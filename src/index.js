@@ -5,10 +5,12 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Login from './Login';
 import Main12 from './main1';
+import NavbarProfile from './navBarprofile';
+import Profile from './profile';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Main12 />
+    <Profile/>
   </React.StrictMode>
 );
 
