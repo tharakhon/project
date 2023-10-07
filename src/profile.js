@@ -5,12 +5,14 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { useState, useEffect } from 'react';
 import Axios from "axios";
+import { useNavigate } from "react-router-dom";
 function Profile(){
     const [profile, setProfile] = useState([]);
     const [flag, setflag] = useState(false);
     const [fullname,setUsername] = useState("");
     const [tel,setTel] = useState("");
     const [email,setEmail] = useState("");
+    const navigate = useNavigate();
     useEffect(() => {
         // ตรวจสอบว่ามีข้อมูลใน /user หรือไม่
         Axios.get("http://localhost:5000/user/:email",{
@@ -31,6 +33,9 @@ function Profile(){
           console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
         });
       }, []);
+      const handleBack =()=>{
+        navigate("/main")
+      }
     return (
         <div>
             <NavbarProfile />
@@ -46,15 +51,15 @@ function Profile(){
                 autoComplete="off"
             >
                 <div style={{ display: 'flex', flexDirection: 'column', width: '50ch' }}>
-                    <TextField id="outlined-basic" label="ชื่อ-นามสกุลจริง" variant="outlined" sx={{ margin: 1 }} />
+                    <TextField id="outlined-basic" label="ชื่อ-นามสกุลจริง" variant="outlined" sx={{ margin: 1 }} defaultValue='tharakhon'/>
                     <TextField id="outlined-basic" label="Email" variant="outlined" sx={{ margin: 1 }}
-                    defaultValue={profile.email}></TextField>
-                    <TextField id="outlined-basic" label="เบอร์โทร" variant="outlined" sx={{ margin: 1 }} />
+                    defaultValue='tharakhon.r@ku.th'></TextField>
+                    <TextField id="outlined-basic" label="เบอร์โทร" variant="outlined" sx={{ margin: 1 }} defaultValue='0638758608'/>
                 </div>
             </Box>
             <div style={{display:'flex',justifyContent:'space-between',margin:10}}>
-            <Button variant="contained" color='error' sx={{top:300}}>ย้อนกลับ</Button>
-            <Button variant="contained" color='success' sx={{ backgroundColor: '#07C27F',top:300}}>เสร็จสิ้น</Button>
+            <Button variant="contained" color='error' sx={{top:300}}onClick={handleBack}>ย้อนกลับ</Button>
+            <Button variant="contained" color='success' sx={{ backgroundColor: '#07C27F',top:300}}onClick={handleBack}>เสร็จสิ้น</Button>
             </div>
         </div>
     );
