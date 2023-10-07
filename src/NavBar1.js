@@ -27,6 +27,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import Badge from '@mui/material/Badge';
 import TextsmsOutlinedIcon from '@mui/icons-material/TextsmsOutlined';
+import { useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -98,6 +99,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 function Navbar1() {
+    const navigate = useNavigate();
     const [open, setOpen] = React.useState(false);
     const theme = useTheme();
     const handleDrawerOpen = () => {
@@ -107,6 +109,9 @@ function Navbar1() {
     const handleDrawerClose = () => {
         setOpen(false);
     };
+    const handleClick = () =>{
+        navigate("/profile")
+    }
     return (
         <div>
             <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
@@ -147,6 +152,7 @@ function Navbar1() {
                             edge="end"
                             aria-haspopup="true"
                             color="inherit"
+                            onClick={handleClick}
                         >
                             <AccountCircle />
                         </IconButton>

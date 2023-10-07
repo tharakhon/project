@@ -8,10 +8,9 @@ import Button from '@mui/material/Button';
 import Navbar from './NavBar';
 import Axios from "axios";
 import { useNavigate } from 'react-router-dom';
-import Register from './register';
 
 
-function Login() {
+function Register() {
 
   const clientId = "80445697984-hft4hh6kkictok8q22lm89nunm1l8vt7.apps.googleusercontent.com"
 
@@ -31,13 +30,11 @@ function Login() {
     }
     gapi.load("client:auth2", initClient)
   }, [])
-  
 
   const onSuccess = (res) => {
     setProfile(res.profileObj)
     console.log('success', res.profileObj)
     setflag(true);
-    navigate("/main")
   }
 
   const onFailure = (res) => {
@@ -48,9 +45,27 @@ function Login() {
     setProfile(null);
     setflag(false);
   }
-  const handleClick = (event) =>{
-    navigate("/Register")
-  }
+
+
+  const addUser = () => {
+    
+    Axios.post("http://localhost:5000/create", {
+      email: profile.email,
+      fullname: fullname ,
+      tel: tel,
+    }).then(() => {
+      setUserList([
+        ...userList,
+        {
+          email: email,
+          fullname: fullname,
+          tel: tel,
+        },
+      ]);
+      navigate("/main")
+    });
+  };
+
 
   return (
     <div>
@@ -97,6 +112,8 @@ function Login() {
                />
            </div>
        </Box>
+       <Button variant="contained" sx={{ backgroundColor: '#07C27F' }} onClick={addUser} >เสร็จสิ้น</Button>
+       <GoogleLogout clientId={clientId} buttonText='LOG OUT' onLogoutSuccess={logOut} />
    </div>
       ) : (<div className="App">
         <header className="App-header">
@@ -124,12 +141,8 @@ function Login() {
               >
                 LOG IN WITH GOOGLE
               </button>
-              
             )}
           />
-            <button onClick={handleClick}>
-              Register WITH GOOGLE
-            </button>
         </header>
       </div>
       )}
@@ -137,4 +150,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Register;
