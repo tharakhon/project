@@ -4,9 +4,12 @@ import FilterAltSharpIcon from '@mui/icons-material/FilterAltSharp';
 import Button from '@mui/material/Button';
 import { useState, useEffect } from 'react';
 import Axios from "axios";
+import { useNavigate } from "react-router-dom";
+
 function Main12(){
     const [profile, setProfile] = useState([]);
     const [flag, setflag] = useState(false);
+    const navigate = useNavigate();
     useEffect(() => {
         // ตรวจสอบว่ามีข้อมูลใน /user หรือไม่
         Axios.get("http://localhost:5000/user/:email")
@@ -23,13 +26,16 @@ function Main12(){
           console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
         });
       }, []);
+      const handleSubmit = () => {
+        navigate('/registerbank')
+      }
     return (
         <div>
 
             <Navbar1/>
             <div style={{display:'flex',margin:20,justifyContent:'space-between'}}>
             <FilterAltSharpIcon fontSize='large' color='info'  />
-            <Button variant='contained' sx={{borderRadius:20,backgroundColor:'#D62828',color: 'white'}}>สร้างธนาคาร</Button></div>
+            <Button variant='contained' sx={{borderRadius:20,backgroundColor:'#D62828',color: 'white'}} onClick={handleSubmit}>สร้างธนาคาร</Button></div>
         </div>
     );
 }

@@ -5,6 +5,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Main12 from './main1';
 import Profile from './profile';
 import Register from './register';
+import RegisterBank from './registerBank';
+import Bank from './ฺBank';
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
         <Route path="register" element={<Register/>}/> 
         <Route path="main" element={<Main12/>}/> 
         <Route path="profile" element={<Profile/>}/>
+        <Route path="registerbank" element={<RegisterBank/>}/>
+        <Route path="bank" element={<Bank/>}/>
         </Routes>
       </BrowserRouter>
    

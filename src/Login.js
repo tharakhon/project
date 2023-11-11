@@ -49,7 +49,7 @@ function Login() {
     setflag(false);
   }
   const handleClick = (event) =>{
-    navigate("/Register")
+    navigate("/register")
   }
 
   return (
@@ -73,10 +73,7 @@ function Login() {
 
                    id="outlined-required"
                    label="Name"
-                   defaultValue=''
-                   onChange={(event) => {
-                    setUsername(event.target.value)
-                  }}
+                   defaultValue={profile.name}
                />
                <br />
                <TextField
@@ -113,23 +110,33 @@ function Login() {
                 onClick={renderProps.onClick}
                 disabled={renderProps.disabled}
                 style={{
-                  backgroundColor: '#f90101', /* เปลี่ยนสีพื้นหลังเป็นสีแดง*/
+                  backgroundColor: '#F5B041', /* เปลี่ยนสีพื้นหลังเป็นสีแดง*/
                   color: '#ffffff', /*เปลี่ยนสีตัวอักษรเป็นสีขาว*/
                   fontSize: '20px', /* เปลี่ยนขนาดตัวอักษร*/
                   width: '600px' , /* กำหนดความกว้าง */
                   height: '75px' , /* กำหนดความสูง */
-                  margin: '50px' , /*กำหนดระยะห่าง */
+                  margin: '30px' , /*กำหนดระยะห่าง */
                   cursor: 'pointer', /* ทำให้เมาส์เป็นรูปแบบของมือ*/
                 }}
               >
-                LOG IN WITH GOOGLE
+                เข้าสู่ระบบ
               </button>
-              
             )}
           />
-            <button onClick={handleClick}>
-              Register WITH GOOGLE
+          <button 
+              onClick={handleClick}
+              style={{
+                  backgroundColor: '#F50303 ', /* เปลี่ยนสีพื้นหลังเป็นสีแดง*/
+                  color: '#ffffff', /*เปลี่ยนสีตัวอักษรเป็นสีขาว*/
+                  fontSize: '20px', /* เปลี่ยนขนาดตัวอักษร*/
+                  width: '600px' , /* กำหนดความกว้าง */
+                  height: '75px' , /* กำหนดความสูง */
+                  margin: '10px' , /*กำหนดระยะห่าง */
+                  cursor: 'pointer', /* ทำให้เมาส์เป็นรูปแบบของมือ*/
+                }}>
+              สมัครเข้าสู่ระบบด้วยบัญชี google
             </button>
+
         </header>
       </div>
       )}

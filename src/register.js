@@ -112,8 +112,9 @@ function Register() {
                />
            </div>
        </Box>
-       <Button variant="contained" sx={{ backgroundColor: '#07C27F' }} onClick={addUser} >เสร็จสิ้น</Button>
+       
        <GoogleLogout clientId={clientId} buttonText='LOG OUT' onLogoutSuccess={logOut} />
+       <Button variant="contained" sx={{ backgroundColor: '#07C27F' }} onClick={addUser} >เสร็จสิ้น</Button>
    </div>
       ) : (<div className="App">
         <header className="App-header">
