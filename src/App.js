@@ -7,6 +7,8 @@ import Profile from './profile';
 import Register from './register';
 import RegisterBank from './registerBank';
 import Bank from './ฺBank';
+import MapShow from './mapShow';
+import  LongdoMap  from './LongdoMap';
 
 function App() {
   return (
@@ -20,6 +22,7 @@ function App() {
         <Route path="profile" element={<Profile/>}/>
         <Route path="registerbank" element={<RegisterBank/>}/>
         <Route path="bank" element={<Bank/>}/>
+        <Route path="map" element={<MapShow/>}/>
         </Routes>
       </BrowserRouter>
    

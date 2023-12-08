@@ -66,6 +66,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
+
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -74,6 +75,18 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
+const products = [
+  { title: 'Lizard',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
+  { title: 'Garlic', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo},
+  { title: 'Apple', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo},
+  { title: 'pond',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
+  { title: 'earth',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
+  { title: 'mud',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
+  { title: 'thailand',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
+  { title: 'island',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
+  { title: 'ลาว',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
+  { title: 'พม่า',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
+];
 export default function Bank() {
   const navigate = useNavigate();
   const handleBack = () => {
@@ -134,206 +147,32 @@ export default function Bank() {
         </Search>
         <Button variant="contained" color='error' sx={{ left: 1050, bottom: 35, borderRadius: 50 }} onClick={handleBack}>เพิ่มทรัพยากร</Button>
         <Grid container spacing={2}>
-        <Grid xs={3}>
-        <Card sx={{ maxWidth: 345 ,m:1}} >
-          <CardMedia
-            sx={{ height: 180, }}
-            image={logo}
-            title="green iguana"
-          />
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              Lizard
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Lizards are a widespread group of squamate reptiles, with over 6,000
-              species, ranging across all continents except Antarctica
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Button size="small">Share</Button>
-            <Button size="small">Learn More</Button>
-          </CardActions>
-        </Card>
+        {products.map(tab => 
+         
+         <Grid xs={3}>
+         <Card sx={{ maxWidth: 345 ,m:1}} >
+           <CardMedia
+             sx={{ height: 180, }}
+             image={tab.image}
+             title="green iguana"
+           />
+           <CardContent>
+             <Typography gutterBottom variant="h5" component="div">
+               {tab.title}
+             </Typography>
+             <Typography variant="body2" color="text.secondary">
+             {tab.titles}
+             </Typography>
+           </CardContent>
+           <CardActions>
+             <Button size="small">Share</Button>
+             <Button size="small">Learn More</Button>
+           </CardActions>
+         </Card>
+         </Grid>
+         
+        )}
         </Grid>
-        <Grid xs={3}>
-        <Card sx={{ maxWidth: 345 ,m:1}} >
-          <CardMedia
-            sx={{ height: 180, }}
-            image={logo}
-            title="green iguana"
-          />
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              Lizard
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Lizards are a widespread group of squamate reptiles, with over 6,000
-              species, ranging across all continents except Antarctica
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Button size="small">Share</Button>
-            <Button size="small">Learn More</Button>
-          </CardActions>
-        </Card>
-        </Grid>
-        <Grid xs={3}>
-        <Card sx={{ maxWidth: 345 ,m:1}} >
-          <CardMedia
-            sx={{ height: 180, }}
-            image={logo}
-            title="green iguana"
-          />
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              Lizard
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Lizards are a widespread group of squamate reptiles, with over 6,000
-              species, ranging across all continents except Antarctica
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Button size="small">Share</Button>
-            <Button size="small">Learn More</Button>
-          </CardActions>
-        </Card>
-        </Grid>
-        <Grid xs={3}>
-        <Card sx={{ maxWidth: 345 ,m:1}} >
-          <CardMedia
-            sx={{ height: 180, }}
-            image={logo}
-            title="green iguana"
-          />
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              Lizard
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Lizards are a widespread group of squamate reptiles, with over 6,000
-              species, ranging across all continents except Antarctica
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Button size="small">Share</Button>
-            <Button size="small">Learn More</Button>
-          </CardActions>
-        </Card>
-        </Grid>
-        <Grid xs={3}>
-        <Card sx={{ maxWidth: 345 ,m:1}} >
-          <CardMedia
-            sx={{ height: 180, }}
-            image={logo}
-            title="green iguana"
-          />
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              Lizard
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Lizards are a widespread group of squamate reptiles, with over 6,000
-              species, ranging across all continents except Antarctica
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Button size="small">Share</Button>
-            <Button size="small">Learn More</Button>
-          </CardActions>
-        </Card>
-        </Grid>
-        <Grid xs={3}>
-        <Card sx={{ maxWidth: 345 ,m:1}} >
-          <CardMedia
-            sx={{ height: 180, }}
-            image={logo}
-            title="green iguana"
-          />
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              Lizard
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Lizards are a widespread group of squamate reptiles, with over 6,000
-              species, ranging across all continents except Antarctica
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Button size="small">Share</Button>
-            <Button size="small">Learn More</Button>
-          </CardActions>
-        </Card>
-        </Grid>
-        <Grid xs={3}>
-        <Card sx={{ maxWidth: 345 ,m:1}} >
-          <CardMedia
-            sx={{ height: 180, }}
-            image={logo}
-            title="green iguana"
-          />
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              Lizard
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Lizards are a widespread group of squamate reptiles, with over 6,000
-              species, ranging across all continents except Antarctica
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Button size="small">Share</Button>
-            <Button size="small">Learn More</Button>
-          </CardActions>
-        </Card>
-        </Grid>
-        <Grid xs={3}>
-        <Card sx={{ maxWidth: 345 ,m:1}} >
-          <CardMedia
-            sx={{ height: 180, }}
-            image={logo}
-            title="green iguana"
-          />
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              Lizard
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Lizards are a widespread group of squamate reptiles, with over 6,000
-              species, ranging across all continents except Antarctica
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Button size="small">Share</Button>
-            <Button size="small">Learn More</Button>
-          </CardActions>
-        </Card>
-        </Grid>
-        <Grid xs={3}>
-        <Card sx={{ maxWidth: 345 ,m:1}} >
-          <CardMedia
-            sx={{ height: 180, }}
-            image={logo}
-            title="green iguana"
-          />
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              Lizard
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Lizards are a widespread group of squamate reptiles, with over 6,000
-              species, ranging across all continents except Antarctica
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Button size="small">Share</Button>
-            <Button size="small">Learn More</Button>
-          </CardActions>
-        </Card>
-        </Grid>
-        </Grid>
-        
       </Box>
     </Box>
   );
