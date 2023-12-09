@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import InputBase from '@mui/material/InputBase';
 
 export let longdo;
 export let map;
@@ -8,6 +9,7 @@ export class LongdoMap extends Component {
     constructor(props) {
         super(props);
         this.mapCallback = this.mapCallback.bind(this);
+        this.suggest = null;  // Declare suggest in the constructor
     }
 
     mapCallback() {
@@ -36,64 +38,79 @@ export class LongdoMap extends Component {
                 this.mapCallback();
                 if (callback) callback();
                 map = new longdo.Map({
-                    placeholder: document.getElementById('map'),
+                    placeholder: document.getElementById(this.props.id),
                     ui: longdo.UiComponent.Mobile
-                  });
-                // Obtain the search element after the script has loaded
+                });
+
                 var search = document.getElementById('search');
 
                 if (search) {
-                    // Initialize search functionality once the map is available
                     map.Search.placeholder(
                         document.getElementById('result')
                     );
 
-                    // When user presses an Enter button #search
                     search.onkeyup = function (event) {
-                        if ((event || window.event).keyCode != 13)
+                        if ((event || window.event).keyCode !== 13)
                             return;
                         doSearch();
                     };
-                    var suggest = document.getElementById('suggest');
-                    search.oninput = function() {
+
+                    this.suggest = document.getElementById('suggest');  // Assign suggest to the class variable
+
+                    search.oninput = () => {
                         if (search.value.length < 3) {
-                          suggest.style.display = 'none';
-                          return;
+                            this.suggest.style.display = 'none';
+                            return;
                         }
-                        
+
                         map.Search.suggest(search.value, {
                             area: 10
-                          });
-                      };
-                      map.Event.bind('suggest', function(result) {
-                        if (result.meta.keyword != search.value) return;
-                        
-                        suggest.innerHTML = '';
-                        for (var i = 0, item; item = result.data[i]; ++i) {
-                          longdo.Util.append(suggest, 'a', {
-                            innerHTML: item.d,
-                            href: 'javascript:doSuggest(\'' + item.w + '\')'
-                          });
+                        });
+                    };
+
+                    map.Event.bind('suggest', (result) => {
+                        if (result.meta.keyword !== search.value) return;
+
+                        this.suggest.innerHTML = '';
+                        for (let i = 0, item; item = result.data[i]; ++i) {
+                            longdo.Util.append(this.suggest, 'a', {
+                                innerHTML: item.d,
+                                href: 'javascript:void(0)',  // Use void(0) instead of calling a function directly in href
+                                onclick: () => this.doSuggest(item.w)  // Use a class method
+                            });
                         }
-                        suggest.style.display = 'block';
-                      });
+                        this.suggest.style.display = 'block';
+                    });
 
                     function doSearch() {
                         map.Search.search(search.value, {
                             area: 10
-                          });
-                        // Check if map object is available before accessing its Search property
-                        var suggest = document.getElementById('suggest');  // <-- Obtain the reference
-                        if (suggest) {
-                            suggest.style.display = 'flex';
-                        } else {
-                            console.error("Suggest element not found in the DOM.");
-                        }
+                        }, (result) => {
+                            if (result.length > 0) {
+                                const location = result[0].location;
+                                const marker = new longdo.Marker(location, {
+                                    title: search.value,
+                                    detail: result[0].name,
+                                    icon: {
+                                        url: 'path/to/marker-icon.png',
+                                        offset: { x: 12, y: 45 }
+                                    }
+                                });
+                                map.Overlays.add(marker);
+
+                                map.zoom(15);
+                                map.location(location, true);
+                            } else {
+                                console.error("No search results found.");
+                            }
+
+                            if (this.suggest) {
+                                this.suggest.style.display = 'flex';
+                            } else {
+                                console.error("Suggest element not found in the DOM.");
+                            }
+                        });
                     }
-                    function doSuggest(value) {
-                        search.value = value;
-                        doSearch();
-                      }
                 } else {
                     console.error("Search element not found in the DOM.");
                 }
@@ -106,15 +123,62 @@ export class LongdoMap extends Component {
         }
     }
 
+    // Define doSuggest as a class method
+    doSuggest(value) {
+        const search = document.getElementById('search');
+        if (search) {
+            search.value = value;
+            doSearch();
+        } else {
+            console.error("Search element not found in the DOM.");
+        }
+
+        function doSearch() {
+            map.Search.search(search.value, {
+                area: 10
+            }, (result) => {
+                if (result.length > 0) {
+                    const location = result[0].location;
+                    const marker = new longdo.Marker(location, {
+                        title: search.value,
+                        detail: result[0].name,
+                        icon: {
+                            url: 'path/to/marker-icon.png',
+                            offset: { x: 12, y: 45 }
+                        }
+                    });
+                    map.Overlays.add(marker);
+
+                    map.zoom(15);
+                    map.location(location, true);
+                } else {
+                    console.error("No search results found.");
+                }
+
+                if (this.suggest) {
+                    this.suggest.style.display = 'flex';
+                } else {
+                    console.error("Suggest element not found in the DOM.");
+                }
+            });
+        }
+    }
+
     render() {
         return (
-            <div >
-                <div id={this.props.id} style={{ width: '100ch', height: '50ch' }}></div>
+            <div>
                 <div >
-                    <input id="search"></input>
+                    <InputBase
+                        sx={{ ml: 1,  }}
+                        placeholder="Search Google Maps"
+                        inputProps={{ 'aria-label': 'search google maps' }}
+                        id="search"
+                    />
                     <div id="suggest" ></div>
                     <div id="result" ></div>
                 </div>
+                <div id={this.props.id} style={{ width: '100ch', height: '50ch' }}></div>
+
             </div>
         );
     }
