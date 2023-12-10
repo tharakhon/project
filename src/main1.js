@@ -12,20 +12,28 @@ import CardMedia from '@mui/material/CardMedia';
 import logo from "../src/Logo.png";
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Unstable_Grid2';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import Avatar from '@mui/material/Avatar';
+import Tooltip from '@mui/material/Tooltip';
+import MenuItem from '@mui/material/MenuItem';
 const products = [
-  { title: 'Lizard',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
-  { title: 'Garlic', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo},
-  { title: 'Apple', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo},
-  { title: 'pond',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
-  { title: 'earth',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
-  { title: 'mud',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
-  { title: 'thailand',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
-  { title: 'island',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
-  { title: 'ลาว',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
-  { title: 'พม่า',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
+  { title: 'Lizard', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: logo },
+  { title: 'Garlic', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: logo },
+  { title: 'Apple', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: logo },
+  { title: 'pond', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: logo },
+  { title: 'earth', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: logo },
+  { title: 'mud', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: logo },
+  { title: 'thailand', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: logo },
+  { title: 'island', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: logo },
+  { title: 'ลาว', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: logo },
+  { title: 'พม่า', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: logo },
 ];
+const settings = ['เรียงด้วยแรงค์', 'เรียงด้วยระยะทาง', 'เรียงด้วยเรตติ้ง'];
 function Main12() {
   const [profile, setProfile] = useState([]);
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [flag, setflag] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
@@ -47,41 +55,76 @@ function Main12() {
   const handleSubmit = () => {
     navigate('/registerbank')
   }
+
+
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
   return (
     <div>
-
       <Navbar1 />
-      <div style={{ display: 'flex', margin: 20, justifyContent: 'space-between' }}>
-        <FilterAltSharpIcon fontSize='large' color='info' />
+      <div style={{ display: 'flex', margin: 10, justifyContent: 'space-between' }}>
+        <Box>
+          <Tooltip title="Open fillter">
+            <IconButton onClick={handleOpenUserMenu} >
+              <FilterAltSharpIcon fontSize='large' color='info' />
+            </IconButton>
+          </Tooltip>
+          <Menu
+            sx={{ mt: '45px' }}
+            id="menu-appbar"
+            anchorEl={anchorElUser}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            open={Boolean(anchorElUser)}
+            onClose={handleCloseUserMenu}
+          >
+            {settings.map((setting) => (
+              <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                <Typography textAlign="center">{setting}</Typography>
+              </MenuItem>
+            ))}
+          </Menu>
+        </Box>
         <Button variant='contained' sx={{ borderRadius: 20, backgroundColor: '#D62828', color: 'white' }} onClick={handleSubmit}>สร้างธนาคาร</Button></div>
-        <Grid container spacing={2}>
-        {products.map(tab => 
-         
-         <Grid xs={3}>
-         <Card sx={{ maxWidth: 345 ,m:1}} >
-           <CardMedia
-             sx={{ height: 180, }}
-             image={tab.image}
-             title="green iguana"
-           />
-           <CardContent>
-             <Typography gutterBottom variant="h5" component="div">
-               {tab.title}
-             </Typography>
-             <Typography variant="body2" color="text.secondary">
-             {tab.titles}
-             </Typography>
-           </CardContent>
-           <CardActions>
-             <Button size="medium">Open</Button>
-             <Button size="medium">Mark</Button>
-           </CardActions>
-         </Card>
-         </Grid>
-         
+      <Grid container spacing={2}>
+        {products.map(tab =>
+          <Grid xs={3}>
+            <Card sx={{ maxWidth: 345, m: 1 }} >
+              <CardMedia
+                sx={{ height: 180, }}
+                image={tab.image}
+                title="green iguana"
+              />
+              <CardContent>
+                <Typography gutterBottom variant="h5" component="div">
+                  {tab.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {tab.titles}
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <Button size="medium">Open</Button>
+                <Button size="medium">Mark</Button>
+              </CardActions>
+            </Card>
+          </Grid>
+
         )}
-        </Grid>
-      
+      </Grid>
+
     </div>
 
   );

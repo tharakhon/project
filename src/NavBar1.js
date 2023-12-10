@@ -28,6 +28,12 @@ import MoreIcon from '@mui/icons-material/MoreVert';
 import Badge from '@mui/material/Badge';
 import TextsmsOutlinedIcon from '@mui/icons-material/TextsmsOutlined';
 import { useNavigate } from "react-router-dom";
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import SettingsIcon from '@mui/icons-material/Settings';
+import ReviewsIcon from '@mui/icons-material/Reviews';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const drawerWidth = 240;
 
@@ -188,11 +194,11 @@ function Navbar1() {
                 </DrawerHeader>
                 <Divider />
                 <List>
-                    {['ธนาคารของคุณ', 'กิจกรรมของคุณ', 'บุ๊คมาร์ค', 'ตั้งค่า','รีวีว'].map((text, index) => (
+                    {['ธนาคารของคุณ', 'กิจกรรมของคุณ'].map((text, index) => (
                         <ListItem key={text} disablePadding>
                             <ListItemButton>
                                 <ListItemIcon>
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                                    {index % 2 === 0 ? <AccountBalanceIcon /> : <AccessTimeIcon /> }
                                 </ListItemIcon>
                                 <ListItemText primary={text} />
                             </ListItemButton>
@@ -201,11 +207,24 @@ function Navbar1() {
                 </List>
                 <Divider />
                 <List>
-                    {['ออกจากระบบ'].map((text, index) => (
+                    {['บุ๊คมาร์ค', 'ตั้งค่า'].map((text, index) => (
                         <ListItem key={text} disablePadding>
                             <ListItemButton>
                                 <ListItemIcon>
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                                    {index % 2 === 0 ? <BookmarkIcon/> :<SettingsIcon/>}
+                                </ListItemIcon>
+                                <ListItemText primary={text} />
+                            </ListItemButton>
+                        </ListItem>
+                    ))}
+                </List>
+                <Divider />
+                <List>
+                    {['รีวีว','ออกจากระบบ'].map((text, index) => (
+                        <ListItem key={text} disablePadding>
+                            <ListItemButton>
+                                <ListItemIcon>
+                                {index % 2 === 0 ? <ReviewsIcon/> : <LogoutIcon />}
                                 </ListItemIcon>
                                 <ListItemText primary={text} />
                             </ListItemButton>

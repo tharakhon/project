@@ -108,30 +108,65 @@ export default function Bank() {
         <Toolbar />
         <Box sx={{ overflow: 'auto', marginTop: 10 }}>
           <List>
-            {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+            {['ทรัพยากรทั้งหมด'].map((text, index) => (
               <ListItem key={text} disablePadding>
                 <ListItemButton>
-                  <ListItemIcon>
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
+                  <ListItemText  primary={text} />
                 </ListItemButton>
               </ListItem>
             ))}
           </List>
           <Divider />
           <List>
-            {['All mail', 'Trash', 'Spam'].map((text, index) => (
+            {['ทรัพยากรเพื่อเช่าหรือยืม'].map((text, index) => (
               <ListItem key={text} disablePadding>
                 <ListItemButton>
-                  <ListItemIcon>
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
+                  <ListItemText  primary={text} />
                 </ListItemButton>
               </ListItem>
             ))}
           </List>
+          <Divider />
+          <List>
+            {['ทรัพยากรเพื่อซื้อขาย'].map((text, index) => (
+              <ListItem key={text} disablePadding>
+                <ListItemButton>
+                  <ListItemText  primary={text} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
+          <List>
+            {['ทรัพยากรเพื่อแลกเปลี่ยน'].map((text, index) => (
+              <ListItem key={text} disablePadding>
+                <ListItemButton>
+                  <ListItemText  primary={text} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
+          <List>
+            {['สมาชิกทั้งหมด'].map((text, index) => (
+              <ListItem key={text} disablePadding>
+                <ListItemButton>
+                  <ListItemText  primary={text} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
+          <List>
+            {['ทรัพยากรที่ทำรายการแล้ว'].map((text, index) => (
+              <ListItem key={text} disablePadding>
+                <ListItemButton>
+                  <ListItemText  primary={text} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
         </Box>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3, marginTop: 10 }}>
