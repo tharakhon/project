@@ -243,7 +243,6 @@ export class LongdoMap extends Component {
                         label="ใส่ที่อยู่ของคุณ"
                         multiline
                         rows={10}
-
                         variant="filled"
                     />
                 </Box>
