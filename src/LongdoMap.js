@@ -1,9 +1,52 @@
 import React, { Component } from 'react';
 import InputBase from '@mui/material/InputBase';
+import { styled, alpha } from '@mui/material/styles';
+import SearchIcon from '@mui/icons-material/Search';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
 
 export let longdo;
 export let map;
 
+const Search = styled('div')(({ theme }) => ({
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: alpha(theme.palette.common.black, 0.15),
+    '&:hover': {
+        backgroundColor: alpha(theme.palette.common.black, 0.25),
+    },
+    marginRight: theme.spacing(2),
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+        marginLeft: theme.spacing(3),
+        width: 'auto',
+    },
+}));
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+    color: 'inherit',
+    '& .MuiInputBase-input': {
+        padding: theme.spacing(1, 1, 1, 0),
+        // vertical padding + font size from searchIcon
+        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+        transition: theme.transitions.create('width'),
+        width: '100%',
+        [theme.breakpoints.up('md')]: {
+            width: '58ch',
+        },
+    },
+}));
 export class LongdoMap extends Component {
 
     constructor(props) {
@@ -59,12 +102,12 @@ export class LongdoMap extends Component {
 
                     search.oninput = () => {
                         if (search.value.length < 3) {
-                            this.suggest.style.display = 'none';
+                            this.suggest.style.display = 'flex';
                             return;
                         }
 
                         map.Search.suggest(search.value, {
-                            area: 10
+                            area: 0
                         });
                     };
 
@@ -79,12 +122,12 @@ export class LongdoMap extends Component {
                                 onclick: () => this.doSuggest(item.w)  // Use a class method
                             });
                         }
-                        this.suggest.style.display = 'block';
+                        this.suggest.style.display = 'flex';
                     });
 
                     function doSearch() {
                         map.Search.search(search.value, {
-                            area: 10
+                            area: 0
                         }, (result) => {
                             if (result.length > 0) {
                                 const location = result[0].location;
@@ -135,7 +178,7 @@ export class LongdoMap extends Component {
 
         function doSearch() {
             map.Search.search(search.value, {
-                area: 10
+                area: 0
             }, (result) => {
                 if (result.length > 0) {
                     const location = result[0].location;
@@ -166,19 +209,44 @@ export class LongdoMap extends Component {
 
     render() {
         return (
-            <div>
-                <div >
-                    <InputBase
-                        sx={{ ml: 1,  }}
-                        placeholder="Search Google Maps"
-                        inputProps={{ 'aria-label': 'search google maps' }}
-                        id="search"
-                    />
-                    <div id="suggest" ></div>
-                    <div id="result" ></div>
-                </div>
-                <div id={this.props.id} style={{ width: '100ch', height: '50ch' }}></div>
+            <div >
+                <div style={{ display: 'flex' }}>
+                    <div id={this.props.id} style={{ width: '100ch', height: '50ch', justifyContent: 'center' }}>
+                    </div>
+                    <div style={{ flex: 2 }}>
+                        <Search>
+                            <SearchIconWrapper>
+                                <SearchIcon />
+                            </SearchIconWrapper>
+                            <StyledInputBase
+                                placeholder="Search Google Maps"
+                                inputProps={{ 'aria-label': 'search google maps' }}
+                                id="search"
+                            />
+                        </Search>
 
+                        <div id="suggest" style={{ flexDirection: 'column' }}></div>
+                        <div id="result" ></div>
+                    </div>
+
+                </div>
+                <Box
+                    component="form"
+                    sx={{
+                        '& .MuiTextField-root': { ml: 30,mt:1, width: '50ch' },
+                    }}
+                    noValidate
+                    autoComplete="off"
+                >
+                    <TextField
+                        id="filled-multiline-static"
+                        label="ใส่ที่อยู่ของคุณ"
+                        multiline
+                        rows={10}
+
+                        variant="filled"
+                    />
+                </Box>
             </div>
         );
     }
