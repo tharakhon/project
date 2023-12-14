@@ -226,7 +226,7 @@ export class LongdoMap extends Component {
                         </Search>
 
                         <div id="suggest" style={{ flexDirection: 'column' }}></div>
-                        <div id="result" ></div>
+                        <div id="result" style={{ position:'absolute' }}></div>
                     </div>
 
                 </div>
