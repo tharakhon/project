@@ -13,7 +13,7 @@ class MapShow extends Component {
   render() {
     const mapKey = 'e4e873a86d89295b2f1ac95fa5c5154e'
     return (
-      <div style={{display: 'flex'}}>
+      <div>
         <LongdoMap id="longdo-map" mapKey={mapKey} callback={this.initMap} />
       </div>
     );

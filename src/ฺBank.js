@@ -23,8 +23,11 @@ import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-import logo from "../src/Logo.png";
+import logo from "../src/image/Logo.png";
 import Grid from '@mui/material/Unstable_Grid2';
+import Apple from '../src/image/a.jpg';
+import hoe from '../src/image/จอบ.jpg';
+import fertilizer from '../src/image/ปุ๋ย.png';
 const drawerWidth = 240;
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -76,16 +79,16 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 const products = [
-  { title: 'Lizard',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
-  { title: 'Garlic', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo},
-  { title: 'Apple', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo},
-  { title: 'pond',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
-  { title: 'earth',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
-  { title: 'mud',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
-  { title: 'thailand',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
-  { title: 'island',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
-  { title: 'ลาว',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
-  { title: 'พม่า',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : logo },
+  { title: 'จอบ',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : hoe },
+  { title: 'ปุ๋ย', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : fertilizer},
+  { title: 'แอบเปิ้ล', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : Apple},
+  { title: 'pond',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : Apple },
+  { title: 'earth',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : Apple },
+  { title: 'mud',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : Apple },
+  { title: 'thailand',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : Apple },
+  { title: 'island',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : Apple },
+  { title: 'ลาว',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : Apple },
+  { title: 'พม่า',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : Apple },
 ];
 export default function Bank() {
   const navigate = useNavigate();
@@ -187,7 +190,7 @@ export default function Bank() {
          <Grid xs={3}>
          <Card sx={{ maxWidth: 345 ,m:1}} >
            <CardMedia
-             sx={{ height: 180, }}
+             sx={{ height: 150, }}
              image={tab.image}
              title="green iguana"
            />

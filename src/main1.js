@@ -9,7 +9,7 @@ import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-import logo from "../src/Logo.png";
+import logo from "../src/image/Logo.png";
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Unstable_Grid2';
 import Box from '@mui/material/Box';
@@ -18,17 +18,21 @@ import Menu from '@mui/material/Menu';
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
+import bk from "../src/image/กรุงเทพ.jpg";
+import ktb from "../src/image/กรุงไทย.jpg";
+import k from "../src/image/กสิกร.jpg";
+import scb from "../src/image/ไทยพานิช.png";
 const products = [
-  { title: 'Lizard', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: logo },
-  { title: 'Garlic', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: logo },
-  { title: 'Apple', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: logo },
-  { title: 'pond', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: logo },
-  { title: 'earth', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: logo },
-  { title: 'mud', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: logo },
-  { title: 'thailand', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: logo },
-  { title: 'island', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: logo },
-  { title: 'ลาว', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: logo },
-  { title: 'พม่า', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: logo },
+  { title: 'กรุงเทพ', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: bk },
+  { title: 'กรุงไทย', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: ktb },
+  { title: 'กสิกร', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: k },
+  { title: 'ไทยพานิช', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: scb },
+  { title: 'earth', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: ktb },
+  { title: 'mud', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: ktb },
+  { title: 'thailand', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: ktb },
+  { title: 'island', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: ktb },
+  { title: 'ลาว', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: ktb },
+  { title: 'พม่า', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: ktb },
 ];
 const settings = ['เรียงด้วยแรงค์', 'เรียงด้วยระยะทาง', 'เรียงด้วยเรตติ้ง'];
 function Main12() {
