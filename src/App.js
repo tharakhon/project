@@ -10,6 +10,7 @@ import Bank from './ฺBank';
 import MapShow from './mapShow';
 import BankUser from './BankUser';
 import OpenBankUsers from './OpenBankUsers';
+import Resource from './Makeresource';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="map" element={<MapShow/>}/>
         <Route path="bankuser" element={<BankUser/>}/>
         <Route path="openbankusers" element={<OpenBankUsers/>}/>
+        <Route path="addproduct" element={<Resource/>}/>
         </Routes>
       </BrowserRouter>
    

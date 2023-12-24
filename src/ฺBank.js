@@ -94,8 +94,8 @@ const products = [
 ];
 export default function Bank() {
   const navigate = useNavigate();
-  const handleBack = () => {
-    navigate("/bank");
+  const handleNext = () => {
+    navigate("/addproduct");
   }
   return (
     <Box sx={{ display: 'flex' }}>
@@ -185,7 +185,7 @@ export default function Bank() {
             inputProps={{ 'aria-label': 'search' }}
           />
         </Search>
-        <Button variant="contained" color='error' sx={{ left: 1050, bottom: 35, borderRadius: 50 }} onClick={handleBack}>เพิ่มทรัพยากร</Button>
+        <Button variant="contained" color='error' sx={{ left: 1050, bottom: 35, borderRadius: 50 }} onClick={handleNext}>เพิ่มทรัพยากร</Button>
         <Grid container spacing={2}>
           {products.map(tab =>
 
