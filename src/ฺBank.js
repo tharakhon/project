@@ -13,7 +13,6 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
-import Navbar1 from './NavBar1';
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
 import { styled, useTheme, alpha } from '@mui/material/styles';
@@ -28,6 +27,9 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Apple from '../src/image/a.jpg';
 import hoe from '../src/image/จอบ.jpg';
 import fertilizer from '../src/image/ปุ๋ย.png';
+import banana from '../src/image/กล้วย.jpg';
+import car from '../src/image/รถเกี่ยวข้าว.png';
+import NavBarBank from './navBarBank';
 const drawerWidth = 240;
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -79,16 +81,16 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 const products = [
-  { title: 'จอบ',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : hoe },
-  { title: 'ปุ๋ย', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : fertilizer},
-  { title: 'แอบเปิ้ล', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : Apple},
-  { title: 'pond',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : Apple },
-  { title: 'earth',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : Apple },
-  { title: 'mud',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : Apple },
-  { title: 'thailand',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : Apple },
-  { title: 'island',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : Apple },
-  { title: 'ลาว',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : Apple },
-  { title: 'พม่า',titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica',image : Apple },
+  { title: 'จอบ', titles: 'จำนวนทรัพที่เหลืออยู่ 1 ชิ้น', image: hoe },
+  { title: 'ปุ๋ย', titles: 'จำนวนทรัพที่เหลืออยู่ 10 กิโลกรัม', image: fertilizer },
+  { title: 'แอบเปิ้ล', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
+  { title: 'กล้วย', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: banana },
+  { title: 'รถเกี่ยวข้าว', titles: 'จำนวนทรัพที่เหลืออยู่ 10 คัน', image: car },
+  { title: 'แอบเปิ้ล', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
+  { title: 'แอบเปิ้ล', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
+  { title: 'แอบเปิ้ล', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
+  { title: 'แอบเปิ้ล', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
+  { title: 'แอบเปิ้ล', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
 ];
 export default function Bank() {
   const navigate = useNavigate();
@@ -98,7 +100,7 @@ export default function Bank() {
   return (
     <Box sx={{ display: 'flex' }}>
       <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-        <Navbar1 />
+        <NavBarBank/>
       </AppBar>
       <Drawer
         variant="permanent"
@@ -114,7 +116,7 @@ export default function Bank() {
             {['ทรัพยากรทั้งหมด'].map((text, index) => (
               <ListItem key={text} disablePadding>
                 <ListItemButton>
-                  <ListItemText  primary={text} />
+                  <ListItemText primary={text} />
                 </ListItemButton>
               </ListItem>
             ))}
@@ -124,7 +126,7 @@ export default function Bank() {
             {['ทรัพยากรเพื่อเช่าหรือยืม'].map((text, index) => (
               <ListItem key={text} disablePadding>
                 <ListItemButton>
-                  <ListItemText  primary={text} />
+                  <ListItemText primary={text} />
                 </ListItemButton>
               </ListItem>
             ))}
@@ -134,7 +136,7 @@ export default function Bank() {
             {['ทรัพยากรเพื่อซื้อขาย'].map((text, index) => (
               <ListItem key={text} disablePadding>
                 <ListItemButton>
-                  <ListItemText  primary={text} />
+                  <ListItemText primary={text} />
                 </ListItemButton>
               </ListItem>
             ))}
@@ -144,7 +146,7 @@ export default function Bank() {
             {['ทรัพยากรเพื่อแลกเปลี่ยน'].map((text, index) => (
               <ListItem key={text} disablePadding>
                 <ListItemButton>
-                  <ListItemText  primary={text} />
+                  <ListItemText primary={text} />
                 </ListItemButton>
               </ListItem>
             ))}
@@ -154,7 +156,7 @@ export default function Bank() {
             {['สมาชิกทั้งหมด'].map((text, index) => (
               <ListItem key={text} disablePadding>
                 <ListItemButton>
-                  <ListItemText  primary={text} />
+                  <ListItemText primary={text} />
                 </ListItemButton>
               </ListItem>
             ))}
@@ -164,7 +166,7 @@ export default function Bank() {
             {['ทรัพยากรที่ทำรายการแล้ว'].map((text, index) => (
               <ListItem key={text} disablePadding>
                 <ListItemButton>
-                  <ListItemText  primary={text} />
+                  <ListItemText primary={text} />
                 </ListItemButton>
               </ListItem>
             ))}
@@ -185,31 +187,31 @@ export default function Bank() {
         </Search>
         <Button variant="contained" color='error' sx={{ left: 1050, bottom: 35, borderRadius: 50 }} onClick={handleBack}>เพิ่มทรัพยากร</Button>
         <Grid container spacing={2}>
-        {products.map(tab => 
-         
-         <Grid xs={3}>
-         <Card sx={{ maxWidth: 345 ,m:1}} >
-           <CardMedia
-             sx={{ height: 150, }}
-             image={tab.image}
-             title="green iguana"
-           />
-           <CardContent>
-             <Typography gutterBottom variant="h5" component="div">
-               {tab.title}
-             </Typography>
-             <Typography variant="body2" color="text.secondary">
-             {tab.titles}
-             </Typography>
-           </CardContent>
-           <CardActions>
-             <Button size="small">Share</Button>
-             <Button size="small">Learn More</Button>
-           </CardActions>
-         </Card>
-         </Grid>
-         
-        )}
+          {products.map(tab =>
+
+            <Grid xs={3}>
+              <Card sx={{ maxWidth: 345, m: 1 }} >
+                <CardMedia
+                  component="img"
+                  height="300"
+                  image={tab.image}
+                  title="รูปภาพทรัพยากร"
+                />
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                    {tab.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {tab.titles}
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button size="small">ดูทรัพยากร</Button>
+                </CardActions>
+              </Card>
+            </Grid>
+
+          )}
         </Grid>
       </Box>
     </Box>

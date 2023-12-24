@@ -9,10 +9,11 @@ import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-import logo from "../src/image/Logo.png";
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Unstable_Grid2';
 import Box from '@mui/material/Box';
+import Rating from '@mui/material/Rating';
+import StarIcon from '@mui/icons-material/Star';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import Avatar from '@mui/material/Avatar';
@@ -23,17 +24,18 @@ import ktb from "../src/image/กรุงไทย.jpg";
 import k from "../src/image/กสิกร.jpg";
 import scb from "../src/image/ไทยพานิช.png";
 const products = [
-  { title: 'กรุงเทพ', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: bk },
-  { title: 'กรุงไทย', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: ktb },
-  { title: 'กสิกร', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: k },
-  { title: 'ไทยพานิช', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: scb },
-  { title: 'earth', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: ktb },
-  { title: 'mud', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: ktb },
-  { title: 'thailand', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: ktb },
-  { title: 'island', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: ktb },
-  { title: 'ลาว', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: ktb },
-  { title: 'พม่า', titles: 'Lizards are a widespread group of squamate reptiles, with over 6000 species ranging across all continents except Antarctica', image: ktb },
+  { title: 'กรุงเทพ',rating:2.5, image: bk },
+  { title: 'กรุงไทย', rating:3.5, image: ktb },
+  { title: 'กสิกร', rating:4.5, image: k },
+  { title: 'ไทยพานิช',  rating:1.5,image: scb },
+  { title: 'earth', rating:4.5,image: ktb },
+  { title: 'mud',  rating:3.5,image: ktb },
+  { title: 'thailand',  rating:2.5,image: ktb },
+  { title: 'island', rating:1.5, image: ktb },
+  { title: 'ลาว', rating:4.5,image: ktb },
+  { title: 'พม่า', rating:0.5, image: ktb },
 ];
+
 const settings = ['เรียงด้วยแรงค์', 'เรียงด้วยระยะทาง', 'เรียงด้วยเรตติ้ง'];
 function Main12() {
   const [profile, setProfile] = useState([]);
@@ -59,7 +61,9 @@ function Main12() {
   const handleSubmit = () => {
     navigate('/registerbank')
   }
-
+  const handleOpenbankuser = () => {
+    navigate('/bankuser')
+  }
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -69,9 +73,9 @@ function Main12() {
     setAnchorElUser(null);
   };
   return (
-    <div>
+    <div >
       <Navbar1 />
-      <div style={{ display: 'flex', margin: 10, justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', margin: 10, justifyContent: 'space-between', flexWrap: 'nowrap' }}>
         <Box>
           <Tooltip title="Open fillter">
             <IconButton onClick={handleOpenUserMenu} >
@@ -107,21 +111,36 @@ function Main12() {
           <Grid xs={3}>
             <Card sx={{ maxWidth: 345, m: 1 }} >
               <CardMedia
-                sx={{ height: 180, }}
+                component="img"
+                height="300"
                 image={tab.image}
-                title="green iguana"
+                title="รูปภาพธนาคาร"
               />
+
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
                   {tab.title}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {tab.titles}
-                </Typography>
+                <Box
+                  sx={{
+                    width: 200,
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Rating
+                    name="text-feedback"
+                    value={tab.rating}
+                    readOnly
+                    precision={0.5}
+                    emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+                  />
+                  <Box sx={{ ml: 2 }}>{tab.rating}</Box>
+                </Box>
               </CardContent>
               <CardActions>
-                <Button size="medium">Open</Button>
-                <Button size="medium">Mark</Button>
+                <Button size="medium" onClick={handleOpenbankuser}>เปิดดูทรัพยากรในธนาคาร</Button>
+                <Button size="medium">บุ๊คมาร์ค</Button>
               </CardActions>
             </Card>
           </Grid>

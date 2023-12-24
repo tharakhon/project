@@ -8,6 +8,7 @@ import Button from '@mui/material/Button';
 import Navbar from './NavBar';
 import Axios from "axios";
 import { useNavigate } from 'react-router-dom';
+import logo from '../src/image/Logo.png';
 
 
 function Register() {
@@ -118,7 +119,7 @@ function Register() {
    </div>
       ) : (<div className="App">
         <header className="App-header">
-          <img src="https://cdn.pic.in.th/file/picinth/368067465_2030957793916000_1185052255972145640_n-1.png" alt="โลโก้แอพ" />
+          <img src={logo} alt="โลโก้แอพ" style={{width:400}}/>
           <GoogleLogin
             clientId={clientId}
             buttonText='LOG IN WITH GOOGLE'
