@@ -30,6 +30,8 @@ import fertilizer from '../src/image/ปุ๋ย.png';
 import banana from '../src/image/กล้วย.jpg';
 import car from '../src/image/รถเกี่ยวข้าว.png';
 import NavBarBank from './navBarBank';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+
 const drawerWidth = 240;
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -97,10 +99,13 @@ export default function Bank() {
   const handleNext = () => {
     navigate("/addproduct");
   }
+  const handleNextListbank = () => {
+    navigate("/listbank");
+  }
   return (
     <Box sx={{ display: 'flex' }}>
       <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-        <NavBarBank/>
+        <NavBarBank />
       </AppBar>
       <Drawer
         variant="permanent"
@@ -112,6 +117,19 @@ export default function Bank() {
       >
         <Toolbar />
         <Box sx={{ overflow: 'auto', marginTop: 10 }}>
+          <List>
+            {['ข้อมูลของธนาคาร'].map((text, index) => (
+              <ListItem key={text} disablePadding>
+                <ListItemButton sx={{backgroundColor:'#a2d2ff'}} onClick={handleNextListbank}>
+                  <ListItemIcon>
+                     <AccountBalanceIcon /> 
+                  </ListItemIcon>
+                  <ListItemText primary={text} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
           <List>
             {['ทรัพยากรทั้งหมด'].map((text, index) => (
               <ListItem key={text} disablePadding>

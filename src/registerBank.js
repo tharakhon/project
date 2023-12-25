@@ -35,7 +35,7 @@ function RegisterBank() {
     navigate("/map");
   }
   const handleBack = () => {
-    navigate("/bank");
+    navigate("/main");
   }
   const handleImageChange = (event) => {
     const selectedImage = event.target.files[0];

@@ -11,6 +11,9 @@ import MapShow from './mapShow';
 import BankUser from './BankUser';
 import OpenBankUsers from './OpenBankUsers';
 import Resource from './Makeresource';
+import Rank from './Ranking';
+import ListBank from './ListBank';
+import ListBankuser from './ListBankUser';
 
 function App() {
   return (
@@ -28,6 +31,9 @@ function App() {
         <Route path="bankuser" element={<BankUser/>}/>
         <Route path="openbankusers" element={<OpenBankUsers/>}/>
         <Route path="addproduct" element={<Resource/>}/>
+        <Route path="rank" element={<Rank/>}/>
+        <Route path="listbank" element={<ListBank/>}/>
+        <Route path="listbankuser" element={<ListBankuser/>}/>
         </Routes>
       </BrowserRouter>
    

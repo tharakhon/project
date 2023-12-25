@@ -30,6 +30,8 @@ import fertilizer from '../src/image/ปุ๋ย.png';
 import banana from '../src/image/กล้วย.jpg';
 import car from '../src/image/รถเกี่ยวข้าว.png';
 import NavBarBank from './navBarBank';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import { useState } from 'react';
 const drawerWidth = 240;
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -86,21 +88,28 @@ const products = [
     { title: 'แอบเปิ้ล', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
     { title: 'กล้วย', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: banana },
     { title: 'รถเกี่ยวข้าว', titles: 'จำนวนทรัพที่เหลืออยู่ 10 คัน', image: car },
-    { title: 'แอบเปิ้ล', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
-    { title: 'แอบเปิ้ล', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
-    { title: 'แอบเปิ้ล', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
-    { title: 'แอบเปิ้ล', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
-    { title: 'แอบเปิ้ล', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
+    { title: 'ส้ม', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
+    { title: 'มะม่วง', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
+    { title: 'เสียม', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
+    { title: 'เคียว', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
+    { title: 'พั่ว', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
 ];
 export default function BankUser() {
+    const [searchInput, setSearchInput] = useState('');
     const navigate = useNavigate();
     const handleNext = () => {
         navigate("/openbankusers");
     }
+    const handleNextListbankuser = () => {
+        navigate("/listbankuser");
+    }
+    const filteredProducts = products.filter((product) =>
+        product.title.toLowerCase().includes(searchInput.toLowerCase())
+    );
     return (
         <Box sx={{ display: 'flex' }}>
             <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-                <NavBarBank/>
+                <NavBarBank />
             </AppBar>
             <Drawer
                 variant="permanent"
@@ -112,6 +121,19 @@ export default function BankUser() {
             >
                 <Toolbar />
                 <Box sx={{ overflow: 'auto', marginTop: 10 }}>
+                    <List>
+                        {['ข้อมูลของธนาคาร'].map((text, index) => (
+                            <ListItem key={text} disablePadding>
+                                <ListItemButton sx={{ backgroundColor: '#a2d2ff' }} onClick={handleNextListbankuser}>
+                                    <ListItemIcon>
+                                        <AccountBalanceIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary={text} />
+                                </ListItemButton>
+                            </ListItem>
+                        ))}
+                    </List>
+                    <Divider />
                     <List>
                         {['ทรัพยากรทั้งหมด'].map((text, index) => (
                             <ListItem key={text} disablePadding>
@@ -172,13 +194,14 @@ export default function BankUser() {
                     <StyledInputBase
                         placeholder="Search…"
                         inputProps={{ 'aria-label': 'search' }}
+                        value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)}
                     />
                 </Search>
 
                 <Grid container spacing={2}>
-                    {products.map(tab =>
-
-                        <Grid xs={3}>
+                {filteredProducts.map((tab) => (
+                    <Grid item xs={3} key={tab.title}>
                             <Card sx={{ maxWidth: 345, m: 1 }} >
                                 <CardMedia
                                     component="img"
@@ -199,7 +222,7 @@ export default function BankUser() {
                                 </CardActions>
                             </Card>
                         </Grid>
-                    )}
+                    ))}
                 </Grid>
             </Box>
         </Box>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import { longdo, map, LongdoMap } from './LongdoMap';
+import LongdoMap, { longdo, map } from './LongdoMap';
 
 class MapShow extends Component {
 
