@@ -29,7 +29,7 @@ function App() {
         <Route path="bank" element={<Bank/>}/>
         <Route path="map" element={<MapShow/>}/>
         <Route path="bankuser" element={<BankUser/>}/>
-        <Route path="openbankusers" element={<OpenBankUsers/>}/>
+        <Route path="openbankusers/:id" element={<OpenBankUsers/>}/>
         <Route path="addproduct" element={<Resource/>}/>
         <Route path="rank" element={<Rank/>}/>
         <Route path="listbank" element={<ListBank/>}/>

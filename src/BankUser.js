@@ -83,23 +83,23 @@ const DrawerHeader = styled('div')(({ theme }) => ({
     ...theme.mixins.toolbar,
 }));
 const products = [
-    { title: 'จอบ', titles: 'จำนวนทรัพที่เหลืออยู่ 1 ชิ้น', image: hoe },
-    { title: 'ปุ๋ย', titles: 'จำนวนทรัพที่เหลืออยู่ 10 กิโลกรัม', image: fertilizer },
-    { title: 'แอบเปิ้ล', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
-    { title: 'กล้วย', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: banana },
-    { title: 'รถเกี่ยวข้าว', titles: 'จำนวนทรัพที่เหลืออยู่ 10 คัน', image: car },
-    { title: 'ส้ม', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
-    { title: 'มะม่วง', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
-    { title: 'เสียม', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
-    { title: 'เคียว', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
-    { title: 'พั่ว', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
+    { id: 1, title: 'จอบ', titles: 'จำนวนทรัพที่เหลืออยู่ 1 ชิ้น', image: hoe },
+    { id: 2, title: 'ปุ๋ย', titles: 'จำนวนทรัพที่เหลืออยู่ 10 กิโลกรัม', image: fertilizer },
+    { id: 3, title: 'แอบเปิ้ล', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
+    { id: 4, title: 'กล้วย', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: banana },
+    { id: 5, title: 'รถเกี่ยวข้าว', titles: 'จำนวนทรัพที่เหลืออยู่ 10 คัน', image: car },
+    { id: 6, title: 'ส้ม', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
+    { id: 7, title: 'มะม่วง', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
+    { id: 8, title: 'เสียม', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
+    { id: 9, title: 'เคียว', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
+    { id: 10, title: 'พั่ว', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
 ];
 export default function BankUser() {
     const [searchInput, setSearchInput] = useState('');
     const navigate = useNavigate();
-    const handleNext = () => {
-        navigate("/openbankusers");
-    }
+    const handleNext = (id) => {
+        navigate(`/openbankusers/${id}`);
+    };
     const handleNextListbankuser = () => {
         navigate("/listbankuser");
     }
@@ -200,8 +200,8 @@ export default function BankUser() {
                 </Search>
 
                 <Grid container spacing={2}>
-                {filteredProducts.map((tab) => (
-                    <Grid item xs={3} key={tab.title}>
+                    {filteredProducts.map((tab) => (
+                        <Grid item xs={3} key={tab.title}>
                             <Card sx={{ maxWidth: 345, m: 1 }} >
                                 <CardMedia
                                     component="img"
@@ -218,12 +218,15 @@ export default function BankUser() {
                                     </Typography>
                                 </CardContent>
                                 <CardActions>
-                                    <Button size="small" onClick={handleNext}>ดูทรัพยากร</Button>
+                                    <Button size="small" onClick={() => handleNext(tab.id)}>
+                                        ดูทรัพยากร
+                                    </Button>
                                 </CardActions>
                             </Card>
                         </Grid>
                     ))}
                 </Grid>
+
             </Box>
         </Box>
     );
