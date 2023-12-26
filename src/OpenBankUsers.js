@@ -48,6 +48,9 @@ function OpenBankUsers() {
     const handleBackbankuser = () => {
         navigate("/bankuser");
     }
+    const handleMemberbankuser = () => {
+        navigate("/member");
+    }
     return (
         <div>
             <NavBarBank />
@@ -80,7 +83,7 @@ function OpenBankUsers() {
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                         <Button variant="contained" color="error" onClick={handleBackbankuser}>ย้อนกลับ</Button>
-                        <Button variant="contained" color="primary">สมัครสมาชิก</Button>
+                        <Button variant="contained" color="primary" onClick={handleMemberbankuser}>สมัครสมาชิก</Button>
                         <Button variant="contained" color="warning">ทำรายการ</Button>
                     </div>
                 </>
