@@ -7,7 +7,6 @@ import Profile from './profile';
 import Register from './register';
 import RegisterBank from './registerBank';
 import Bank from './ฺBank';
-import MapShow from './mapShow';
 import BankUser from './BankUser';
 import OpenBankUsers from './OpenBankUsers';
 import Resource from './Makeresource';
@@ -15,6 +14,7 @@ import Rank from './Ranking';
 import ListBank from './ListBank';
 import ListBankuser from './ListBankUser';
 import Member from './membank';
+import Address from './Address';
 
 function App() {
   return (
@@ -28,7 +28,7 @@ function App() {
         <Route path="profile" element={<Profile/>}/>
         <Route path="registerbank" element={<RegisterBank/>}/>
         <Route path="bank" element={<Bank/>}/>
-        <Route path="map" element={<MapShow/>}/>
+        <Route path="address" element={<Address/>}/>
         <Route path="bankuser" element={<BankUser/>}/>
         <Route path="openbankusers/:id" element={<OpenBankUsers/>}/>
         <Route path="addproduct" element={<Resource/>}/>

@@ -53,13 +53,15 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ReviewsIcon from '@mui/icons-material/Reviews';
 import LogoutIcon from '@mui/icons-material/Logout';
+import TTB from '../src/image/TTB.jpg';
+import BAY from '../src/image/กรุงศรีอยุธยา.png';
 const products = [
   { title: 'กรุงเทพ', rating: 2.5, image: bk },
   { title: 'กรุงไทย', rating: 3.5, image: ktb },
   { title: 'กสิกร', rating: 4.5, image: k },
   { title: 'ไทยพานิช', rating: 1.5, image: scb },
-  { title: 'กรุงศรีอยุธยา', rating: 4.5, image: ktb },
-  { title: 'mud', rating: 3.5, image: ktb },
+  { title: 'กรุงศรีอยุธยา', rating: 4.5, image: BAY },
+  { title: 'TTB', rating: 3.5, image: TTB },
   { title: 'thailand', rating: 2.5, image: ktb },
   { title: 'island', rating: 1.5, image: ktb },
   { title: 'ลาว', rating: 4.5, image: ktb },

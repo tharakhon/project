@@ -46,7 +46,7 @@ function Rank() {
         navigate("/bank");
     }
     const handleBack = () => {
-        navigate("/map");
+        navigate("/address");
     }
 
     return (

@@ -10,6 +10,7 @@ import Ribbon2 from "../src/image/ribbon2.png";
 import Ribbon3 from "../src/image/ribbon3.png";
 import Ribbon4 from "../src/image/ribbon4.png";
 import { Autocomplete} from "@mui/material";
+import MapShow from "./mapShow";
 const ListBronze = [
     { label: 'สามารถทำรายการทั้งหมดได้ 1 รายการ' },
     { label: 'สามารถทำรายการเช่าหรือยืมได้ 1 รายการ' },
@@ -197,6 +198,7 @@ function ListBankuser() {
                         renderInput={(params) => <TextField {...params} />}></Autocomplete>
                 </div>
             </Box>
+            <MapShow/>
             <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: 50 }}>
                 <Button variant="contained" size="large" color="error" onClick={handleBack}> ย้อนกลับ </Button>
                 <Button variant="contained" size="large" color="success" onClick={handleSubmit}>ถัดไป</Button>

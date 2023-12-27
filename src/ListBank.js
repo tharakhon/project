@@ -10,6 +10,7 @@ import Ribbon2 from "../src/image/ribbon2.png";
 import Ribbon3 from "../src/image/ribbon3.png";
 import Ribbon4 from "../src/image/ribbon4.png";
 import { Autocomplete} from "@mui/material";
+import Mapshow from './mapShow';
 const ListBronze = [
     { label: 'สามารถทำรายการทั้งหมดได้ 1 รายการ' },
     { label: 'สามารถทำรายการเช่าหรือยืมได้ 1 รายการ' },
@@ -142,6 +143,7 @@ function ListBank() {
 
                     {/* ในส่วนของเบอร์โทร คุณอาจต้องสร้าง state และใช้ value ใน TextField เช่นเดียวกัน */}
                 </div>
+                
                 <Box
                     component="form"
                     sx={{
@@ -197,6 +199,7 @@ function ListBank() {
                         renderInput={(params) => <TextField {...params} />}></Autocomplete>
                 </div>
             </Box>
+            <Mapshow/>
             <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: 50 }}>
                 <Button variant="contained" size="large" color="error" onClick={handleBack}> ย้อนกลับ </Button>
                 <Button variant="contained" size="large" color="primary"> บันทึกข้อมูล </Button>

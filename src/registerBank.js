@@ -32,7 +32,7 @@ function RegisterBank() {
       });
   }, []);
   const handleSubmit = () => {
-    navigate("/map");
+    navigate("/address");
   }
   const handleBack = () => {
     navigate("/main");
