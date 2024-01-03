@@ -14,32 +14,11 @@ import { useNavigate } from "react-router-dom";
 
 
 const currencies = [
-  { label: 'ทรัพยากรทางการเกษตรทางธรรมชาติ' },
-  { label: 'ทรัพยากรทางการเกษตรทางเคมี' },
-  { label: 'อุปกรณ์หรือเครื่องมือทางการเกษตรช่วยเรื่องดิน' },
-  { label: 'อุปกรณ์หรือเครื่องมือทางการเกษตรช่วยเรื่องน้ำ' },
-  { label: 'เครื่องยนต์ทางการเกษตรขนาดเล็ก' },
-  { label: 'เครื่องยนต์ทางการเกษตรขนาดใหญ่' },
+  { label: 'ทรัพยากรทางการเกษตรใช้แล้วหมด เช่น ปุ๋ย ดิน' },
+  { label: 'อุปกรณ์หรือเครื่องมือทางการเกษตรขนาดเล็ก' },
+  { label: 'อุปกรณ์หรือเครื่องมือทางการเกษตรขนาดใหญ่' },
 ];
 
-const classey = [
-  {
-    value: 'ชิ้น',
-    label: 'ชิ้น',
-  },
-  {
-    value: 'กิโลกรัม',
-    label: 'กก.',
-  },
-  {
-    value: 'เครื่อง',
-    label: 'เครื่อง',
-  },
-  {
-    value: 'กระสอบ',
-    label: 'กระสอบ',
-  },
-];
 
 const textStyle = {
   color: 'black',
@@ -148,19 +127,7 @@ function Resource() {
         </div>
         <div style={{ marginTop: 30 }}>
           <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากร:</FormLabel>
-
-          <TextField sx={{ width: 150 }}></TextField>
-          <TextField
-            id="outlined-select-currency"
-            select
-            sx={{ width: '20ch' }}
-          >
-            {classey.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
+          <TextField sx={{ width: 220 }}></TextField>
         </div>
 
         <div style={{ marginTop: 30 }}>
@@ -178,10 +145,6 @@ function Resource() {
           <OutlinedInput
             id="outlined-adornment-weight"
             endAdornment={<InputAdornment position="end">บาท</InputAdornment>}
-
-            inputProps={{
-              'aria-label': 'weight',
-            }}
 
           />
           <FormHelperText >หมายเหตุ : ถ้าเลือกบริการเช่ายืมหรือแลกเปลี่ยน</FormHelperText>

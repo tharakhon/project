@@ -1,6 +1,6 @@
 import React from "react";
 import NavBarLevel from "./navBarLevel";
-import { Autocomplete, Button, TextField } from "@mui/material";
+import { Autocomplete, Button, FormLabel, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select, TextField } from "@mui/material";
 import Ribbon1 from "../src/image/ribbon1.png";
 import Ribbon2 from "../src/image/ribbon2.png";
 import Ribbon3 from "../src/image/ribbon3.png";
@@ -9,38 +9,14 @@ import Ribbon4 from "../src/image/ribbon4.png";
 import { useNavigate } from "react-router-dom";
 
 
-const circularImageContainer = {
-    width: '150px',
-    height: '150px',
-    borderRadius: '50%',
-    overflow: 'hidden',
-};
-const ListBronze = [
-    { label: 'สามารถทำรายการทั้งหมดได้ 1 รายการ' },
-    { label: 'สามารถทำรายการเช่าหรือยืมได้ 1 รายการ' },
-    { label: 'สามารถทำรายการแลกเปลี่ยนด้ 1 รายการ' },
-    { label: 'สามารถทำรายการซื้อขายได้ 1 รายการ' },
-]
-const ListSilver = [
-    { label: 'สามารถทำรายการทั้งหมดได้ 2 รายการ' },
-    { label: 'สามารถทำรายการเช่าหรือยืมได้ 2 รายการ' },
-    { label: 'สามารถทำรายการแลกเปลี่ยนด้ 2 รายการ' },
-    { label: 'สามารถทำรายการซื้อขายได้ 2 รายการ' },
-]
-const ListGold = [
-    { label: 'สามารถทำรายการทั้งหมดได้ 3 รายการ' },
-    { label: 'สามารถทำรายการเช่าหรือยืมได้ 3 รายการ' },
-    { label: 'สามารถทำรายการแลกเปลี่ยนด้ 3 รายการ' },
-    { label: 'สามารถทำรายการซื้อขายได้ 3 รายการ' },
-]
-const ListPlatinum = [
-    { label: 'สามารถทำรายการทั้งหมดได้ไม่จำกัด' },
-    { label: 'สามารถทำรายการเช่าหรือยืมได้ 4 รายการ' },
-    { label: 'สามารถทำรายการแลกเปลี่ยนด้ 4 รายการ' },
-    { label: 'สามารถทำรายการซื้อขายได้ 4 รายการ' },
-]
-
 function Rank() {
+
+    const [age, setAge] = React.useState('');
+
+  const handleChange = (event) => {
+    setAge(event.target.value);
+  };
+
     const navigate = useNavigate();
     const handleSubmit = () => {
         navigate("/bank");
@@ -53,40 +29,56 @@ function Rank() {
         <>
             <NavBarLevel />
             <div style={{ display: "flex", alignitems: "center", justifyContent: 'center', }}>
-                <img src={Ribbon1} alt="Bronze"
-                    style={{ marginTop: 50, }} />
-                <Autocomplete disablePortal
-                    id="combo-box-demo"
-                    options={ListBronze}
-                    sx={{ marginTop: 9, width: 500 }}
-                    renderInput={(params) => <TextField {...params} />}></Autocomplete>
+                <img src={Ribbon1} alt="Bronze" style={{ marginTop: 60}} />
+                <FormLabel component="legend" style={{ color: 'black' ,fontSize: '22px',left:50,top:70}}>Bronze</FormLabel>
+                <div>
+                <FormLabel component="legend" style={{ color: 'black',right:20,top:100}}>สามารถทำรายการในธนาคารทั้งหมดได้ </FormLabel>
+                <OutlinedInput
+                    id="outlined-adornment-weight"
+                    endAdornment={<InputAdornment position="end">รายการ</InputAdornment>}
+                    sx={{  right:20,top:100, }}  
+                />
+                </div>
+                
             </div>
             <div style={{ display: "flex", alignitems: "center", justifyContent: 'center', }}>
                 <img src={Ribbon2} alt="Silver"
-                    style={{ marginTop: 100, }} />
-                <Autocomplete disablePortal
-                    id="combo-box-demo"
-                    options={ListSilver}
-                    sx={{ marginTop: 16, width: 500 }}
-                    renderInput={(params) => <TextField {...params} />}></Autocomplete>
+                    style={{ marginTop: 100,marginRight:7 }} />
+               <FormLabel component="legend" style={{ color: 'black' ,fontSize: '22px',left:38,top:110}}>Silver</FormLabel>
+                <div>
+                <FormLabel component="legend" style={{ color: 'black',right:20,top:140}}>สามารถทำรายการในธนาคารทั้งหมดได้ </FormLabel>
+                <OutlinedInput
+                    id="outlined-adornment-weight"
+                    endAdornment={<InputAdornment position="end">รายการ</InputAdornment>}
+                    sx={{  right:20,top:140, }}  
+                />
+                </div>
             </div>
             <div style={{ display: "flex", alignitems: "center", justifyContent: 'center', }}>
                 <img src={Ribbon3} alt="Gold"
-                    style={{ marginTop: 100, }} />
-                <Autocomplete disablePortal
-                    id="combo-box-demo"
-                    options={ListGold}
-                    sx={{ marginTop: 16, width: 500 }}
-                    renderInput={(params) => <TextField {...params} />}></Autocomplete>
+                    style={{ marginTop: 100,marginRight:13 }} />
+                <FormLabel component="legend" style={{ color: 'black' ,fontSize: '22px',left:34,top:110}}>Gold</FormLabel>
+                <div>
+                <FormLabel component="legend" style={{ color: 'black',right:12,top:140}}>สามารถทำรายการในธนาคารทั้งหมดได้ </FormLabel>
+                <OutlinedInput
+                    id="outlined-adornment-weight"
+                    endAdornment={<InputAdornment position="end">รายการ</InputAdornment>}
+                    sx={{  right:12,top:140, }}  
+                />
+                </div>
             </div>
             <div style={{ display: "flex", alignitems: "center", justifyContent: 'center', }}>
                 <img src={Ribbon4} alt="Platinum"
-                    style={{ marginTop: 100, }} />
-                <Autocomplete disablePortal
-                    id="combo-box-demo"
-                    options={ListPlatinum}
-                    sx={{ marginTop: 16, width: 500 }}
-                    renderInput={(params) => <TextField {...params} />}></Autocomplete>
+                    style={{ marginTop: 100,marginLeft:17 }} />
+                 <FormLabel component="legend" style={{ color: 'black' ,fontSize: '22px',left:58,top:110}}>Platinum</FormLabel>
+                <div>
+                <FormLabel component="legend" style={{ color: 'black',right:30,top:140}}>สามารถทำรายการในธนาคารทั้งหมดได้ </FormLabel>
+                <OutlinedInput
+                    id="outlined-adornment-weight"
+                    endAdornment={<InputAdornment position="end">รายการ</InputAdornment>}
+                    sx={{  right:30,top:140, }}  
+                />
+                </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: 50 }}>
                 <Button variant="contained" size="large" color="error" onClick={handleBack}> ย้อนกลับ </Button>

@@ -55,17 +55,23 @@ import ReviewsIcon from '@mui/icons-material/Reviews';
 import LogoutIcon from '@mui/icons-material/Logout';
 import TTB from '../src/image/TTB.jpg';
 import BAY from '../src/image/กรุงศรีอยุธยา.png';
+import Ribbon1 from '../src/image/ribbon1.png';
+import Ribbon2 from '../src/image/ribbon2.png';
+import Ribbon3 from '../src/image/ribbon3.png';
+import Ribbon4 from '../src/image/ribbon4.png';
+import CardHeader from '@mui/material/CardHeader';
+import LongdoMap, { map as longdoMap } from './LongdoMap';
 const products = [
-  { title: 'กรุงเทพ', rating: 2.5, image: bk },
-  { title: 'กรุงไทย', rating: 3.5, image: ktb },
-  { title: 'กสิกร', rating: 4.5, image: k },
-  { title: 'ไทยพานิช', rating: 1.5, image: scb },
-  { title: 'กรุงศรีอยุธยา', rating: 4.5, image: BAY },
-  { title: 'TTB', rating: 3.5, image: TTB },
-  { title: 'thailand', rating: 2.5, image: ktb },
-  { title: 'island', rating: 1.5, image: ktb },
-  { title: 'ลาว', rating: 4.5, image: ktb },
-  { title: 'พม่า', rating: 0.5, image: ktb },
+  { title: 'กรุงเทพ', rating: 2.5, image: bk, rank: Ribbon2 ,lat:13.1,lon:100},
+  { title: 'กรุงไทย', rating: 3.5, image: ktb, rank: Ribbon3,lat:13.2,lon:100.1 },
+  { title: 'กสิกร', rating: 4.5, image: k, rank: Ribbon3 ,lat:13.3,lon:100.2},
+  { title: 'ไทยพานิช', rating: 1.5, image: scb, rank: Ribbon1 ,lat:13.4,lon:100.3},
+  { title: 'กรุงศรีอยุธยา', rating: 4.5, image: BAY, rank: Ribbon4 ,lat:13.5,lon:100.4},
+  { title: 'TTB', rating: 3.5, image: TTB, rank: Ribbon3 ,lat:13.6,lon:100.5},
+  { title: 'thailand', rating: 2.5, image: ktb, rank: Ribbon2 ,lat:13.7,lon:100.6},
+  { title: 'island', rating: 1.5, image: ktb, rank: Ribbon2 ,lat:13.8,lon:100.7},
+  { title: 'ลาว', rating: 4.5, image: ktb, rank: Ribbon4 ,lat:13.9,lon:100.8},
+  { title: 'พม่า', rating: 0.5, image: ktb, rank: Ribbon1 ,lat:14,lon:100.9},
 ];
 
 const settings = ['เรียงด้วยแรงค์', 'เรียงด้วยระยะทาง', 'เรียงด้วยเรตติ้ง'];
@@ -147,6 +153,7 @@ function Main12() {
   const theme = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredProducts, setFilteredProducts] = useState(products);
+  const [currentPosition, setCurrentPosition] = useState(null);
   const handleSearchChange = (event) => {
     const query = event.target.value;
     setSearchQuery(query);
@@ -199,6 +206,42 @@ function Main12() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setCurrentPosition({ lat: latitude, lon: longitude });
+      },
+      (error) => {
+        console.error('Error getting geolocation:', error);
+      }
+    );
+  }, []);
+
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Radius of the earth in km
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c; // Distance in km
+    return distance;
+  };
+
+  const deg2rad = (deg) => {
+    return deg * (Math.PI / 180);
+  };
+
+  useEffect(() => {
+    const updatedProducts = products.map((product) => {
+      const distance =
+        currentPosition && calculateDistance(currentPosition.lat, currentPosition.lon, product.lat, product.lon);
+      return { ...product, distance };
+    });
+    setFilteredProducts(updatedProducts);
+  }, [currentPosition]);
   return (
     <div >
       <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
@@ -351,6 +394,26 @@ function Main12() {
         {filteredProducts.map((tab, index) => (
           <Grid key={index} xs={3}>
             <Card sx={{ maxWidth: 345, m: 1 }} >
+              <CardHeader
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row-reverse', // Move Avatar to the right
+                  justifyContent: 'space-between', // Add space between Avatar and content
+                  alignItems: 'center',
+                  background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)', // Customize background
+                  color: 'white', // Customize text color
+                }}
+                avatar={
+                  <Avatar
+                    alt={`Rank ${tab.title}`}
+                    src={tab.rank}
+                    sx={{
+                      backgroundColor: 'transparent', // Set a transparent background
+                    }}
+                  />
+                }
+              />
+
               <CardMedia
                 component="img"
                 height="300"
@@ -361,7 +424,9 @@ function Main12() {
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
                   {tab.title}
+
                 </Typography>
+
                 <Box
                   sx={{
                     width: 200,
@@ -378,6 +443,11 @@ function Main12() {
                   />
                   <Box sx={{ ml: 2 }}>{tab.rating}</Box>
                 </Box>
+                {currentPosition && (
+                <Typography>
+                  Distance: {tab.distance ? tab.distance.toFixed(2) : 'N/A'} km
+                </Typography>
+              )}
               </CardContent>
               <CardActions>
                 <Button size="medium" onClick={handleOpenbankuser}>เปิดดูทรัพยากรในธนาคาร</Button>

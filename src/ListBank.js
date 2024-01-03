@@ -9,32 +9,9 @@ import Ribbon1 from "../src/image/ribbon1.png";
 import Ribbon2 from "../src/image/ribbon2.png";
 import Ribbon3 from "../src/image/ribbon3.png";
 import Ribbon4 from "../src/image/ribbon4.png";
-import { Autocomplete} from "@mui/material";
+import { Autocomplete, FormLabel, InputAdornment, OutlinedInput} from "@mui/material";
 import Mapshow from './mapShow';
-const ListBronze = [
-    { label: 'สามารถทำรายการทั้งหมดได้ 1 รายการ' },
-    { label: 'สามารถทำรายการเช่าหรือยืมได้ 1 รายการ' },
-    { label: 'สามารถทำรายการแลกเปลี่ยนด้ 1 รายการ' },
-    { label: 'สามารถทำรายการซื้อขายได้ 1 รายการ' },
-]
-const ListSilver = [
-    { label: 'สามารถทำรายการทั้งหมดได้ 2 รายการ' },
-    { label: 'สามารถทำรายการเช่าหรือยืมได้ 2 รายการ' },
-    { label: 'สามารถทำรายการแลกเปลี่ยนด้ 2 รายการ' },
-    { label: 'สามารถทำรายการซื้อขายได้ 2 รายการ' },
-]
-const ListGold = [
-    { label: 'สามารถทำรายการทั้งหมดได้ 3 รายการ' },
-    { label: 'สามารถทำรายการเช่าหรือยืมได้ 3 รายการ' },
-    { label: 'สามารถทำรายการแลกเปลี่ยนด้ 3 รายการ' },
-    { label: 'สามารถทำรายการซื้อขายได้ 3 รายการ' },
-]
-const ListPlatinum = [
-    { label: 'สามารถทำรายการทั้งหมดได้ไม่จำกัด' },
-    { label: 'สามารถทำรายการเช่าหรือยืมได้ 4 รายการ' },
-    { label: 'สามารถทำรายการแลกเปลี่ยนด้ 4 รายการ' },
-    { label: 'สามารถทำรายการซื้อขายได้ 4 รายการ' },
-]
+
 function ListBank() {
     const [profile, setProfile] = useState();
     const [email, setEmail] = useState();
@@ -61,6 +38,7 @@ function ListBank() {
     }
     return (
         <>
+        
             <NavbarProfile />
             <Box
                 component="form"
@@ -165,38 +143,54 @@ function ListBank() {
                 <div style={{ display: "flex", alignitems: "center", justifyContent: 'center', }}>
                     <img src={Ribbon1} alt="Bronze"
                         style={{ marginTop: 50, width:100}} />
-                    <Autocomplete disablePortal
-                        id="combo-box-demo"
-                        options={ListBronze}
-                        sx={{ marginTop: 9, width: 350 }}
-                        renderInput={(params) => <TextField {...params} />}></Autocomplete>
+                    <FormLabel component="legend" style={{ color: 'black' ,fontSize: '22px',left:50,top:70}}>Bronze</FormLabel>
+                <div>
+                <FormLabel component="legend" style={{ color: 'black',right:20,top:100}}>สามารถทำรายการในธนาคารทั้งหมดได้ </FormLabel>
+                <OutlinedInput
+                    id="outlined-adornment-weight"
+                    endAdornment={<InputAdornment position="end">รายการ</InputAdornment>}
+                    sx={{  right:20,top:100, }}  
+                />
+                </div>
                 </div>
                 <div style={{ display: "flex", alignitems: "center", justifyContent: 'center', }}>
                     <img src={Ribbon2} alt="Silver"
                         style={{ marginTop: 75, width:100 }} />
-                    <Autocomplete disablePortal
-                        id="combo-box-demo"
-                        options={ListSilver}
-                        sx={{ marginTop: 12, width: 350 }}
-                        renderInput={(params) => <TextField {...params} />}></Autocomplete>
+                    <FormLabel component="legend" style={{ color: 'black' ,fontSize: '22px',left:50,top:70}}>Bronze</FormLabel>
+                <div>
+                <FormLabel component="legend" style={{ color: 'black',right:20,top:100}}>สามารถทำรายการในธนาคารทั้งหมดได้ </FormLabel>
+                <OutlinedInput
+                    id="outlined-adornment-weight"
+                    endAdornment={<InputAdornment position="end">รายการ</InputAdornment>}
+                    sx={{  right:20,top:100, }}  
+                />
+                </div>
                 </div>
                 <div style={{ display: "flex", alignitems: "center", justifyContent: 'center', }}>
                     <img src={Ribbon3} alt="Gold"
                         style={{ marginTop: 75, width:100 }} />
-                    <Autocomplete disablePortal
-                        id="combo-box-demo"
-                        options={ListGold}
-                        sx={{ marginTop: 12, width: 350 }}
-                        renderInput={(params) => <TextField {...params} />}></Autocomplete>
+                    <FormLabel component="legend" style={{ color: 'black' ,fontSize: '22px',left:50,top:70}}>Bronze</FormLabel>
+                <div>
+                <FormLabel component="legend" style={{ color: 'black',right:20,top:100}}>สามารถทำรายการในธนาคารทั้งหมดได้ </FormLabel>
+                <OutlinedInput
+                    id="outlined-adornment-weight"
+                    endAdornment={<InputAdornment position="end">รายการ</InputAdornment>}
+                    sx={{  right:20,top:100, }}  
+                />
+                </div>
                 </div>
                 <div style={{ display: "flex", alignitems: "center", justifyContent: 'center', }}>
                     <img src={Ribbon4} alt="Platinum"
                         style={{ marginTop: 75, width:100 }} />
-                    <Autocomplete disablePortal
-                        id="combo-box-demo"
-                        options={ListPlatinum}
-                        sx={{ marginTop: 12, width: 350 }}
-                        renderInput={(params) => <TextField {...params} />}></Autocomplete>
+                    <FormLabel component="legend" style={{ color: 'black' ,fontSize: '22px',left:50,top:70}}>Bronze</FormLabel>
+                <div>
+                <FormLabel component="legend" style={{ color: 'black',right:20,top:100}}>สามารถทำรายการในธนาคารทั้งหมดได้ </FormLabel>
+                <OutlinedInput
+                    id="outlined-adornment-weight"
+                    endAdornment={<InputAdornment position="end">รายการ</InputAdornment>}
+                    sx={{  right:20,top:100, }}  
+                />
+                </div>
                 </div>
             </Box>
             <Mapshow/>
