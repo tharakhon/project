@@ -15,6 +15,7 @@ import ListBank from './ListBank';
 import ListBankuser from './ListBankUser';
 import Member from './membank';
 import Address from './Address';
+import OrderBankUsers from './OrderBankUsers';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
         <Route path="listbank" element={<ListBank/>}/>
         <Route path="listbankuser" element={<ListBankuser/>}/>
         <Route path="member" element={<Member/>}/>
+        <Route path="orderbankusers/:id" element={<OrderBankUsers/>}/>
         </Routes>
       </BrowserRouter>
    

@@ -62,7 +62,8 @@ import Ribbon4 from '../src/image/ribbon4.png';
 import CardHeader from '@mui/material/CardHeader';
 import LongdoMap, { map as longdoMap } from './LongdoMap';
 const products = [
-  { title: 'กรุงเทพ', rating: 2.5, image: bk, rank: Ribbon2 ,lat:13.1,lon:100},
+  { title: 'กรุงเทพ', rating: 2.5, image: bk, rank: Ribbon2 ,lat:
+  13.111478,lon: 100.930375},
   { title: 'กรุงไทย', rating: 3.5, image: ktb, rank: Ribbon3,lat:13.2,lon:100.1 },
   { title: 'กสิกร', rating: 4.5, image: k, rank: Ribbon3 ,lat:13.3,lon:100.2},
   { title: 'ไทยพานิช', rating: 1.5, image: scb, rank: Ribbon1 ,lat:13.4,lon:100.3},
@@ -320,37 +321,71 @@ function Main12() {
         </DrawerHeader>
         <Divider />
         <List>
-          {['ธนาคารของคุณ', 'กิจกรรมของคุณ'].map((text, index) => (
+          {['ธนาคารของคุณ'].map((text, index) => (
             <ListItem key={text} disablePadding>
-              <ListItemButton>
+              <ListItemButton onClick={() => navigate('/bank')}>
                 <ListItemIcon>
-                  {index % 2 === 0 ? <AccountBalanceIcon /> : <AccessTimeIcon />}
+                  <AccountBalanceIcon />
                 </ListItemIcon>
                 <ListItemText primary={text} />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
-        <Divider />
         <List>
-          {['บุ๊คมาร์ค', 'ตั้งค่า'].map((text, index) => (
+          {['กิจกรรมของคุณ'].map((text, index) => (
             <ListItem key={text} disablePadding>
-              <ListItemButton>
+              <ListItemButton onClick={() => navigate('/registerbank')}>
                 <ListItemIcon>
-                  {index % 2 === 0 ? <BookmarkIcon /> : <SettingsIcon />}
+                  <AccessTimeIcon />
                 </ListItemIcon>
                 <ListItemText primary={text} />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
-        <Divider />
         <List>
-          {['รีวีว', 'ออกจากระบบ'].map((text, index) => (
+          {['บุ๊คมาร์ค'].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton>
                 <ListItemIcon>
-                  {index % 2 === 0 ? <ReviewsIcon /> : <LogoutIcon />}
+                 <BookmarkIcon />
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <List>
+          {['ตั้งค่า'].map((text, index) => (
+            <ListItem key={text} disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                  <SettingsIcon />
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <List>
+          {['รีวีว'].map((text, index) => (
+            <ListItem key={text} disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                 <ReviewsIcon />
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <List>
+          {['ออกจากระบบ'].map((text, index) => (
+            <ListItem key={text} disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                 <LogoutIcon />
                 </ListItemIcon>
                 <ListItemText primary={text} />
               </ListItemButton>
@@ -400,7 +435,7 @@ function Main12() {
                   flexDirection: 'row-reverse', // Move Avatar to the right
                   justifyContent: 'space-between', // Add space between Avatar and content
                   alignItems: 'center',
-                  background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)', // Customize background
+                  background: 'linear-gradient(to right, #43e97b 0%, #38f9d7 100%)', // Customize background
                   color: 'white', // Customize text color
                 }}
                 avatar={
