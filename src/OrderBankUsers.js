@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import NavBarBank from "./navBarBank";
 import { useLocation, useParams } from "react-router-dom";
 import CardMedia from '@mui/material/CardMedia';
@@ -9,11 +9,55 @@ import Button from '@mui/material/Button';
 import FormLabel from '@mui/material/FormLabel';
 import { Autocomplete, FormControl, FormHelperText, InputAdornment, MenuItem, OutlinedInput } from "@mui/material";
 import Box from '@mui/material/Box';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { styled } from '@mui/material/styles';
+import Tooltip from '@mui/material/Tooltip';
+import Stack from '@mui/material/Stack';
+import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+
+const ProSpan = styled('span')({
+    display: 'inline-block',
+    height: '1em',
+    width: '1em',
+    verticalAlign: 'middle',
+    marginLeft: '0.3em',
+    marginBottom: '0.08em',
+    backgroundSize: 'contain',
+    backgroundRepeat: 'no-repeat',
+    backgroundImage: 'url(https://mui.com/static/x/pro.svg)',
+});
+
+function Label({ componentName, isProOnly }) {
+    const content = (
+        <span>
+            <strong>{componentName}</strong>
+        </span>
+    );
+
+    if (isProOnly) {
+        return (
+            <Stack direction="row" spacing={0.5} component="span">
+                <Tooltip title="Included on Pro package">
+                    <a href="https://mui.com/x/introduction/licensing/#pro-plan">
+                        <ProSpan />
+                    </a>
+                </Tooltip>
+                {content}
+            </Stack>
+        );
+    }
+
+    return content;
+}
+
 
 function OrderBankUsers() {
     const { id } = useParams();
     const location = useLocation();
     const productDetails = location.state?.productDetails;
+    const [selectedDate, setSelectedDate] = useState("");
     const navigate = useNavigate();
 
     const handleBackbankuser = () => {
@@ -39,7 +83,7 @@ function OrderBankUsers() {
                             />
                         </Card>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'center',flexDirection: 'column', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
                         <div style={{ marginTop: 50 }}>
                             <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
                             <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={productDetails.title} sx={{ width: '50ch' }} />
@@ -63,7 +107,7 @@ function OrderBankUsers() {
                         </div>
                         <div style={{ marginTop: 30 }}>
                             <FormLabel component="legend" style={{ color: 'red' }}>จำนวนทรัพยากร : {productDetails.titles}</FormLabel>
-                            <TextField  id="outlined-disabled" label="" variant="outlined" defaultValue='ใส่จำนวนที่ต้องการ' sx={{ width: '50ch'}} />
+                            <TextField id="outlined-disabled" label="" variant="outlined" defaultValue='ใส่จำนวนที่ต้องการ' sx={{ width: '50ch' }} />
                         </div>
 
                         <div style={{ marginTop: 30 }}>
@@ -76,6 +120,28 @@ function OrderBankUsers() {
                                 rows={4}
                                 sx={{ width: '40ch' }} />
                         </div>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DemoContainer
+                                components={[
+                                    'DatePicker',
+                                ]}
+                            >
+                                <DemoItem label={<Label componentName="วันที่ต้องการยืมทรัพยากร" valueType="date" />}>
+                                    <DatePicker />
+                                </DemoItem>
+                            </DemoContainer>
+                        </LocalizationProvider>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DemoContainer
+                                components={[
+                                    'DatePicker',
+                                ]}
+                            >
+                                <DemoItem label={<Label componentName="วันที่ต้องการคืนทรัพยากร" valueType="date" />}>
+                                    <DatePicker />
+                                </DemoItem>
+                            </DemoContainer>
+                        </LocalizationProvider>
 
                         <div style={{ marginTop: 30 }}>
                             <FormLabel component="legend" style={{ color: 'black' }}>ราคาของทรัพยากร:</FormLabel>
