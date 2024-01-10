@@ -16,6 +16,9 @@ import ListBankuser from './ListBankUser';
 import Member from './membank';
 import Address from './Address';
 import OrderBankUsers from './OrderBankUsers';
+import Bookmark from './Bookmark';
+import Changepage from './ChangPage';
+import Borroww from './borrow2';
 
 function App() {
   return (
@@ -38,6 +41,9 @@ function App() {
         <Route path="listbankuser" element={<ListBankuser/>}/>
         <Route path="member" element={<Member/>}/>
         <Route path="orderbankusers/:id" element={<OrderBankUsers/>}/>
+        <Route path="bookmark" element={<Bookmark/>}/>
+        <Route path="changepage/:id" element={<Changepage/>}/>
+        <Route path="borroww" element={<Borroww/>}/>
         </Routes>
       </BrowserRouter>
    

@@ -16,7 +16,7 @@ import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 const productsData = [
     { id: 1, title: 'จอบ', titles: 'เหลืออยู่ 1 ชิ้น', image: hoe, ServiceType: 'ทรัพยากรเพื่อเช่าหรือยืม', ResourceType: 'อุปกรณ์หรือเครื่องมือทางการเกษตรช่วยเรื่องดิน', Resourcestatus: 'ว่างสามารถให้บริการได้', Price:'0',Moredetails:'ไม่มี'},
-    { id: 2, title: 'ปุ๋ย', titles: 'เหลืออยู่ 10 กิโลกรัม', image: fertilizer, ServiceType: 'ทรัพยากรเพื่อเช่าหรือยืม', ResourceType: 'ทรัพยากรทางการเกษตรทางเคมี', Resourcestatus: 'ว่างสามารถให้บริการได้', Price:'50' ,Moredetails:'สามารถขายแบ่งเป็นขีดๆได้หรือเป็นกิโลก็ได้'},
+    { id: 2, title: 'ปุ๋ย', titles: 'เหลืออยู่ 10 กิโลกรัม', image: fertilizer, ServiceType: 'ทรัพยากรเพื่อแลกเปลี่ยน', ResourceType: 'ทรัพยากรทางการเกษตรทางเคมี', Resourcestatus: 'ว่างสามารถให้บริการได้', Price:'50' ,Moredetails:'สามารถขายแบ่งเป็นขีดๆได้หรือเป็นกิโลก็ได้'},
     { id: 3, title: 'แอบเปิ้ล', titles: 'เหลืออยู่ 10 ผล', image: Apple, ServiceType: 'ทรัพยากรเพื่อเช่าหรือยืม', ResourceType: 'ทรัพยากรทางการเกษตรทางธรรมชาติ', Resourcestatus: 'ว่างสามารถให้บริการได้', Price:'30' ,Moredetails:'สามารถขายแบ่งเป็นขีดๆได้หรือเป็นกิโลก็ได้'},
     { id: 4, title: 'กล้วย', titles: 'เหลืออยู่ 10 ผล', image: banana, ServiceType: 'ทรัพยากรเพื่อเช่าหรือยืม', ResourceType: 'ทรัพยากรทางการเกษตรทางธรรมชาติ', Resourcestatus: 'ว่างสามารถให้บริการได้', Price:'30' ,Moredetails:'สามารถขายแบ่งเป็นขีดๆได้หรือเป็นกิโลก็ได้'},
     { id: 5, title: 'รถเกี่ยวข้าว', titles: 'เหลืออยู่ 10 คัน', image: car, ServiceType: 'ทรัพยากรเพื่อเช่าหรือยืม', ResourceType: 'เครื่องยนต์ทางการเกษตรขนาดใหญ่', Resourcestatus: 'ว่างสามารถให้บริการได้', Price:'0' ,Moredetails:'ไม่มี'},
@@ -54,6 +54,9 @@ function OpenBankUsers() {
     const handleOrderbankuser = (id) => {
         navigate(`/orderbankusers/${id}`, { state: { productDetails } });
     }
+    const handleExchangePage = () => {
+        navigate(`/changepage/${id}`, { state: { productDetails } }); // Change "/exchangePage" to the desired route
+    };
     return (
         <div>
             <NavBarBank />
@@ -87,6 +90,9 @@ function OpenBankUsers() {
                     <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                         <Button variant="contained" color="error" onClick={handleBackbankuser}>ย้อนกลับ</Button>
                         <Button variant="contained" color="primary" onClick={handleMemberbankuser}>สมัครสมาชิก</Button>
+                        {productDetails.ServiceType === 'ทรัพยากรเพื่อแลกเปลี่ยน' && (
+                            <Button variant="contained" color="secondary" onClick={handleExchangePage}>ไปหน้าแลกเปลี่ยน</Button>
+                        )}
                         <Button variant="contained" color="warning" onClick={handleOrderbankuser}>ทำรายการ</Button>
                     </div>
                 </>

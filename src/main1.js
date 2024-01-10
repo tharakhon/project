@@ -61,18 +61,21 @@ import Ribbon3 from '../src/image/ribbon3.png';
 import Ribbon4 from '../src/image/ribbon4.png';
 import CardHeader from '@mui/material/CardHeader';
 import LongdoMap, { map as longdoMap } from './LongdoMap';
+import Bookmark from "./Bookmark";
 const products = [
-  { title: 'กรุงเทพ', rating: 2.5, image: bk, rank: Ribbon2 ,lat:
-  13.111478,lon: 100.930375},
-  { title: 'กรุงไทย', rating: 3.5, image: ktb, rank: Ribbon3,lat:13.2,lon:100.1 },
-  { title: 'กสิกร', rating: 4.5, image: k, rank: Ribbon3 ,lat:13.3,lon:100.2},
-  { title: 'ไทยพานิช', rating: 1.5, image: scb, rank: Ribbon1 ,lat:13.4,lon:100.3},
-  { title: 'กรุงศรีอยุธยา', rating: 4.5, image: BAY, rank: Ribbon4 ,lat:13.5,lon:100.4},
-  { title: 'TTB', rating: 3.5, image: TTB, rank: Ribbon3 ,lat:13.6,lon:100.5},
-  { title: 'thailand', rating: 2.5, image: ktb, rank: Ribbon2 ,lat:13.7,lon:100.6},
-  { title: 'island', rating: 1.5, image: ktb, rank: Ribbon2 ,lat:13.8,lon:100.7},
-  { title: 'ลาว', rating: 4.5, image: ktb, rank: Ribbon4 ,lat:13.9,lon:100.8},
-  { title: 'พม่า', rating: 0.5, image: ktb, rank: Ribbon1 ,lat:14,lon:100.9},
+  {
+    title: 'กรุงเทพ', rating: 2.5, image: bk, rank: Ribbon2, lat:
+      13.111478, lon: 100.930375
+  },
+  { title: 'กรุงไทย', rating: 3.5, image: ktb, rank: Ribbon3, lat: 13.2, lon: 100.1 },
+  { title: 'กสิกร', rating: 4.5, image: k, rank: Ribbon3, lat: 13.3, lon: 100.2 },
+  { title: 'ไทยพานิช', rating: 1.5, image: scb, rank: Ribbon1, lat: 13.4, lon: 100.3 },
+  { title: 'กรุงศรีอยุธยา', rating: 4.5, image: BAY, rank: Ribbon4, lat: 13.5, lon: 100.4 },
+  { title: 'TTB', rating: 3.5, image: TTB, rank: Ribbon3, lat: 13.6, lon: 100.5 },
+  { title: 'thailand', rating: 2.5, image: ktb, rank: Ribbon2, lat: 13.7, lon: 100.6 },
+  { title: 'island', rating: 1.5, image: ktb, rank: Ribbon2, lat: 13.8, lon: 100.7 },
+  { title: 'ลาว', rating: 4.5, image: ktb, rank: Ribbon4, lat: 13.9, lon: 100.8 },
+  { title: 'พม่า', rating: 0.5, image: ktb, rank: Ribbon1, lat: 14, lon: 100.9 },
 ];
 
 const settings = ['เรียงด้วยแรงค์', 'เรียงด้วยระยะทาง', 'เรียงด้วยเรตติ้ง'];
@@ -144,7 +147,6 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
   justifyContent: 'flex-end',
 }));
-
 function Main12() {
   const [profile, setProfile] = useState([]);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -155,6 +157,23 @@ function Main12() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredProducts, setFilteredProducts] = useState(products);
   const [currentPosition, setCurrentPosition] = useState(null);
+  const [bookmarks, setBookmarks] = useState([]);
+  
+
+  const handleBookmarkClick = (title) => {
+    // Check if the item is already bookmarked
+    const isBookmarked = bookmarks.some((item) => item.title === title);
+
+    if (isBookmarked) {
+      // Remove from bookmarks if already bookmarked
+      const updatedBookmarks = bookmarks.filter((item) => item.title !== title);
+      setBookmarks(updatedBookmarks);
+    } else {
+      // Add to bookmarks if not bookmarked
+      const bookmarkedItem = filteredProducts.find((item) => item.title === title);
+      setBookmarks([...bookmarks, bookmarkedItem]);
+    }
+  };
   const handleSearchChange = (event) => {
     const query = event.target.value;
     setSearchQuery(query);
@@ -347,9 +366,10 @@ function Main12() {
         <List>
           {['บุ๊คมาร์ค'].map((text, index) => (
             <ListItem key={text} disablePadding>
-              <ListItemButton>
+              <ListItemButton onClick={() => setBookmarks([...bookmarks])}>
                 <ListItemIcon>
-                 <BookmarkIcon />
+                  <BookmarkIcon />
+                  
                 </ListItemIcon>
                 <ListItemText primary={text} />
               </ListItemButton>
@@ -373,7 +393,7 @@ function Main12() {
             <ListItem key={text} disablePadding>
               <ListItemButton>
                 <ListItemIcon>
-                 <ReviewsIcon />
+                  <ReviewsIcon />
                 </ListItemIcon>
                 <ListItemText primary={text} />
               </ListItemButton>
@@ -385,7 +405,7 @@ function Main12() {
             <ListItem key={text} disablePadding>
               <ListItemButton>
                 <ListItemIcon>
-                 <LogoutIcon />
+                  <LogoutIcon />
                 </ListItemIcon>
                 <ListItemText primary={text} />
               </ListItemButton>
@@ -393,6 +413,7 @@ function Main12() {
           ))}
         </List>
       </Drawer>
+      <Bookmark bookmarks={bookmarks} />
       <div style={{ display: 'flex', margin: 10, justifyContent: 'space-between', flexWrap: 'nowrap' }}>
         <Box>
           <Tooltip title="Open fillter">
@@ -423,7 +444,7 @@ function Main12() {
             ))}
           </Menu>
         </Box>
-
+        
         <Button variant='contained' sx={{ borderRadius: 20, backgroundColor: '#D62828', color: 'white' }} onClick={handleSubmit}>สร้างธนาคาร</Button></div>
       <Grid container spacing={2}>
         {filteredProducts.map((tab, index) => (
@@ -479,14 +500,16 @@ function Main12() {
                   <Box sx={{ ml: 2 }}>{tab.rating}</Box>
                 </Box>
                 {currentPosition && (
-                <Typography>
-                  Distance: {tab.distance ? tab.distance.toFixed(2) : 'N/A'} km
-                </Typography>
-              )}
+                  <Typography>
+                    Distance: {tab.distance ? tab.distance.toFixed(2) : 'N/A'} km
+                  </Typography>
+                )}
               </CardContent>
               <CardActions>
                 <Button size="medium" onClick={handleOpenbankuser}>เปิดดูทรัพยากรในธนาคาร</Button>
-                <Button size="medium">บุ๊คมาร์ค</Button>
+                <Button size="medium" onClick={() => handleBookmarkClick(tab.title)}>
+                  {bookmarks.some((item) => item.title === tab.title) ? 'ยกเลิกบุ๊คมาร์ค' : 'บุ๊คมาร์ค'}
+                </Button>
               </CardActions>
             </Card>
           </Grid>
