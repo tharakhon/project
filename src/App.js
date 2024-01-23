@@ -32,11 +32,9 @@ function App() {
         <Route path="profile/:email" element={<Profile/>}/>
         <Route path="registerbank/:email" element={<RegisterBank/>}/>
         <Route path="bank" element={<Bank/>}/>
-        <Route path="address" element={<Address/>}/>
         <Route path="bankuser" element={<BankUser/>}/>
         <Route path="openbankusers/:id" element={<OpenBankUsers/>}/>
         <Route path="addproduct" element={<Resource/>}/>
-        <Route path="rank" element={<Rank/>}/>
         <Route path="listbank" element={<ListBank/>}/>
         <Route path="listbankuser" element={<ListBankuser/>}/>
         <Route path="member" element={<Member/>}/>
