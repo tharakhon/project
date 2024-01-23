@@ -4,21 +4,21 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function Profile() {
   const [profile, setProfile] = useState();
-  const [email, setEmail] = useState();
+  const [useremail, setEmail] = useState();
   const [flag, setFlag] = useState(false);
   const [tel, setTel] = useState("");
   const navigate = useNavigate();
-
+  const { email } = useParams();
   useEffect(() => {
     // แทน email ด้วยค่า email ของผู้ใช้ที่คุณต้องการดึง
-    const userEmail = "tharakhon.r@ku.th";
+    // const userEmail = "tharakhon.r@ku.th";
     // const userEmail = "earth0981234@gmail.com";
-
-    Axios.get(`http://localhost:5000/user/${userEmail}`)
+    console.log(email);
+    Axios.get(`http://localhost:5000/user/${email}`)
       .then((response) => {
         console.log("ข้อมูลที่ได้รับ:", response.data[0].email);
         const userData = response.data;
@@ -32,10 +32,10 @@ function Profile() {
         console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
       });
   }, []);
-console.log(profile)
-console.log(email)
+  console.log(profile)
+  console.log(email)
   const handleBack = () => {
-    navigate("/main");
+    navigate(`/main/${email}`);
   }
 
   return (

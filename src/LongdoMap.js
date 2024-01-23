@@ -47,6 +47,7 @@ const LongdoMap = (props) => {
             };
 
             document.body.appendChild(script);
+        
         };
 
         if (!existingScript) {

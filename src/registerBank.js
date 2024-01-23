@@ -2,41 +2,126 @@ import React from "react";
 import Button from '@mui/material/Button';
 import { useState, useEffect } from 'react';
 import Axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import NavBank1 from "./navbank1";
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
+import MapShow from "./mapShow";
+import { Autocomplete, FormLabel, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select } from "@mui/material";
+import Ribbon1 from "../src/image/ribbon1.png";
+import Ribbon2 from "../src/image/ribbon2.png";
+import Ribbon3 from "../src/image/ribbon3.png";
+import Ribbon4 from "../src/image/ribbon4.png";
 
 function RegisterBank() {
   const [profile, setProfile] = useState();
-  const [email, setEmail] = useState();
   const [tel, setTel] = useState("");
-  const [flag, setflag] = useState(false);
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [address, setAddress] = useState('');
   const navigate = useNavigate();
+  const { email } = useParams();
+  const [currentPosition, setCurrentPosition] = useState(null);
+  const [medals, setMedals] = useState({
+    bronze: '',
+    silver: '',
+    gold: '',
+    phat: '',
+  });
+  console.log(medals)
+  console.log(profile)
+  console.log(imagePreview)
+  
+  console.log(address)
+  console.log(tel)
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setMedals((prevMedals) => ({
+      ...prevMedals,
+      [name]: value,
+    }));
+    
+  };
+  // const handleLocationChange = ({ lat, lng }) => {
+  //   console.log('New location:', { lat, lng });
+  
+  //   setLatitude(lat, () => {
+  //     console.log('Updated Latitude:', lat);
+  //   });
+  
+  //   setLongitude(lng, () => {
+  //     console.log('Updated Longitude:', lng);
+  //   });
+  // };
   useEffect(() => {
-    // ตรวจสอบว่ามีข้อมูลใน /user หรือไม่
-    Axios.get("http://localhost:5000/user/:email")
-      .then((response) => {
-        console.log("ข้อมูลที่ได้รับ:", response.data);
-        const userEmails = response.data.map((user) => user.email);
-        if (userEmails.includes(profile.email)) {
-          setflag(true);
-        } else {
-          alert("ไม่พบข้อมูลผู้ใช้");
-        }
-      })
-      .catch((error) => {
-        console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
-      });
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setCurrentPosition({ lat: latitude, lon: longitude });
+        
+      },
+      (error) => {
+        console.error('Error getting geolocation:', error);
+      }
+    );
   }, []);
+  // useEffect(() => {
+  //   // ตรวจสอบว่ามีข้อมูลใน /user หรือไม่
+  //   Axios.get(`http://localhost:5000/user/${email}`)
+  //     .then((response) => {
+  //       console.log("ข้อมูลที่ได้รับ:", response.data);
+  //       const userEmails = response.data.map((user) => user.email);
+  //       // if (userEmails.includes(profile)) {
+  //       //   setflag(true);
+  //       // } else {
+  //       //   alert("ไม่พบข้อมูลผู้ใช้");
+  //       // }
+  //     })
+  //     .catch((error) => {
+  //       console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+  //     });
+  // }, [email]);
   const handleSubmit = () => {
-    navigate("/address");
+    Axios.post('http://localhost:5000/bank_create', {
+    bank_email: email,
+    bank_telephone: tel,
+    bank_name: profile,
+    bank_latitude:currentPosition.lat,
+    bank_longitude:currentPosition.lon,
+    bank_image: imagePreview,
+    bank_address: address,
+    bank_bronze: medals.bronze,
+    bank_silver: medals.silver,
+    bank_gold: medals.gold,
+    bank_platinum: medals.phat
+    // ... other data
+  })
+    .then((response) => {
+      console.log(response.data);
+      // Redirect to the bank page on successful registration
+      
+    })
+    .catch((error) => {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error("Server Error:", error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error("No Response from Server");
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.error("Error:", error.message);
+      }
+    });
   }
   const handleBack = () => {
-    navigate("/main");
+    navigate(`/main/${email}`);
   }
+  const handleNext=()=>{
+    navigate("/bank");
+  }
+  
   const handleImageChange = (event) => {
     const selectedImage = event.target.files[0];
 
@@ -141,9 +226,98 @@ function RegisterBank() {
           {/* ในส่วนของเบอร์โทร คุณอาจต้องสร้าง state และใช้ value ใน TextField เช่นเดียวกัน */}
         </div>
       </Box>
-      <div style={{ display: 'flex', justifyContent: 'space-between', margin: 10 }}>
+      <h1 style={{ textAlign: 'center' }}>ปักหมุดที่อยู่ของคุณโดยกดที่รูปคนใน Map </h1>
+      <MapShow />
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Box
+          component="form"
+          sx={{
+            '& .MuiTextField-root': { mt: 2, width: '50ch' },
+          }}
+          noValidate
+          autoComplete="off"
+        >
+          <TextField
+            id="filled-multiline-static"
+            label="ใส่ที่อยู่ของคุณ"
+            multiline
+            rows={6}
+            variant="filled"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+          />
+        </Box>
+        <h2>จัดการแรงค์ของผู้ใช้ว่าสามารถทำอะไรได้บ้าง</h2>
+      </div >
+      
+      <div style={{ display: "flex", alignitems: "center", justifyContent: 'center', }}>
+        <img src={Ribbon1} alt="Bronze" style={{ marginTop: 60 }} />
+        <FormLabel component="legend" style={{ color: 'black', fontSize: '22px', left: 50, top: 70 }}>Bronze</FormLabel>
+        <div>
+          <FormLabel component="legend" style={{ color: 'black', right: 20, top: 100 }}>สามารถทำรายการในธนาคารทั้งหมดได้ </FormLabel>
+          <OutlinedInput
+            id="outlined-adornment-weight"
+            endAdornment={<InputAdornment position="end">รายการ</InputAdornment>}
+            name="bronze"
+            value={medals.bronze}
+            onChange={handleChange}
+            sx={{ right: 20, top: 100, }}
+          />
+        </div>
+
+      </div>
+      <div style={{ display: "flex", alignitems: "center", justifyContent: 'center', }}>
+        <img src={Ribbon2} alt="Silver"
+          style={{ marginTop: 100, marginRight: 7 }} />
+        <FormLabel component="legend" style={{ color: 'black', fontSize: '22px', left: 38, top: 110 }}>Silver</FormLabel>
+        <div>
+          <FormLabel component="legend" style={{ color: 'black', right: 20, top: 140 }}>สามารถทำรายการในธนาคารทั้งหมดได้ </FormLabel>
+          <OutlinedInput
+            id="outlined-adornment-weight"
+            endAdornment={<InputAdornment position="end">รายการ</InputAdornment>}
+            name="silver"
+            value={medals.silver}
+            onChange={handleChange}
+            sx={{ right: 20, top: 140, }}
+          />
+        </div>
+      </div>
+      <div style={{ display: "flex", alignitems: "center", justifyContent: 'center', }}>
+        <img src={Ribbon3} alt="Gold"
+          style={{ marginTop: 100, marginRight: 13 }} />
+        <FormLabel component="legend" style={{ color: 'black', fontSize: '22px', left: 34, top: 110 }}>Gold</FormLabel>
+        <div>
+          <FormLabel component="legend" style={{ color: 'black', right: 12, top: 140 }}>สามารถทำรายการในธนาคารทั้งหมดได้ </FormLabel>
+          <OutlinedInput
+            id="outlined-adornment-weight"
+            endAdornment={<InputAdornment position="end" >รายการ</InputAdornment>}
+            name="gold"
+            value={medals.gold}
+            onChange={handleChange}
+            sx={{ right: 12, top: 140, }}
+          />
+        </div>
+      </div>
+      <div style={{ display: "flex", alignitems: "center", justifyContent: 'center', }}>
+        <img src={Ribbon4} alt="Platinum"
+          style={{ marginTop: 100, marginLeft: 17 }} />
+        <FormLabel component="legend" style={{ color: 'black', fontSize: '22px', left: 58, top: 110 }}>Platinum</FormLabel>
+        <div>
+          <FormLabel component="legend" style={{ color: 'black', right: 30, top: 140 }}>สามารถทำรายการในธนาคารทั้งหมดได้ </FormLabel>
+          <OutlinedInput
+            id="outlined-adornment-weight"
+            endAdornment={<InputAdornment position="end"  >รายการ</InputAdornment>}
+            name="phat"
+            value={medals.phat}
+            onChange={handleChange}
+            sx={{ right: 30, top: 140, }}
+          />
+        </div>
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-around', margin: 10 }}>
         <Button variant="contained" color='error' sx={{ top: 100 }} onClick={handleBack}>ย้อนกลับ</Button>
-        <Button variant="contained" color='success' sx={{ backgroundColor: '#07C27F', top: 100 }} onClick={handleSubmit}>เสร็จสิ้น</Button>
+        <Button variant="contained" color='warning' sx={{ top: 100 }} onClick={handleSubmit}>บันทึกข้อมูล</Button>
+        <Button variant="contained" color='success' sx={{ backgroundColor: '#07C27F', top: 100 }} onClick={handleNext}>เสร็จสิ้น</Button>
       </div>
     </div>
 

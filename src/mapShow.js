@@ -3,7 +3,7 @@ import './App.css';
 import LongdoMap, { longdo, map } from './LongdoMap';
 
 class MapShow extends Component {
-
+  
   initMap(){
     map.Layers.setBase(longdo.Layers.GRAY);
     

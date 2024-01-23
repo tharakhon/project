@@ -37,7 +37,7 @@ function Login() {
     setProfile(res.profileObj)
     console.log('success', res.profileObj)
     setflag(true);
-    navigate("/main")
+    navigate(`/main/${res.profileObj.email}`)
   }
 
   const onFailure = (res) => {

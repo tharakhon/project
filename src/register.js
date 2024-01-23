@@ -36,6 +36,8 @@ function Register() {
     setProfile(res.profileObj)
     console.log('success', res.profileObj)
     setflag(true);
+   
+    
   }
 
   const onFailure = (res) => {
@@ -63,7 +65,7 @@ function Register() {
           tel: tel,
         },
       ]);
-      navigate("/main")
+      navigate(`/`)
     });
   };
 

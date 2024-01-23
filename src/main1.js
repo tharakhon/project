@@ -4,7 +4,7 @@ import FilterAltSharpIcon from '@mui/icons-material/FilterAltSharp';
 import Button from '@mui/material/Button';
 import { useState, useEffect } from 'react';
 import Axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams } from "react-router-dom";
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -194,26 +194,31 @@ function Main12() {
     setOpen(false);
   };
   const handleClick = () => {
-    navigate("/profile")
+    navigate(`/profile/${email}`)
   }
+
+  const {email} =useParams();
   useEffect(() => {
-    // ตรวจสอบว่ามีข้อมูลใน /user หรือไม่
-    Axios.get("http://localhost:5000/user/:email")
+    
+    console.log(email);
+  
+    Axios.get(`http://localhost:5000/user/${email}`)
       .then((response) => {
         console.log("ข้อมูลที่ได้รับ:", response.data);
-        const userEmails = response.data.map((user) => user.email);
-        if (userEmails.includes(profile.email)) {
-          setflag(true);
-        } else {
-          alert("ไม่พบข้อมูลผู้ใช้");
-        }
+        // const userEmails = response.data.map((user) => user.email);
+        // if (userEmails==email) {
+        //   console.log("ข้อมูลที่ได้รับ: profile.email", profile);
+        //   setflag(true);
+        // } else {
+        //   alert("ไม่พบข้อมูลผู้ใช้");
+        // }
       })
       .catch((error) => {
         console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
       });
-  }, []);
+  }, [email]);
   const handleSubmit = () => {
-    navigate('/registerbank')
+    navigate(`/registerbank/${email}`)
   }
   const handleOpenbankuser = () => {
     navigate('/bankuser')

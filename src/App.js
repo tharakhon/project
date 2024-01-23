@@ -28,9 +28,9 @@ function App() {
         <Route path="/" element={<Login/>}/>
         <Route path="login" element={<Login/>}/> 
         <Route path="register" element={<Register/>}/> 
-        <Route path="main" element={<Main12/>}/> 
-        <Route path="profile" element={<Profile/>}/>
-        <Route path="registerbank" element={<RegisterBank/>}/>
+        <Route path="main/:email" element={<Main12/>}/> 
+        <Route path="profile/:email" element={<Profile/>}/>
+        <Route path="registerbank/:email" element={<RegisterBank/>}/>
         <Route path="bank" element={<Bank/>}/>
         <Route path="address" element={<Address/>}/>
         <Route path="bankuser" element={<BankUser/>}/>
