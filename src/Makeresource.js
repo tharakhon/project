@@ -57,7 +57,7 @@ function Resource() {
   const handleAddData = () => {
     Axios.post('http://localhost:5000/bank_product', {
       product_name: nameProduct,
-      product_image: imagePreview,
+      product_image: image.name,
       product_type: resourceForRent,
       product_type2: resourceForSale,
       product_type3: resourceForExchange,

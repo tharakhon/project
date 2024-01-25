@@ -30,7 +30,7 @@ function RegisterBank() {
   });
   console.log(medals)
   console.log(profile)
-  console.log(imagePreview)
+  console.log(image.name)
   
   console.log(address)
   console.log(tel)
@@ -88,7 +88,7 @@ function RegisterBank() {
     bank_name: profile,
     bank_latitude:currentPosition.lat,
     bank_longitude:currentPosition.lon,
-    bank_image: imagePreview,
+    bank_image: image.name,
     bank_address: address,
     bank_bronze: medals.bronze,
     bank_silver: medals.silver,
