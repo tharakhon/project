@@ -14,7 +14,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
 import { styled, useTheme, alpha } from '@mui/material/styles';
 import Button from '@mui/material/Button';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -27,6 +27,10 @@ import banana from '../src/image/กล้วย.jpg';
 import car from '../src/image/รถเกี่ยวข้าว.png';
 import NavBarBank from './navBarBank';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import { useEffect, useState } from 'react';
+import Axios from 'axios';
+import { ReactSession } from 'react-client-session';
+
 
 const drawerWidth = 240;
 const Search = styled('div')(({ theme }) => ({
@@ -78,26 +82,39 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
-const products = [
-  { title: 'จอบ', titles: 'จำนวนทรัพที่เหลืออยู่ 1 ชิ้น', image: hoe },
-  { title: 'ปุ๋ย', titles: 'จำนวนทรัพที่เหลืออยู่ 10 กิโลกรัม', image: fertilizer },
-  { title: 'แอบเปิ้ล', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
-  { title: 'กล้วย', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: banana },
-  { title: 'รถเกี่ยวข้าว', titles: 'จำนวนทรัพที่เหลืออยู่ 10 คัน', image: car },
-  { title: 'แอบเปิ้ล', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
-  { title: 'แอบเปิ้ล', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
-  { title: 'แอบเปิ้ล', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
-  { title: 'แอบเปิ้ล', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
-  { title: 'แอบเปิ้ล', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
-];
+
 export default function Bank() {
+  const username = ReactSession.get("username");
   const navigate = useNavigate();
+  const [resources, setResources] = useState(null);
   const handleNext = () => {
     navigate("/addproduct");
   }
   const handleNextListbank = () => {
     navigate("/listbank");
   }
+
+  useEffect(() => {
+
+    console.log(username);
+
+    Axios.get(`http://localhost:5000/showproduct/${username}`)
+      .then((response) => {
+        console.log("ข้อมูลที่ได้รับ:", response.data);
+        setResources(response.data);
+
+        // const userEmails = response.data.map((user) => user.email);
+        // if (userEmails==email) {
+        //   console.log("ข้อมูลที่ได้รับ: profile.email", profile);
+        //   setflag(true);
+        // } else {
+        //   alert("ไม่พบข้อมูลผู้ใช้");
+        // }
+      })
+      .catch((error) => {
+        console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+      });
+  }, [username]);
   return (
     <Box sx={{ display: 'flex' }}>
       <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -116,9 +133,9 @@ export default function Bank() {
           <List>
             {['ข้อมูลของธนาคาร'].map((text, index) => (
               <ListItem key={text} disablePadding>
-                <ListItemButton sx={{backgroundColor:'#a2d2ff'}} onClick={handleNextListbank}>
+                <ListItemButton sx={{ backgroundColor: '#a2d2ff' }} onClick={handleNextListbank}>
                   <ListItemIcon>
-                     <AccountBalanceIcon /> 
+                    <AccountBalanceIcon />
                   </ListItemIcon>
                   <ListItemText primary={text} />
                 </ListItemButton>
@@ -201,31 +218,35 @@ export default function Bank() {
         </Search>
         <Button variant="contained" color='error' sx={{ left: 1050, bottom: 35, borderRadius: 50 }} onClick={handleNext}>เพิ่มทรัพยากร</Button>
         <Grid container spacing={2}>
-          {products.map(tab =>
-
-            <Grid xs={3}>
-              <Card sx={{ maxWidth: 345, m: 1 }} >
-                <CardMedia
-                  component="img"
-                  height="300"
-                  image={tab.image}
-                  title="รูปภาพทรัพยากร"
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    {tab.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {tab.titles}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button size="small">ดูทรัพยากร</Button>
-                </CardActions>
-              </Card>
-            </Grid>
-
+          {resources && resources.length > 0 ? (
+            resources.map((resource) => (
+              <Grid key={resource.product_id} item xs={3}>
+               <Card sx={{ maxWidth: 345, m: 1 }}>
+                  <CardMedia
+                    component="img"
+                    height="300"
+                    image={resource.product_image}
+                    title="รูปภาพทรัพยากร"
+                  />
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="div">
+                      {resource.product_name}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {`จำนวนทรัพยากรที่เหลืออยู่: ${resource.product_quantity}`}
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button size="small">ดูทรัพยากร</Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))
+          ) : (
+            // Render a message when resources is empty
+            <Typography variant="body1">No resources available.</Typography>
           )}
+          
         </Grid>
       </Box>
     </Box>

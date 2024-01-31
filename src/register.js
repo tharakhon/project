@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import logo from '../src/image/Logo.png';
 
 
+
 function Register() {
 
   const clientId = "80445697984-hft4hh6kkictok8q22lm89nunm1l8vt7.apps.googleusercontent.com"
@@ -19,9 +20,10 @@ function Register() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState([]);
   const [userList, setUserList] = useState([]);
-  const [fullname,setUsername] = useState("");
-  const [email,setEmail] = useState("");
-  const [tel,setTel] = useState("");
+  const [fullname, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [tel, setTel] = useState("");
+  const [userImage, setUserImage] = useState(null);
   useEffect(() => {
     const initClient = () => {
       gapi.client.init({
@@ -36,8 +38,8 @@ function Register() {
     setProfile(res.profileObj)
     console.log('success', res.profileObj)
     setflag(true);
-   
-    
+
+
   }
 
   const onFailure = (res) => {
@@ -49,17 +51,33 @@ function Register() {
     setflag(false);
   }
 
+  useEffect(() => {
 
+    console.log(email);
+
+    Axios.get(`http://localhost:5000/readimage/${email}`)
+      .then((response) => {
+        console.log("ข้อมูลที่ได้รับ:", response.data[0].email);
+        // Assuming the image data is present in the response data
+        setUserImage(response.data[0].image);
+      })
+      .catch((error) => {
+        console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+      })
+      
+  }, [email]);
   const addUser = () => {
-    
+
     Axios.post("http://localhost:5000/create", {
+      image: profile.imageUrl,
       email: profile.email,
-      fullname: fullname ,
+      fullname: fullname,
       tel: tel,
     }).then(() => {
       setUserList([
         ...userList,
         {
+          image: profile.imageUrl,
           email: email,
           fullname: fullname,
           tel: tel,
@@ -73,55 +91,59 @@ function Register() {
   return (
     <div>
       {flag ? (
-       <div>
-       <Navbar />
-       <Box
-           component="form"
-           sx={{
-               display: 'flex',
-               flexDirection: 'column',
-               alignItems: 'center',
-               padding: 5,
-           }}
-           noValidate
-           autoComplete="off"
-       >
-           <div style={{ display: 'flex', flexDirection: 'column', width: '50ch' }}>
-               <TextField
+        <div>
+          <Navbar />
+          <Box
+            component="form"
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              padding: 5,
+            }}
+            noValidate
+            autoComplete="off"
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', width: '50ch' }}>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <img src={profile.imageUrl} style={{width:'30ch',height:'25ch',marginBottom:10}}/>
+              </div>
+              <TextField
 
-                   id="outlined-required"
-                   label="Name"
-                   defaultValue=''
-                   onChange={(event) => {
-                    setUsername(event.target.value)
-                  }}
-               />
-               <br />
-               <TextField
-                   disabled
-                   id="outlined-disabled"
-                   label="Email"
-                   defaultValue={profile.email}
-               />
-               <br />
-               <TextField
-                   id="outlined-required"
-                   label="Tel" 
-                   type='number'
-                   defaultValue=" "
-                   onChange={(event) => {
-                    setTel(event.target.value)
-                  }}
-               />
-           </div>
-       </Box>
-       
-       <GoogleLogout clientId={clientId} buttonText='LOG OUT' onLogoutSuccess={logOut} />
-       <Button variant="contained" sx={{ backgroundColor: '#07C27F' }} onClick={addUser} >เสร็จสิ้น</Button>
-   </div>
+                id="outlined-required"
+                label="Name"
+                defaultValue=''
+                onChange={(event) => {
+                  setUsername(event.target.value)
+                }}
+              />
+              <br />
+              <TextField
+                disabled
+                id="outlined-disabled"
+                label="Email"
+                defaultValue={profile.email}
+              />
+              <br />
+              <TextField
+                id="outlined-required"
+                label="Tel"
+                type='number'
+                defaultValue=" "
+                onChange={(event) => {
+                  setTel(event.target.value)
+                }}
+              />
+            </div>
+          </Box>
+          <div style={{ display: 'flex', justifyContent:'space-around'}}>
+            <GoogleLogout clientId={clientId} buttonText='LOG OUT' onLogoutSuccess={logOut} />
+            <Button variant="contained" sx={{ backgroundColor: '#07C27F' }} onClick={addUser} >บันทึกข้อมูล</Button>
+          </div>
+        </div>
       ) : (<div className="App">
         <header className="App-header">
-          <img src={logo} alt="โลโก้แอพ" style={{width:400}}/>
+          <img src={logo} alt="โลโก้แอพ" style={{ width: 400 }} />
           <GoogleLogin
             clientId={clientId}
             buttonText='LOG IN WITH GOOGLE'
@@ -130,16 +152,16 @@ function Register() {
             cookiePolicy={'single_host_origin'}
             isSignedIn={false}
             render={(renderProps) => (
-              <button 
+              <button
                 onClick={renderProps.onClick}
                 disabled={renderProps.disabled}
                 style={{
                   backgroundColor: '#f90101', /* เปลี่ยนสีพื้นหลังเป็นสีแดง*/
                   color: '#ffffff', /*เปลี่ยนสีตัวอักษรเป็นสีขาว*/
                   fontSize: '20px', /* เปลี่ยนขนาดตัวอักษร*/
-                  width: '600px' , /* กำหนดความกว้าง */
-                  height: '75px' , /* กำหนดความสูง */
-                  margin: '50px' , /*กำหนดระยะห่าง */
+                  width: '600px', /* กำหนดความกว้าง */
+                  height: '75px', /* กำหนดความสูง */
+                  margin: '50px', /*กำหนดระยะห่าง */
                   cursor: 'pointer', /* ทำให้เมาส์เป็นรูปแบบของมือ*/
                 }}
               >

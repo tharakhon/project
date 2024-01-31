@@ -10,7 +10,7 @@ import Axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import Register from './register';
 import logo from '../src/image/Logo.png';
-
+import { ReactSession } from 'react-client-session';
 function Login() {
 
   const clientId = "80445697984-hft4hh6kkictok8q22lm89nunm1l8vt7.apps.googleusercontent.com"
@@ -18,9 +18,6 @@ function Login() {
   const [flag, setflag] = useState(false);
   const navigate = useNavigate();
   const [profile, setProfile] = useState([]);
-  const [userList, setUserList] = useState([]);
-  const [fullname,setUsername] = useState("");
-  const [email,setEmail] = useState("");
   const [tel,setTel] = useState("");
   useEffect(() => {
     const initClient = () => {
@@ -35,9 +32,13 @@ function Login() {
 
   const onSuccess = (res) => {
     setProfile(res.profileObj)
+    const { name, email } = res.profileObj;
+    ReactSession.set("username", res.profileObj.email);
+    console.log('name:',name);
+    console.log('email:',email);
     console.log('success', res.profileObj)
     setflag(true);
-    navigate(`/main/${res.profileObj.email}`)
+    navigate(`/main`)
   }
 
   const onFailure = (res) => {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -9,7 +9,7 @@ import Checkbox from "@mui/material/Checkbox";
 import FormLabel from "@mui/material/FormLabel";
 import Stack from "@mui/material";
 import NavBarBank from "./navBarBank";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Axios from 'axios';
 
 const currencies = [
@@ -37,7 +37,7 @@ function Resource() {
   const [resourceForRent, setResourceForRent] = useState("");
   const [resourceForSale, setResourceForSale] = useState("");
   const [resourceForExchange, setResourceForExchange] = useState("");
-
+  const [bank_codename, setCodeName] = useState('');
   const handleCheckboxChange = (value, setter) => {
     // Toggle the checkbox value
     setter((prevValue) => (prevValue === value ? "" : value));
@@ -54,8 +54,11 @@ function Resource() {
   const handleCurrencyChange = (event, value) => {
     setSelectedCurrency(value);
   };
+  
   const handleAddData = () => {
+
     Axios.post('http://localhost:5000/bank_product', {
+      bank_codename: bank_codename,
       product_name: nameProduct,
       product_image: image.name,
       product_type: resourceForRent,
@@ -98,7 +101,7 @@ function Resource() {
   };
 
   const handleSubmit = () => {
-    navigate("/bank");
+    navigate(-1);
   };
 
   return (
@@ -137,13 +140,25 @@ function Resource() {
         )}
         <div style={{ marginTop: 50 }}>
           <FormLabel component="legend" style={{ color: "black" }}>
+            ใส่รหัสที่ของธนาคารของคุณ:
+          </FormLabel>
+          <TextField
+            id="outlined-basic"
+            label=""
+            variant="outlined"
+            sx={{ width: 400 }}
+            value={bank_codename}
+            onChange={(event) => setCodeName(event.target.value)}
+          />
+
+          <FormLabel component="legend" style={{ color: "black" }}>
             ชื่อทรัพยากร:
           </FormLabel>
           <TextField
             id="outlined-basic"
             label=""
             variant="outlined"
-            sx={{ width: "50ch" }}
+            sx={{ width: 400 }}
             value={nameProduct}
             onChange={(e) => setNameProduct(e.target.value)}
           />
@@ -193,26 +208,31 @@ function Resource() {
           <FormLabel component="legend" style={{ color: "black" }}>
             จำนวนทรัพยากร:
           </FormLabel>
-          <TextField sx={{ width: 220 }} value={amount} onChange={(e) => setAmount(e.target.value)} />
+          <TextField sx={{ width: 400 }} value={amount} onChange={(e) => setAmount(e.target.value)} />
         </div>
         <div style={{ marginTop: 30 }}>
           <FormLabel component="legend" style={{ color: "black" }}>
             รายละเอียดเพิ่มเติม:
           </FormLabel>
-          <TextField id="outlined-multiline-static" multiline rows={4} sx={{ width: "40ch" }} value={additionalDetails} onChange={(e) => setAdditionalDetails(e.target.value)} />
+          <TextField id="outlined-multiline-static" sx={{ width: 400 }} value={additionalDetails} onChange={(e) => setAdditionalDetails(e.target.value)} />
         </div>
         <div style={{ marginTop: 30 }}>
-          <FormLabel component="legend" style={{ color: "black" }}>
-            ราคาของทรัพยากร:
-          </FormLabel>
-          <OutlinedInput
-            id="outlined-adornment-weight"
-            endAdornment={<InputAdornment position="end">บาท</InputAdornment>}
-            value={resourcePrice}
-            onChange={(e) => setResourcePrice(e.target.value)}
-          />
-          <FormHelperText>หมายเหตุ : ถ้าเลือกบริการเช่ายืมหรือแลกเปลี่ยน</FormHelperText>
-          <FormHelperText>ให้ใส่ราคา 0 บาท</FormHelperText>
+
+          {resourceForSale === "" ? null : (
+            <>
+              <FormLabel component="legend" style={{ color: "black" }}>
+                ราคาของทรัพยากร:
+              </FormLabel>
+              <OutlinedInput
+                id="outlined-adornment-weight"
+                endAdornment={<InputAdornment position="end">บาท</InputAdornment>}
+                value={resourcePrice}
+                sx={{ width: 400 }}
+                onChange={(e) => setResourcePrice(e.target.value)}
+              />
+            </>
+          )}
+
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: 40 }}>
           <Button variant="contained" size="large" color="error" onClick={handleSubmit}>

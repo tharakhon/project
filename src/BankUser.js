@@ -31,7 +31,8 @@ import banana from '../src/image/กล้วย.jpg';
 import car from '../src/image/รถเกี่ยวข้าว.png';
 import NavBarBank from './navBarBank';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
+import Axios from "axios";
 const drawerWidth = 240;
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -95,6 +96,7 @@ const products = [
     { id: 10, title: 'พั่ว', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
 ];
 export default function BankUser() {
+    const [filteredProducts, setFilteredProducts] = useState([]);
     const [searchInput, setSearchInput] = useState('');
     const navigate = useNavigate();
     const handleNext = (id) => {
@@ -103,9 +105,27 @@ export default function BankUser() {
     const handleNextListbankuser = () => {
         navigate("/listbankuser");
     }
-    const filteredProducts = products.filter((product) =>
-        product.title.toLowerCase().includes(searchInput.toLowerCase())
-    );
+    // const filteredProducts = products.filter((product) =>
+    //     product.title.toLowerCase().includes(searchInput.toLowerCase())
+    // );
+    useEffect(() => {
+        Axios.get(`http://localhost:5000/showProductUser`)
+          .then((response) => {
+            console.log("ข้อมูลที่ได้รับ:", response.data);
+            const fetchedProducts = response.data.map((item) => ({
+                id : item.product_id,
+              title: item.product_name,
+              quantity: item.product_quantity,
+              image: item.product_image // Update with the correct property name
+              // Update with the correct property name
+            }));
+            setFilteredProducts(fetchedProducts);
+          })
+          .catch((error) => {
+            console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+          })
+    
+      }, []);
     return (
         <Box sx={{ display: 'flex' }}>
             <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -214,7 +234,7 @@ export default function BankUser() {
                                         {tab.title}
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary">
-                                        {tab.titles}
+                                        {`จำนวนทรัพยากรที่เหลืออยู่${tab.quantity}`}
                                     </Typography>
                                 </CardContent>
                                 <CardActions>

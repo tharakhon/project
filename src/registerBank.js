@@ -12,16 +12,17 @@ import Ribbon1 from "../src/image/ribbon1.png";
 import Ribbon2 from "../src/image/ribbon2.png";
 import Ribbon3 from "../src/image/ribbon3.png";
 import Ribbon4 from "../src/image/ribbon4.png";
-
+import { ReactSession } from 'react-client-session';
 function RegisterBank() {
+  const username = ReactSession.get("username");
   const [profile, setProfile] = useState();
   const [tel, setTel] = useState("");
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [address, setAddress] = useState('');
   const navigate = useNavigate();
-  const { email } = useParams();
   const [currentPosition, setCurrentPosition] = useState(null);
+  const [codename,setCodeName] =useState('');
   const [medals, setMedals] = useState({
     bronze: '',
     silver: '',
@@ -30,8 +31,8 @@ function RegisterBank() {
   });
   console.log(medals)
   console.log(profile)
-  console.log(image.name)
   
+
   console.log(address)
   console.log(tel)
   const handleChange = (event) => {
@@ -40,15 +41,15 @@ function RegisterBank() {
       ...prevMedals,
       [name]: value,
     }));
-    
+
   };
   // const handleLocationChange = ({ lat, lng }) => {
   //   console.log('New location:', { lat, lng });
-  
+
   //   setLatitude(lat, () => {
   //     console.log('Updated Latitude:', lat);
   //   });
-  
+
   //   setLongitude(lng, () => {
   //     console.log('Updated Longitude:', lng);
   //   });
@@ -58,70 +59,80 @@ function RegisterBank() {
       (position) => {
         const { latitude, longitude } = position.coords;
         setCurrentPosition({ lat: latitude, lon: longitude });
-        
+
       },
       (error) => {
         console.error('Error getting geolocation:', error);
       }
     );
   }, []);
-  // useEffect(() => {
-  //   // ตรวจสอบว่ามีข้อมูลใน /user หรือไม่
-  //   Axios.get(`http://localhost:5000/user/${email}`)
-  //     .then((response) => {
-  //       console.log("ข้อมูลที่ได้รับ:", response.data);
-  //       const userEmails = response.data.map((user) => user.email);
-  //       // if (userEmails.includes(profile)) {
-  //       //   setflag(true);
-  //       // } else {
-  //       //   alert("ไม่พบข้อมูลผู้ใช้");
-  //       // }
-  //     })
-  //     .catch((error) => {
-  //       console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
-  //     });
-  // }, [email]);
+  useEffect(() => {
+
+    console.log(username);
+
+    Axios.get(`http://localhost:5000/user/${username}`)
+      .then((response) => {
+        console.log("ข้อมูลที่ได้รับ:", response.data[0].email);
+        // const userEmails = response.data.map((user) => user.email);
+        // if (userEmails==email) {
+        //   console.log("ข้อมูลที่ได้รับ: profile.email", profile);
+        //   setflag(true);
+        // } else {
+        //   alert("ไม่พบข้อมูลผู้ใช้");
+        // }
+      })
+      .catch((error) => {
+        console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+      });
+  }, []);
   const handleSubmit = () => {
+    if (!username || !tel || !profile || !currentPosition || !image || !address || !medals || !codename) {
+      console.error('Missing required data. Cannot submit the form.');
+      return;
+    }
     Axios.post('http://localhost:5000/bank_create', {
-    bank_email: email,
-    bank_telephone: tel,
-    bank_name: profile,
-    bank_latitude:currentPosition.lat,
-    bank_longitude:currentPosition.lon,
-    bank_image: image.name,
-    bank_address: address,
-    bank_bronze: medals.bronze,
-    bank_silver: medals.silver,
-    bank_gold: medals.gold,
-    bank_platinum: medals.phat
-    // ... other data
-  })
-    .then((response) => {
-      console.log(response.data);
-      // Redirect to the bank page on successful registration
-      
+      bank_codename: codename,
+      bank_email: username,
+      bank_telephone: tel,
+      bank_name: profile,
+      bank_latitude: currentPosition.lat,
+      bank_longitude: currentPosition.lon,
+      bank_image: image.name,
+      bank_address: address,
+      bank_bronze: medals.bronze,
+      bank_silver: medals.silver,
+      bank_gold: medals.gold,
+      bank_platinum: medals.phat
+      // ... other data
     })
-    .catch((error) => {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.error("Server Error:", error.response.data);
-      } else if (error.request) {
-        // The request was made but no response was received
-        console.error("No Response from Server");
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.error("Error:", error.message);
-      }
-    });
+      .then((response) => {
+        console.log(response.data);
+        
+        // Redirect to the bank page on successful registration
+
+      })
+      .catch((error) => {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.error("Server Error:", error.response.data);
+        } else if (error.request) {
+          // The request was made but no response was received
+          console.error("No Response from Server");
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.error("Error:", error.message);
+        }
+      });
   }
   const handleBack = () => {
-    navigate(`/main/${email}`);
+    navigate('/main');
   }
-  const handleNext=()=>{
-    navigate("/bank");
+  const handleNext = () => {
+    ReactSession.set("codename",  codename);
+    navigate(`/bank`);
   }
-  
+
   const handleImageChange = (event) => {
     const selectedImage = event.target.files[0];
 
@@ -192,6 +203,17 @@ function RegisterBank() {
           </div>
           <TextField
             id="outlined-required"
+            label="ใส่รหัสที่ของธนาคารของคุณ"
+            variant="outlined"
+            sx={{ margin: 1 }}
+            value={codename} // ใช้ value แทน defaultValue
+            onChange={(event) => setCodeName(event.target.value)}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+          <TextField
+            id="outlined-required"
             label="ชื่อธนาคาร"
             variant="outlined"
             sx={{ margin: 1 }}
@@ -208,7 +230,7 @@ function RegisterBank() {
             label="Email"
             variant="outlined"
             sx={{ margin: 1 }}
-            value={email} // ใช้ value แทน defaultValue
+            value={username} // ใช้ value แทน defaultValue
             InputLabelProps={{
               shrink: true,
             }}
@@ -249,7 +271,7 @@ function RegisterBank() {
         </Box>
         <h2>จัดการแรงค์ของผู้ใช้ว่าสามารถทำอะไรได้บ้าง</h2>
       </div >
-      
+
       <div style={{ display: "flex", alignitems: "center", justifyContent: 'center', }}>
         <img src={Ribbon1} alt="Bronze" style={{ marginTop: 60 }} />
         <FormLabel component="legend" style={{ color: 'black', fontSize: '22px', left: 50, top: 70 }}>Bronze</FormLabel>

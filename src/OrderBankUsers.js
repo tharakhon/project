@@ -16,7 +16,8 @@ import Stack from '@mui/material/Stack';
 import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-
+import { useEffect } from 'react';
+import Axios from "axios";
 const ProSpan = styled('span')({
     display: 'inline-block',
     height: '1em',
@@ -55,9 +56,9 @@ function Label({ componentName, isProOnly }) {
 
 function OrderBankUsers() {
     const { id } = useParams();
-    const location = useLocation();
-    const productDetails = location.state?.productDetails;
+    console.log(id)
     const [selectedDate, setSelectedDate] = useState("");
+    const [filteredProduct, setFilteredProduct] = useState(null);
     const navigate = useNavigate();
 
     const handleBackbankuser = () => {
@@ -67,18 +68,33 @@ function OrderBankUsers() {
     const handleMemberbankuser = () => {
         navigate("/member");
     }
+    useEffect(() => {
+        // Fetch data from the server
+        Axios.get(`http://localhost:5000/showProductUser1/${id}`)
+            .then((response) => {
+                console.log("ข้อมูลที่ได้รับ:", response.data[0]);
+                // Assuming response.data is an array of products
+                // Choose the first product for now
+                if (response.data.length > 0) {
+                    setFilteredProduct(response.data[0]);
+                }
+            })
+            .catch((error) => {
+                console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+            })
+    }, []);
 
     return (
         <div>
             <NavBarBank />
-            {productDetails ? (
+            {filteredProduct ? (
                 <>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
                         <Card sx={{ maxWidth: 345, m: 1 }} >
                             <CardMedia
                                 component="img"
                                 height="300"
-                                image={productDetails.image}
+                                image={filteredProduct.product_image}
                                 title="รูปภาพทรัพยากร"
                             />
                         </Card>
@@ -86,12 +102,20 @@ function OrderBankUsers() {
                     <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
                         <div style={{ marginTop: 50 }}>
                             <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
-                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={productDetails.title} sx={{ width: '50ch' }} />
+                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProduct.product_name} sx={{ width: '50ch' }} />
                         </div>
                         <div style={{ marginTop: 20 }}>
-                            <FormLabel component="legend" style={{ color: 'black' }}>เลือกประเภทบริการ :</FormLabel>
-                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={productDetails.ServiceType} sx={{ width: '50ch' }} />
+                            <FormLabel component="legend" style={{ color: 'black' }}>ประเภทบริการ1 :</FormLabel>
+                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProduct.product_type1} sx={{ width: '50ch' }} />
+                            
                         </div>
+                        <div style={{ marginTop: 20 }}>
+                        <FormLabel component="legend" style={{ color: 'black' }}>ประเภทบริการ2 :</FormLabel>
+                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProduct.product_type2} sx={{ width: '50ch' }} />
+                            </div>
+                            <div style={{ marginTop: 20 }}>
+                            <FormLabel component="legend" style={{ color: 'black' }}>ประเภทบริการ3 :</FormLabel>
+                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProduct.product_type3} sx={{ width: '50ch' }} /></div>
                         <div style={{ marginTop: 20 }}>
                             <Box
                                 component="form"
@@ -101,12 +125,12 @@ function OrderBankUsers() {
                                 noValidate
                                 autoComplete="off"
                             ></Box>
-                            <FormLabel component="legend" style={{ color: 'black' }}>เลือกประเภททรัพยากรทางการเกษตร:</FormLabel>
-                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={productDetails.ResourceType} sx={{ width: '50ch' }} />
+                            <FormLabel component="legend" style={{ color: 'black' }}>ประเภททรัพยากรทางการเกษตร:</FormLabel>
+                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProduct.product_type4} sx={{ width: '50ch' }} />
 
                         </div>
                         <div style={{ marginTop: 30 }}>
-                            <FormLabel component="legend" style={{ color: 'red' }}>จำนวนทรัพยากร : {productDetails.titles}</FormLabel>
+                            <FormLabel component="legend" style={{ color: 'red' }}>จำนวนทรัพยากร : {filteredProduct.product_quantity}</FormLabel>
                             <TextField id="outlined-disabled" label="" variant="outlined" defaultValue='ใส่จำนวนที่ต้องการ' sx={{ width: '50ch' }} />
                         </div>
 
@@ -114,7 +138,7 @@ function OrderBankUsers() {
                             <FormLabel component="legend" style={{ color: 'black' }}>รายละเอียดเพิ่มเติม:</FormLabel>
                             <TextField
                                 disabled
-                                defaultValue={productDetails.Moredetails}
+                                defaultValue={filteredProduct.product_details}
                                 id="outlined-multiline-static"
                                 multiline
                                 rows={4}
@@ -147,7 +171,7 @@ function OrderBankUsers() {
                             <FormLabel component="legend" style={{ color: 'black' }}>ราคาของทรัพยากร:</FormLabel>
                             <OutlinedInput
                                 disabled
-                                defaultValue={productDetails.Price}
+                                defaultValue={filteredProduct.product_price}
                                 id="outlined-adornment-weight"
                                 endAdornment={<InputAdornment position="end">บาท</InputAdornment>}
 

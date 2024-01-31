@@ -31,10 +31,10 @@ function ListBank() {
         }
     };
     const handleSubmit = () => {
-        navigate("/bank");
+        navigate(-1);
     }
     const handleBack = () => {
-        navigate("/bank");
+        navigate(-1);
     }
     return (
         <>

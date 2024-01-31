@@ -4,7 +4,7 @@ import FilterAltSharpIcon from '@mui/icons-material/FilterAltSharp';
 import Button from '@mui/material/Button';
 import { useState, useEffect } from 'react';
 import Axios from "axios";
-import { useNavigate,useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -62,6 +62,8 @@ import Ribbon4 from '../src/image/ribbon4.png';
 import CardHeader from '@mui/material/CardHeader';
 import LongdoMap, { map as longdoMap } from './LongdoMap';
 import Bookmark from "./Bookmark";
+import HomeIcon from '@mui/icons-material/Home';
+import { ReactSession } from 'react-client-session';
 const products = [
   {
     title: 'กรุงเทพ', rating: 2.5, image: bk, rank: Ribbon2, lat:
@@ -77,7 +79,7 @@ const products = [
   { title: 'ลาว', rating: 4.5, image: ktb, rank: Ribbon4, lat: 13.9, lon: 100.8 },
   { title: 'พม่า', rating: 0.5, image: ktb, rank: Ribbon1, lat: 14, lon: 100.9 },
 ];
-
+const setting2 = ['Profile', 'Logout'];
 const settings = ['เรียงด้วยแรงค์', 'เรียงด้วยระยะทาง', 'เรียงด้วยเรตติ้ง'];
 const drawerWidth = 240;
 
@@ -147,29 +149,32 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
   justifyContent: 'flex-end',
 }));
+
 function Main12() {
+  const username = ReactSession.get("username");
   const [profile, setProfile] = useState([]);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [anchorElUser2, setAnchorElUser2] = React.useState(null);
   const [flag, setflag] = useState(false);
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const theme = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredProducts, setFilteredProducts] = useState(products);
   const [currentPosition, setCurrentPosition] = useState(null);
   const [bookmarks, setBookmarks] = useState([]);
-  
+  const [userImage, setUserImage] = useState(null);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [displayBookmarks, setDisplayBookmarks] = useState(false);
+console.log(username)
+
 
   const handleBookmarkClick = (title) => {
-    // Check if the item is already bookmarked
     const isBookmarked = bookmarks.some((item) => item.title === title);
 
     if (isBookmarked) {
-      // Remove from bookmarks if already bookmarked
       const updatedBookmarks = bookmarks.filter((item) => item.title !== title);
       setBookmarks(updatedBookmarks);
     } else {
-      // Add to bookmarks if not bookmarked
       const bookmarkedItem = filteredProducts.find((item) => item.title === title);
       setBookmarks([...bookmarks, bookmarkedItem]);
     }
@@ -181,7 +186,7 @@ function Main12() {
   };
 
   const filterProducts = (query) => {
-    const filtered = products.filter((product) =>
+    const filtered = filteredProducts.filter((product) =>
       product.title.toLowerCase().includes(query.toLowerCase())
     );
     setFilteredProducts(filtered);
@@ -194,17 +199,46 @@ function Main12() {
     setOpen(false);
   };
   const handleClick = () => {
-    navigate(`/profile/${email}`)
+    navigate(`/profile`)
   }
 
-  const {email} =useParams();
+  const handleCloseUserMenu1 = () => {
+    setAnchorElUser2(null);
+  };
+  const handleOpenUserMenu1 = (event) => {
+    setAnchorElUser2(event.currentTarget);
+  };
+  const handleMenuOptionClick = (option) => {
+    handleCloseUserMenu1();
+
+    // Handle different menu options here
+    switch (option) {
+      case 'Profile':
+        // Navigate to the profile page
+        navigate(`/profile`);
+        break;
+      case 'Account':
+        // Handle 'Account' option
+        break;
+      case 'Dashboard':
+        // Handle 'Dashboard' option
+        break;
+      case 'Logout':
+        // Handle 'Logout' option
+        navigate(`/`)
+        break;
+      default:
+        break;
+    }
+  };
+
   useEffect(() => {
-    
-    console.log(email);
-  
-    Axios.get(`http://localhost:5000/user/${email}`)
+
+    console.log(username);
+
+    Axios.get(`http://localhost:5000/user/${username}`)
       .then((response) => {
-        console.log("ข้อมูลที่ได้รับ:", response.data);
+        console.log("ข้อมูลที่ได้รับ:", response.data[0].email);
         // const userEmails = response.data.map((user) => user.email);
         // if (userEmails==email) {
         //   console.log("ข้อมูลที่ได้รับ: profile.email", profile);
@@ -216,11 +250,46 @@ function Main12() {
       .catch((error) => {
         console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
       });
-  }, [email]);
+  }, [username]);
+  useEffect(() => {
+
+    console.log(username);
+
+    Axios.get(`http://localhost:5000/readimage/${username}`)
+      .then((response) => {
+        console.log("ข้อมูลที่ได้รับ:", response.data[0].image);
+        // Assuming the image data is present in the response data
+        setUserImage(response.data[0].image);
+      })
+      .catch((error) => {
+        console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+      })
+
+  }, [username]);
+  useEffect(() => {
+    Axios.get(`http://localhost:5000/showbank`)
+      .then((response) => {
+        console.log("ข้อมูลที่ได้รับ:", response.data);
+        const fetchedProducts = response.data.map((item) => ({
+          title: item.bank_name,
+          rating: item.bank_rating,
+          image: item.bank_image, // Update with the correct property name
+          rank: item.bank_rank,   // Update with the correct property name
+          lat: item.bank_latitude, // Update with the correct property name
+          lon: item.bank_longitude, // Update with the correct property name
+        }));
+        setFilteredProducts(fetchedProducts);
+      })
+      .catch((error) => {
+        console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+      })
+
+  }, [username]);
   const handleSubmit = () => {
-    navigate(`/registerbank/${email}`)
+    navigate(`/registerbank`)
   }
   const handleOpenbankuser = () => {
+    setDisplayBookmarks(false);
     navigate('/bankuser')
   }
 
@@ -231,11 +300,17 @@ function Main12() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+  const handleDisplayBookmarks = () => {
+    setDisplayBookmarks(!displayBookmarks);
+  };
+
+
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
         setCurrentPosition({ lat: latitude, lon: longitude });
+
       },
       (error) => {
         console.error('Error getting geolocation:', error);
@@ -260,11 +335,12 @@ function Main12() {
   };
 
   useEffect(() => {
-    const updatedProducts = products.map((product) => {
+    const updatedProducts = filteredProducts.map((product) => {
       const distance =
         currentPosition && calculateDistance(currentPosition.lat, currentPosition.lon, product.lat, product.lon);
       return { ...product, distance };
     });
+    console.log(updatedProducts)
     setFilteredProducts(updatedProducts);
   }, [currentPosition]);
   return (
@@ -304,15 +380,35 @@ function Main12() {
             >
               <NotificationsIcon />
             </IconButton>
-            <IconButton
-              size="large"
-              edge="end"
-              aria-haspopup="true"
-              color="inherit"
-              onClick={handleClick}
-            >
-              <AccountCircle />
-            </IconButton>
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu1} sx={{ p: 0 }}>
+                  <Avatar alt="Remy Sharp" src={userImage} />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={anchorElUser2}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorElUser2)}
+                onClose={handleCloseUserMenu1}
+              >
+                {setting2.map((setting1) => (
+                  <MenuItem key={setting1} onClick={() => handleMenuOptionClick(setting1)}>
+                    <Typography textAlign="center">{setting1}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton
@@ -345,6 +441,18 @@ function Main12() {
         </DrawerHeader>
         <Divider />
         <List>
+          {['หน้ากลัก'].map((text, index) => (
+            <ListItem key={text} disablePadding>
+              <ListItemButton onClick={() => navigate(`/main`)}>
+                <ListItemIcon>
+                  <HomeIcon />
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <List>
           {['ธนาคารของคุณ'].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton onClick={() => navigate('/bank')}>
@@ -374,7 +482,7 @@ function Main12() {
               <ListItemButton onClick={() => setBookmarks([...bookmarks])}>
                 <ListItemIcon>
                   <BookmarkIcon />
-                  
+
                 </ListItemIcon>
                 <ListItemText primary={text} />
               </ListItemButton>
@@ -418,7 +526,6 @@ function Main12() {
           ))}
         </List>
       </Drawer>
-      <Bookmark bookmarks={bookmarks} />
       <div style={{ display: 'flex', margin: 10, justifyContent: 'space-between', flexWrap: 'nowrap' }}>
         <Box>
           <Tooltip title="Open fillter">
@@ -449,10 +556,13 @@ function Main12() {
             ))}
           </Menu>
         </Box>
-        
+
         <Button variant='contained' sx={{ borderRadius: 20, backgroundColor: '#D62828', color: 'white' }} onClick={handleSubmit}>สร้างธนาคาร</Button></div>
+      <Button variant='contained' sx={{ borderRadius: 20, backgroundColor: '#2196F3', color: 'white' }} onClick={handleDisplayBookmarks}>
+        {displayBookmarks ? 'แสดงทั้งหมด' : 'แสดงบุ๊คมาร์ค'}
+      </Button>
       <Grid container spacing={2}>
-        {filteredProducts.map((tab, index) => (
+        {(displayBookmarks ? bookmarks : filteredProducts).map((tab, index) => (
           <Grid key={index} xs={3}>
             <Card sx={{ maxWidth: 345, m: 1 }} >
               <CardHeader
@@ -519,9 +629,7 @@ function Main12() {
             </Card>
           </Grid>
         ))}
-
       </Grid>
-
     </div>
 
   );
