@@ -31,14 +31,14 @@ function App() {
         <Route path="registerbank" element={<RegisterBank/>}/>
         <Route path="bank" element={<Bank/>}/>
         <Route path="bankuser" element={<BankUser/>}/>
-        <Route path="openbankusers/:id" element={<OpenBankUsers/>}/>
+        <Route path="openbankusers" element={<OpenBankUsers/>}/>
         <Route path="addproduct" element={<Resource/>}/>
         <Route path="listbank" element={<ListBank/>}/>
         <Route path="listbankuser" element={<ListBankuser/>}/>
         <Route path="member" element={<Member/>}/>
-        <Route path="orderbankusers/:id" element={<OrderBankUsers/>}/>
+        <Route path="orderbankusers" element={<OrderBankUsers/>}/>
         <Route path="bookmark" element={<Bookmark/>}/>
-        <Route path="changepage/:id" element={<Changepage/>}/>
+        <Route path="changepage" element={<Changepage/>}/>
         <Route path="borroww" element={<Borroww/>}/>
         </Routes>
       </BrowserRouter>

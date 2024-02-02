@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NavBarBank from "./navBarBank";
 import { useLocation, useParams } from "react-router-dom";
 import CardMedia from '@mui/material/CardMedia';
@@ -16,6 +16,9 @@ import Stack from '@mui/material/Stack';
 import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { ReactSession } from 'react-client-session';
+import Axios from "axios";
+import Typography from '@mui/material/Typography';
 
 const ProSpan = styled('span')({
     display: 'inline-block',
@@ -54,14 +57,28 @@ function Label({ componentName, isProOnly }) {
 
 
 function Changepage() {
-    const { id } = useParams();
-    const location = useLocation();
-    const productDetails = location.state?.productDetails;
+    const id = ReactSession.get("id");
+    const [filteredProducts, setFilteredProducts] = useState([]);
     const [selectedDate, setSelectedDate] = useState("");
     const navigate = useNavigate();
 
+    useEffect(() => {
+        Axios.get(`http://localhost:5000/showProductUser1/${id}`)
+            .then((response) => {
+                console.log("ข้อมูลที่ได้รับchangpage:", response.data[0]);
+                // Assuming response.data is an array of products
+                // Choose the first product for now
+                if (response.data.length > 0) {
+                    setFilteredProducts(response.data[0]);
+                }
+            })
+            .catch((error) => {
+                console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+            })
+
+    }, []);
     const handleBackbankuser = () => {
-        navigate(-1);
+        navigate('/openbankusers');
     }
 
     const handleNextbankuser = () => {
@@ -71,27 +88,36 @@ function Changepage() {
     return (
         <div>
             <NavBarBank />
-            {productDetails ? (
+            {filteredProducts ? (
                 <>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
                         <Card sx={{ maxWidth: 345, m: 1 }} >
                             <CardMedia
                                 component="img"
                                 height="300"
-                                image={productDetails.image}
+                                image={filteredProducts.product_image}
                                 title="รูปภาพทรัพยากร"
                             />
                         </Card>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
                         <div style={{ marginTop: 50 }}>
+                            
                             <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
-                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={productDetails.title} sx={{ width: '50ch' }} />
+                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProducts.product_name} sx={{ width: '50ch' }} />
                         </div>
                         <div style={{ marginTop: 20 }}>
-                            <FormLabel component="legend" style={{ color: 'black' }}>เลือกประเภทบริการ :</FormLabel>
-                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={productDetails.ServiceType} sx={{ width: '50ch' }} />
+                            <FormLabel component="legend" style={{ color: 'black' }}>ประเภทบริการ1 :</FormLabel>
+                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProducts.product_type} sx={{ width: '50ch' }} />
+
                         </div>
+                        <div style={{ marginTop: 20 }}>
+                            <FormLabel component="legend" style={{ color: 'black' }}>ประเภทบริการ2 :</FormLabel>
+                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProducts.product_type2} sx={{ width: '50ch' }} />
+                        </div>
+                        <div style={{ marginTop: 20 }}>
+                            <FormLabel component="legend" style={{ color: 'black' }}>ประเภทบริการ3 :</FormLabel>
+                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProducts.product_type3} sx={{ width: '50ch' }} /></div>
                         <div style={{ marginTop: 20 }}>
                             <Box
                                 component="form"
@@ -101,12 +127,12 @@ function Changepage() {
                                 noValidate
                                 autoComplete="off"
                             ></Box>
-                            <FormLabel component="legend" style={{ color: 'black' }}>เลือกประเภททรัพยากรทางการเกษตร:</FormLabel>
-                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={productDetails.ResourceType} sx={{ width: '50ch' }} />
+                            <FormLabel component="legend" style={{ color: 'black' }}>ประเภททรัพยากรทางการเกษตร:</FormLabel>
+                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProducts.product_type4} sx={{ width: '50ch' }} />
 
                         </div>
                         <div style={{ marginTop: 30 }}>
-                            <FormLabel component="legend" style={{ color: 'red' }}>จำนวนทรัพยากร : {productDetails.titles}</FormLabel>
+                            <FormLabel component="legend" style={{ color: 'red' }}>จำนวนทรัพยากร : {filteredProducts.product_quantity}</FormLabel>
                             <TextField id="outlined-disabled" label="" variant="outlined" defaultValue='ใส่จำนวนที่ต้องการ' sx={{ width: '50ch' }} />
                         </div>
 
@@ -125,16 +151,14 @@ function Changepage() {
                             <FormLabel component="legend" style={{ color: 'black' }}>รายละเอียดเพิ่มเติม:</FormLabel>
                             <TextField
                                 disabled
-                                defaultValue={productDetails.Moredetails}
-                                id="outlined-multiline-static"
-                                multiline
-                                rows={4}
-                                sx={{ width: '40ch' }} />
+                                defaultValue={filteredProducts.product_details}
+                                id="outlined-disabled"
+                                sx={{ width: '50ch' }} />
                         </div>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: 40 }}>
                         <Button variant="contained" color="error" onClick={handleBackbankuser}>ย้อนกลับ</Button>
-                        <Button variant="contained" color="warning"onClick={handleNextbankuser} >ต่อไป</Button>
+                        <Button variant="contained" color="warning" onClick={handleNextbankuser} >ต่อไป</Button>
                     </div>
                 </>
             ) : (

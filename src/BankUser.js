@@ -33,6 +33,7 @@ import NavBarBank from './navBarBank';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import { useState,useEffect } from 'react';
 import Axios from "axios";
+import { ReactSession } from 'react-client-session';
 const drawerWidth = 240;
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -83,24 +84,15 @@ const DrawerHeader = styled('div')(({ theme }) => ({
     // necessary for content to be below app bar
     ...theme.mixins.toolbar,
 }));
-const products = [
-    { id: 1, title: 'จอบ', titles: 'จำนวนทรัพที่เหลืออยู่ 1 ชิ้น', image: hoe },
-    { id: 2, title: 'ปุ๋ย', titles: 'จำนวนทรัพที่เหลืออยู่ 10 กิโลกรัม', image: fertilizer },
-    { id: 3, title: 'แอบเปิ้ล', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
-    { id: 4, title: 'กล้วย', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: banana },
-    { id: 5, title: 'รถเกี่ยวข้าว', titles: 'จำนวนทรัพที่เหลืออยู่ 10 คัน', image: car },
-    { id: 6, title: 'ส้ม', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
-    { id: 7, title: 'มะม่วง', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
-    { id: 8, title: 'เสียม', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
-    { id: 9, title: 'เคียว', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
-    { id: 10, title: 'พั่ว', titles: 'จำนวนทรัพที่เหลืออยู่ 10 ผล', image: Apple },
-];
+
 export default function BankUser() {
+    const bank_name = ReactSession.get("bank_name");
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [searchInput, setSearchInput] = useState('');
     const navigate = useNavigate();
     const handleNext = (id) => {
-        navigate(`/openbankusers/${id}`);
+        ReactSession.set("id",id)
+        navigate(`/openbankusers`);
     };
     const handleNextListbankuser = () => {
         navigate("/listbankuser");
@@ -109,7 +101,7 @@ export default function BankUser() {
     //     product.title.toLowerCase().includes(searchInput.toLowerCase())
     // );
     useEffect(() => {
-        Axios.get(`http://localhost:5000/showProductUser`)
+        Axios.get(`http://localhost:5000/showProductUser/${bank_name}`)
           .then((response) => {
             console.log("ข้อมูลที่ได้รับ:", response.data);
             const fetchedProducts = response.data.map((item) => ({

@@ -64,21 +64,7 @@ import LongdoMap, { map as longdoMap } from './LongdoMap';
 import Bookmark from "./Bookmark";
 import HomeIcon from '@mui/icons-material/Home';
 import { ReactSession } from 'react-client-session';
-const products = [
-  {
-    title: 'กรุงเทพ', rating: 2.5, image: bk, rank: Ribbon2, lat:
-      13.111478, lon: 100.930375
-  },
-  { title: 'กรุงไทย', rating: 3.5, image: ktb, rank: Ribbon3, lat: 13.2, lon: 100.1 },
-  { title: 'กสิกร', rating: 4.5, image: k, rank: Ribbon3, lat: 13.3, lon: 100.2 },
-  { title: 'ไทยพานิช', rating: 1.5, image: scb, rank: Ribbon1, lat: 13.4, lon: 100.3 },
-  { title: 'กรุงศรีอยุธยา', rating: 4.5, image: BAY, rank: Ribbon4, lat: 13.5, lon: 100.4 },
-  { title: 'TTB', rating: 3.5, image: TTB, rank: Ribbon3, lat: 13.6, lon: 100.5 },
-  { title: 'thailand', rating: 2.5, image: ktb, rank: Ribbon2, lat: 13.7, lon: 100.6 },
-  { title: 'island', rating: 1.5, image: ktb, rank: Ribbon2, lat: 13.8, lon: 100.7 },
-  { title: 'ลาว', rating: 4.5, image: ktb, rank: Ribbon4, lat: 13.9, lon: 100.8 },
-  { title: 'พม่า', rating: 0.5, image: ktb, rank: Ribbon1, lat: 14, lon: 100.9 },
-];
+import { background } from "@chakra-ui/react";
 const setting2 = ['Profile', 'Logout'];
 const settings = ['เรียงด้วยแรงค์', 'เรียงด้วยระยะทาง', 'เรียงด้วยเรตติ้ง'];
 const drawerWidth = 240;
@@ -165,7 +151,7 @@ function Main12() {
   const [userImage, setUserImage] = useState(null);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [displayBookmarks, setDisplayBookmarks] = useState(false);
-console.log(username)
+  console.log(username)
 
 
   const handleBookmarkClick = (title) => {
@@ -216,12 +202,6 @@ console.log(username)
       case 'Profile':
         // Navigate to the profile page
         navigate(`/profile`);
-        break;
-      case 'Account':
-        // Handle 'Account' option
-        break;
-      case 'Dashboard':
-        // Handle 'Dashboard' option
         break;
       case 'Logout':
         // Handle 'Logout' option
@@ -288,8 +268,10 @@ console.log(username)
   const handleSubmit = () => {
     navigate(`/registerbank`)
   }
-  const handleOpenbankuser = () => {
+  const handleOpenbankuser = (title) => {
     setDisplayBookmarks(false);
+    console.log(title)
+    ReactSession.set("bank_name",title);
     navigate('/bankuser')
   }
 
@@ -588,16 +570,15 @@ console.log(username)
               <CardMedia
                 component="img"
                 height="300"
-                image={tab.image}
+                image={`image/${tab.image}`}
                 title="รูปภาพธนาคาร"
               />
-
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
                   {tab.title}
-
+                  
                 </Typography>
-
+                
                 <Box
                   sx={{
                     width: 200,
@@ -621,7 +602,7 @@ console.log(username)
                 )}
               </CardContent>
               <CardActions>
-                <Button size="medium" onClick={handleOpenbankuser}>เปิดดูทรัพยากรในธนาคาร</Button>
+                <Button size="medium" onClick={() => handleOpenbankuser(tab.title)}>เปิดดูทรัพยากรในธนาคาร</Button>
                 <Button size="medium" onClick={() => handleBookmarkClick(tab.title)}>
                   {bookmarks.some((item) => item.title === tab.title) ? 'ยกเลิกบุ๊คมาร์ค' : 'บุ๊คมาร์ค'}
                 </Button>

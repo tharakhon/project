@@ -18,6 +18,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { useEffect } from 'react';
 import Axios from "axios";
+import { ReactSession } from 'react-client-session';
 const ProSpan = styled('span')({
     display: 'inline-block',
     height: '1em',
@@ -55,8 +56,7 @@ function Label({ componentName, isProOnly }) {
 
 
 function OrderBankUsers() {
-    const { id } = useParams();
-    console.log(id)
+    const id = ReactSession.get("id");
     const [selectedDate, setSelectedDate] = useState("");
     const [filteredProduct, setFilteredProduct] = useState(null);
     const navigate = useNavigate();
@@ -106,14 +106,14 @@ function OrderBankUsers() {
                         </div>
                         <div style={{ marginTop: 20 }}>
                             <FormLabel component="legend" style={{ color: 'black' }}>ประเภทบริการ1 :</FormLabel>
-                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProduct.product_type1} sx={{ width: '50ch' }} />
-                            
+                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProduct.product_type} sx={{ width: '50ch' }} />
+
                         </div>
                         <div style={{ marginTop: 20 }}>
-                        <FormLabel component="legend" style={{ color: 'black' }}>ประเภทบริการ2 :</FormLabel>
+                            <FormLabel component="legend" style={{ color: 'black' }}>ประเภทบริการ2 :</FormLabel>
                             <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProduct.product_type2} sx={{ width: '50ch' }} />
-                            </div>
-                            <div style={{ marginTop: 20 }}>
+                        </div>
+                        <div style={{ marginTop: 20 }}>
                             <FormLabel component="legend" style={{ color: 'black' }}>ประเภทบริการ3 :</FormLabel>
                             <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProduct.product_type3} sx={{ width: '50ch' }} /></div>
                         <div style={{ marginTop: 20 }}>

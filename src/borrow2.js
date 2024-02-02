@@ -101,7 +101,7 @@ function Borroww() {
     navigate('/bank')
   };
   const handleBack = () => {
-    navigate(-1)
+    navigate('/changepage')
   };
   return (
     <div>
@@ -190,7 +190,7 @@ function Borroww() {
             sx={{ width: '50ch' }} />
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 40 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: 40 }}>
           <Button variant="contained" size="large" color="error" onClick={handleBack}> ย้อนกลับ </Button>
           <Button variant="contained" size="large" color="success" >เสร็จสิ้น</Button>
         </div>

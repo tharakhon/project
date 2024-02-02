@@ -86,7 +86,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 export default function Bank() {
   const username = ReactSession.get("username");
   const navigate = useNavigate();
-  const [resources, setResources] = useState(null);
+  const [resources, setResources] = useState([]);
   const handleNext = () => {
     navigate("/addproduct");
   }
@@ -96,25 +96,21 @@ export default function Bank() {
 
   useEffect(() => {
 
-    console.log(username);
-
     Axios.get(`http://localhost:5000/showproduct/${username}`)
       .then((response) => {
         console.log("ข้อมูลที่ได้รับ:", response.data);
-        setResources(response.data);
 
-        // const userEmails = response.data.map((user) => user.email);
-        // if (userEmails==email) {
-        //   console.log("ข้อมูลที่ได้รับ: profile.email", profile);
-        //   setflag(true);
-        // } else {
-        //   alert("ไม่พบข้อมูลผู้ใช้");
-        // }
-      })
-      .catch((error) => {
-        console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
-      });
+    if (Array.isArray(response.data)) {
+      setResources(response.data);
+    } else {
+      console.error("Invalid response format. Expected an array.");
+    }
+  })
+  .catch((error) => {
+    console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+  });
   }, [username]);
+  
   return (
     <Box sx={{ display: 'flex' }}>
       <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -218,7 +214,7 @@ export default function Bank() {
         </Search>
         <Button variant="contained" color='error' sx={{ left: 1050, bottom: 35, borderRadius: 50 }} onClick={handleNext}>เพิ่มทรัพยากร</Button>
         <Grid container spacing={2}>
-          {resources && resources.length > 0 ? (
+        {resources && resources.length > 0 ? (
             resources.map((resource) => (
               <Grid key={resource.product_id} item xs={3}>
                <Card sx={{ maxWidth: 345, m: 1 }}>
@@ -246,7 +242,6 @@ export default function Bank() {
             // Render a message when resources is empty
             <Typography variant="body1">No resources available.</Typography>
           )}
-          
         </Grid>
       </Box>
     </Box>

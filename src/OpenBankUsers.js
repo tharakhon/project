@@ -15,15 +15,15 @@ import Typography from '@mui/material/Typography';
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Axios from "axios";
+import { ReactSession } from 'react-client-session';
 
 function OpenBankUsers() {
-    
+    const id = ReactSession.get("id");
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [productDetails, setProductDetails] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-    const { id } = useParams();
-    console.log(id)
+   
     useEffect(() => {
         Axios.get(`http://localhost:5000/showProductUser1/${id}`)
         .then((response) => {
@@ -43,13 +43,15 @@ function OpenBankUsers() {
         navigate("/bankuser");
     }
     const handleMemberbankuser = () => {
-        navigate("/member");
+        // navigate("/member");
     }
-    const handleOrderbankuser = () => {
-        navigate(`/orderbankusers/${id}`);
+    const handleOrderbankuser = (id) => {
+        ReactSession.set("id",id)
+        navigate(`/orderbankusers`);
     }
-    const handleExchangePage = () => {
-        // navigate(`/changepage/${id}`, { state: { productDetails } }); // Change "/exchangePage" to the desired route
+    const handleExchangePage = (id) => {
+        ReactSession.set("id",id)
+        navigate(`/changepage`);
     };
     return (
         <div>
@@ -84,9 +86,9 @@ function OpenBankUsers() {
                         <Button variant="contained" color="error" onClick={handleBackbankuser}>ย้อนกลับ</Button>
                         <Button variant="contained" color="primary" onClick={handleMemberbankuser}>สมัครสมาชิก</Button>
                         {filteredProducts.product_type3 === 'ทรัพยากรเพื่อแลกเปลี่ยน' && (
-                            <Button variant="contained" color="secondary" onClick={handleExchangePage}>ไปหน้าแลกเปลี่ยน</Button>
+                            <Button variant="contained" color="secondary" onClick={() => handleExchangePage(id)}>ไปหน้าแลกเปลี่ยน</Button>
                         )}
-                        <Button variant="contained" color="warning" onClick={handleOrderbankuser}>ทำรายการ</Button>
+                        <Button variant="contained" color="warning" onClick={() => handleOrderbankuser(id)}>ทำรายการ</Button>
                     </div>
                 </>
             ) : (
