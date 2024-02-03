@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import NavBarBank from "./navBarBank";
-import { useLocation, useParams } from "react-router-dom";
 import CardMedia from '@mui/material/CardMedia';
 import Card from '@mui/material/Card';
 import { useNavigate } from "react-router-dom";
@@ -130,19 +129,30 @@ function OrderBankUsers() {
 
                         </div>
                         <div style={{ marginTop: 30 }}>
-                            <FormLabel component="legend" style={{ color: 'red' }}>จำนวนทรัพยากร : {filteredProduct.product_quantity}</FormLabel>
-                            <TextField id="outlined-disabled" label="" variant="outlined" defaultValue='ใส่จำนวนที่ต้องการ' sx={{ width: '50ch' }} />
+                            {filteredProduct.product_price === '' ? null : (
+                                <>
+                                    <FormLabel component="legend" style={{ color: 'black' }}>ราคาของทรัพยากร:</FormLabel>
+                                    <OutlinedInput
+                                        disabled
+                                        defaultValue={filteredProduct.product_price}
+                                        id="outlined-adornment-weight"
+                                        sx={{ width: '48ch' }}
+                                        endAdornment={<InputAdornment position="end">บาท</InputAdornment>}
+                                    />
+                                </>
+                            )}
                         </div>
-
-                        <div style={{ marginTop: 30 }}>
+                        <div >
                             <FormLabel component="legend" style={{ color: 'black' }}>รายละเอียดเพิ่มเติม:</FormLabel>
                             <TextField
                                 disabled
                                 defaultValue={filteredProduct.product_details}
                                 id="outlined-multiline-static"
-                                multiline
-                                rows={4}
-                                sx={{ width: '40ch' }} />
+                                sx={{ width: '50ch' }} />
+                        </div>
+                        <div style={{ marginTop: 30 }}>
+                            <FormLabel component="legend" style={{ color: 'red' }}>จำนวนทรัพยากร : {filteredProduct.product_quantity}</FormLabel>
+                            <TextField id="outlined-disabled" label="" variant="outlined" defaultValue='ใส่จำนวนที่ต้องการ' sx={{ width: '50ch' }} />
                         </div>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DemoContainer
@@ -167,16 +177,7 @@ function OrderBankUsers() {
                             </DemoContainer>
                         </LocalizationProvider>
 
-                        <div style={{ marginTop: 30 }}>
-                            <FormLabel component="legend" style={{ color: 'black' }}>ราคาของทรัพยากร:</FormLabel>
-                            <OutlinedInput
-                                disabled
-                                defaultValue={filteredProduct.product_price}
-                                id="outlined-adornment-weight"
-                                endAdornment={<InputAdornment position="end">บาท</InputAdornment>}
 
-                            />
-                        </div>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                         <Button variant="contained" color="error" onClick={handleBackbankuser}>ย้อนกลับ</Button>

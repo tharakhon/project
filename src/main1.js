@@ -148,7 +148,7 @@ function Main12() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPosition, setCurrentPosition] = useState(null);
   const [bookmarks, setBookmarks] = useState([]);
-  const [userImage, setUserImage] = useState(null);
+  const [userImage, setUserImage] = useState('');
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [displayBookmarks, setDisplayBookmarks] = useState(false);
   console.log(username)
@@ -177,6 +177,7 @@ function Main12() {
     );
     setFilteredProducts(filtered);
   };
+  
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -270,7 +271,6 @@ function Main12() {
   }
   const handleOpenbankuser = (title) => {
     setDisplayBookmarks(false);
-    console.log(title)
     ReactSession.set("bank_name",title);
     navigate('/bankuser')
   }
@@ -325,6 +325,15 @@ function Main12() {
     console.log(updatedProducts)
     setFilteredProducts(updatedProducts);
   }, [currentPosition]);
+  // useEffect(() => {
+  //   const storedBookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+  //   setBookmarks(storedBookmarks);
+  // }, []);
+
+  // // Save bookmarks to local storage whenever it changes
+  // useEffect(() => {
+  //   localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+  // }, [bookmarks]);
   return (
     <div >
       <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
@@ -459,48 +468,11 @@ function Main12() {
           ))}
         </List>
         <List>
-          {['บุ๊คมาร์ค'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton onClick={() => setBookmarks([...bookmarks])}>
-                <ListItemIcon>
-                  <BookmarkIcon />
-
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <List>
-          {['ตั้งค่า'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <SettingsIcon />
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <List>
           {['รีวีว'].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton>
                 <ListItemIcon>
                   <ReviewsIcon />
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <List>
-          {['ออกจากระบบ'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <LogoutIcon />
                 </ListItemIcon>
                 <ListItemText primary={text} />
               </ListItemButton>

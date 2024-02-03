@@ -61,14 +61,15 @@ function Changepage() {
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [selectedDate, setSelectedDate] = useState("");
     const navigate = useNavigate();
-
     useEffect(() => {
         Axios.get(`http://localhost:5000/showProductUser1/${id}`)
             .then((response) => {
                 console.log("ข้อมูลที่ได้รับchangpage:", response.data[0]);
                 // Assuming response.data is an array of products
                 // Choose the first product for now
+
                 if (response.data.length > 0) {
+
                     setFilteredProducts(response.data[0]);
                 }
             })
@@ -101,23 +102,28 @@ function Changepage() {
                         </Card>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+                        
                         <div style={{ marginTop: 50 }}>
-                            
-                            <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
+                            <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร : </FormLabel>
                             <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProducts.product_name} sx={{ width: '50ch' }} />
                         </div>
+
                         <div style={{ marginTop: 20 }}>
                             <FormLabel component="legend" style={{ color: 'black' }}>ประเภทบริการ1 :</FormLabel>
                             <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProducts.product_type} sx={{ width: '50ch' }} />
 
                         </div>
+
                         <div style={{ marginTop: 20 }}>
                             <FormLabel component="legend" style={{ color: 'black' }}>ประเภทบริการ2 :</FormLabel>
                             <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProducts.product_type2} sx={{ width: '50ch' }} />
                         </div>
+
                         <div style={{ marginTop: 20 }}>
                             <FormLabel component="legend" style={{ color: 'black' }}>ประเภทบริการ3 :</FormLabel>
-                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProducts.product_type3} sx={{ width: '50ch' }} /></div>
+                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProducts.product_type3} sx={{ width: '50ch' }} />
+                        </div>
+
                         <div style={{ marginTop: 20 }}>
                             <Box
                                 component="form"
@@ -131,6 +137,7 @@ function Changepage() {
                             <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProducts.product_type4} sx={{ width: '50ch' }} />
 
                         </div>
+
                         <div style={{ marginTop: 30 }}>
                             <FormLabel component="legend" style={{ color: 'red' }}>จำนวนทรัพยากร : {filteredProducts.product_quantity}</FormLabel>
                             <TextField id="outlined-disabled" label="" variant="outlined" defaultValue='ใส่จำนวนที่ต้องการ' sx={{ width: '50ch' }} />
@@ -141,8 +148,9 @@ function Changepage() {
                                 components={[
                                     'DatePicker',
                                 ]}
+
                             >
-                                <DemoItem label={<Label componentName="วันที่จะนำของมาแลกเปลี่ยน" valueType="date" />}>
+                                <DemoItem label={<Label componentName="วันที่จะนำของมาแลกเปลี่ยน" valueType="date" />} >
                                     <DatePicker />
                                 </DemoItem>
                             </DemoContainer>

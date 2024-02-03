@@ -31,7 +31,7 @@ import banana from '../src/image/กล้วย.jpg';
 import car from '../src/image/รถเกี่ยวข้าว.png';
 import NavBarBank from './navBarBank';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Axios from "axios";
 import { ReactSession } from 'react-client-session';
 const drawerWidth = 240;
@@ -91,7 +91,7 @@ export default function BankUser() {
     const [searchInput, setSearchInput] = useState('');
     const navigate = useNavigate();
     const handleNext = (id) => {
-        ReactSession.set("id",id)
+        ReactSession.set("id", id)
         navigate(`/openbankusers`);
     };
     const handleNextListbankuser = () => {
@@ -102,22 +102,25 @@ export default function BankUser() {
     // );
     useEffect(() => {
         Axios.get(`http://localhost:5000/showProductUser/${bank_name}`)
-          .then((response) => {
-            console.log("ข้อมูลที่ได้รับ:", response.data);
-            const fetchedProducts = response.data.map((item) => ({
-                id : item.product_id,
-              title: item.product_name,
-              quantity: item.product_quantity,
-              image: item.product_image // Update with the correct property name
-              // Update with the correct property name
-            }));
-            setFilteredProducts(fetchedProducts);
-          })
-          .catch((error) => {
-            console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
-          })
-    
-      }, []);
+            .then((response) => {
+                console.log("ข้อมูลที่ได้รับ:", response.data);
+                const fetchedProducts = response.data.map((item) => ({
+                    id: item.product_id,
+                    title: item.product_name,
+                    quantity: item.product_quantity,
+                    image: item.product_image // Update with the correct property name
+                    // Update with the correct property name
+                }));
+                setFilteredProducts(fetchedProducts);
+            })
+            .catch((error) => {
+                console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+            })
+
+    }, []);
+    const filteredAndSearchedProducts = filteredProducts.filter((product) =>
+        product.title.toLowerCase().includes(searchInput.toLowerCase())
+    );
     return (
         <Box sx={{ display: 'flex' }}>
             <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -212,31 +215,32 @@ export default function BankUser() {
                 </Search>
 
                 <Grid container spacing={2}>
-                    {filteredProducts.map((tab) => (
-                        <Grid item xs={3} key={tab.title}>
-                            <Card sx={{ maxWidth: 345, m: 1 }} >
-                                <CardMedia
-                                    component="img"
-                                    height="300"
-                                    image={tab.image}
-                                    title="รูปภาพทรัพยากร"
-                                />
-                                <CardContent>
-                                    <Typography gutterBottom variant="h5" component="div">
-                                        {tab.title}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        {`จำนวนทรัพยากรที่เหลืออยู่${tab.quantity}`}
-                                    </Typography>
-                                </CardContent>
-                                <CardActions>
-                                    <Button size="small" onClick={() => handleNext(tab.id)}>
-                                        ดูทรัพยากร
-                                    </Button>
-                                </CardActions>
-                            </Card>
-                        </Grid>
-                    ))}
+                    {filteredAndSearchedProducts.
+                        map((tab) => (
+                            <Grid item xs={3} key={tab.title}>
+                                <Card sx={{ maxWidth: 345, m: 1 }} >
+                                    <CardMedia
+                                        component="img"
+                                        height="300"
+                                        image={tab.image}
+                                        title="รูปภาพทรัพยากร"
+                                    />
+                                    <CardContent>
+                                        <Typography gutterBottom variant="h5" component="div">
+                                            {tab.title}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {`จำนวนทรัพยากรที่เหลืออยู่${tab.quantity}`}
+                                        </Typography>
+                                    </CardContent>
+                                    <CardActions>
+                                        <Button size="small" onClick={() => handleNext(tab.id)}>
+                                            ดูทรัพยากร
+                                        </Button>
+                                    </CardActions>
+                                </Card>
+                            </Grid>
+                        ))}
                 </Grid>
 
             </Box>

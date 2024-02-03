@@ -11,9 +11,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import { styled, useTheme , alpha} from '@mui/material/styles';
+import { styled, useTheme, alpha } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiAppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -25,15 +23,13 @@ import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreIcon from '@mui/icons-material/MoreVert';
-import Badge from '@mui/material/Badge';
 import TextsmsOutlinedIcon from '@mui/icons-material/TextsmsOutlined';
 import { useNavigate } from "react-router-dom";
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import BookmarkIcon from '@mui/icons-material/Bookmark';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ReviewsIcon from '@mui/icons-material/Reviews';
-import LogoutIcon from '@mui/icons-material/Logout';
+import HomeIcon from '@mui/icons-material/Home';
 
 const drawerWidth = 240;
 
@@ -42,19 +38,19 @@ const Search = styled('div')(({ theme }) => ({
     borderRadius: theme.shape.borderRadius,
     backgroundColor: alpha(theme.palette.common.white, 0.15),
     '&:hover': {
-      backgroundColor: alpha(theme.palette.common.white, 0.25),
+        backgroundColor: alpha(theme.palette.common.white, 0.25),
     },
     marginRight: theme.spacing(2),
     marginLeft: 0,
     width: '100%',
-    borderRadius:20,
+    borderRadius: 20,
     [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(30),
-      width: 'auto',
+        marginLeft: theme.spacing(30),
+        width: 'auto',
     },
-  }));
-  
-  const SearchIconWrapper = styled('div')(({ theme }) => ({
+}));
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
     padding: theme.spacing(0, 2),
     height: '100%',
     position: 'absolute',
@@ -62,21 +58,21 @@ const Search = styled('div')(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-  }));
-  
-  const StyledInputBase = styled(InputBase)(({ theme }) => ({
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
     '& .MuiInputBase-input': {
-      padding: theme.spacing(1, 1, 1, 0),
-      // vertical padding + font size from searchIcon
-      paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-      transition: theme.transitions.create('width'),
-      width: '100%',
-      [theme.breakpoints.up('sm')]: {
+        padding: theme.spacing(1, 1, 1, 0),
+        // vertical padding + font size from searchIcon
+        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+        transition: theme.transitions.create('width'),
         width: '100%',
-      },
+        [theme.breakpoints.up('sm')]: {
+            width: '100%',
+        },
     },
-  }));
+}));
 
 const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
@@ -115,7 +111,7 @@ function Navbar1() {
     const handleDrawerClose = () => {
         setOpen(false);
     };
-    const handleClick = () =>{
+    const handleClick = () => {
         navigate("/profile")
     }
     return (
@@ -144,14 +140,14 @@ function Navbar1() {
                     </Search>
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                        <IconButton size="large"  color="inherit">
-                        <TextsmsOutlinedIcon />
+                        <IconButton size="large" color="inherit">
+                            <TextsmsOutlinedIcon />
                         </IconButton>
                         <IconButton
                             size="large"
                             color="inherit"
                         >
-                        <NotificationsIcon />
+                            <NotificationsIcon />
                         </IconButton>
                         <IconButton
                             size="large"
@@ -194,37 +190,47 @@ function Navbar1() {
                 </DrawerHeader>
                 <Divider />
                 <List>
-                    {['ธนาคารของคุณ', 'กิจกรรมของคุณ'].map((text, index) => (
+                    {['หน้ากลัก'].map((text, index) => (
                         <ListItem key={text} disablePadding>
-                            <ListItemButton>
+                            <ListItemButton onClick={() => navigate(`/main`)}>
                                 <ListItemIcon>
-                                    {index % 2 === 0 ? <AccountBalanceIcon /> : <AccessTimeIcon /> }
+                                    <HomeIcon />
                                 </ListItemIcon>
                                 <ListItemText primary={text} />
                             </ListItemButton>
                         </ListItem>
                     ))}
                 </List>
-                <Divider />
                 <List>
-                    {['บุ๊คมาร์ค', 'ตั้งค่า'].map((text, index) => (
+                    {['ธนาคารของคุณ'].map((text, index) => (
                         <ListItem key={text} disablePadding>
-                            <ListItemButton>
+                            <ListItemButton onClick={() => navigate('/bank')}>
                                 <ListItemIcon>
-                                    {index % 2 === 0 ? <BookmarkIcon/> :<SettingsIcon/>}
+                                    <AccountBalanceIcon />
                                 </ListItemIcon>
                                 <ListItemText primary={text} />
                             </ListItemButton>
                         </ListItem>
                     ))}
                 </List>
-                <Divider />
                 <List>
-                    {['รีวีว','ออกจากระบบ'].map((text, index) => (
+                    {['กิจกรรมของคุณ'].map((text, index) => (
+                        <ListItem key={text} disablePadding>
+                            <ListItemButton onClick={() => navigate('/registerbank')}>
+                                <ListItemIcon>
+                                    <AccessTimeIcon />
+                                </ListItemIcon>
+                                <ListItemText primary={text} />
+                            </ListItemButton>
+                        </ListItem>
+                    ))}
+                </List>
+                <List>
+                    {['รีวีว'].map((text, index) => (
                         <ListItem key={text} disablePadding>
                             <ListItemButton>
                                 <ListItemIcon>
-                                {index % 2 === 0 ? <ReviewsIcon/> : <LogoutIcon />}
+                                    <ReviewsIcon />
                                 </ListItemIcon>
                                 <ListItemText primary={text} />
                             </ListItemButton>

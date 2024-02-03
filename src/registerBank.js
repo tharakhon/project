@@ -13,6 +13,7 @@ import Ribbon2 from "../src/image/ribbon2.png";
 import Ribbon3 from "../src/image/ribbon3.png";
 import Ribbon4 from "../src/image/ribbon4.png";
 import { ReactSession } from 'react-client-session';
+
 function RegisterBank() {
   const username = ReactSession.get("username");
   const [profile, setProfile] = useState();

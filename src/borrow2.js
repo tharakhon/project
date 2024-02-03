@@ -19,38 +19,38 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import NavBarBank from "./navBarBank";
 
 const ProSpan = styled('span')({
-    display: 'inline-block',
-    height: '1em',
-    width: '1em',
-    verticalAlign: 'middle',
-    marginLeft: '0.3em',
-    marginBottom: '0.08em',
-    backgroundSize: 'contain',
-    backgroundRepeat: 'no-repeat',
-    backgroundImage: 'url(https://mui.com/static/x/pro.svg)',
+  display: 'inline-block',
+  height: '1em',
+  width: '1em',
+  verticalAlign: 'middle',
+  marginLeft: '0.3em',
+  marginBottom: '0.08em',
+  backgroundSize: 'contain',
+  backgroundRepeat: 'no-repeat',
+  backgroundImage: 'url(https://mui.com/static/x/pro.svg)',
 });
 
 function Label({ componentName, isProOnly }) {
-    const content = (
-        <span>
-            <strong>{componentName}</strong>
-        </span>
+  const content = (
+    <span>
+      <strong>{componentName}</strong>
+    </span>
+  );
+
+  if (isProOnly) {
+    return (
+      <Stack direction="row" spacing={0.5} component="span">
+        <Tooltip title="Included on Pro package">
+          <a href="https://mui.com/x/introduction/licensing/#pro-plan">
+            <ProSpan />
+          </a>
+        </Tooltip>
+        {content}
+      </Stack>
     );
+  }
 
-    if (isProOnly) {
-        return (
-            <Stack direction="row" spacing={0.5} component="span">
-                <Tooltip title="Included on Pro package">
-                    <a href="https://mui.com/x/introduction/licensing/#pro-plan">
-                        <ProSpan />
-                    </a>
-                </Tooltip>
-                {content}
-            </Stack>
-        );
-    }
-
-    return content;
+  return content;
 }
 
 
@@ -105,7 +105,7 @@ function Borroww() {
   };
   return (
     <div>
-     <NavBarBank/>
+      <NavBarBank />
 
       <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
         <h1 style={textStyle}> ทรัพยากรที่คุณนำไปแลกเปลี่ยน</h1>
@@ -168,6 +168,15 @@ function Borroww() {
           <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการแลกเปลี่ยน:</FormLabel>
           <TextField sx={{ width: 435 }} defaultValue="ใส่จำนวนทรัพยากรที่คุณต้องการ"></TextField>
         </div>
+        <div style={{ marginTop: 30 }}>
+          <FormLabel component="legend" style={{ color: 'black' }}>รายละเอียดเพิ่มเติม:</FormLabel>
+          <TextField
+            id="outlined-multiline-static"
+
+            multiline
+            rows={4}
+            sx={{ width: '50ch' }} />
+        </div>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DemoContainer
             components={[
@@ -180,15 +189,7 @@ function Borroww() {
           </DemoContainer>
         </LocalizationProvider>
 
-        <div style={{ marginTop: 30 }}>
-          <FormLabel component="legend" style={{ color: 'black' }}>รายละเอียดเพิ่มเติม:</FormLabel>
-          <TextField
-            id="outlined-multiline-static"
 
-            multiline
-            rows={4}
-            sx={{ width: '50ch' }} />
-        </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: 40 }}>
           <Button variant="contained" size="large" color="error" onClick={handleBack}> ย้อนกลับ </Button>

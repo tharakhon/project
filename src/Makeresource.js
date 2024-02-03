@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -23,7 +23,24 @@ const textStyle = {
   fontSize: "50px",
   fontWeight: "normal",
 };
-
+const classey = [
+  {
+    value: 'ชิ้น',
+    label: 'ชิ้น',
+  },
+  {
+    value: 'กิโลกรัม',
+    label: 'กก.',
+  },
+  {
+    value: 'เครื่อง',
+    label: 'เครื่อง',
+  },
+  {
+    value: 'กระสอบ',
+    label: 'กระสอบ',
+  },
+];
 function Resource() {
   const navigate = useNavigate();
   const [nameProduct, setNameProduct] = useState("");
@@ -54,7 +71,7 @@ function Resource() {
   const handleCurrencyChange = (event, value) => {
     setSelectedCurrency(value);
   };
-  
+
   const handleAddData = () => {
 
     Axios.post('http://localhost:5000/bank_product', {
@@ -167,7 +184,7 @@ function Resource() {
           <FormLabel component="legend" style={{ color: "black" }}>
             เลือกประเภทบริการ
           </FormLabel>
-          <FormGroup>
+          <FormGroup sx={{ display: 'flex', flexDirection: 'column' }}>
             <FormControlLabel
               control={<Checkbox checked={resourceForRent !== ""} onChange={() => handleCheckboxChange("ทรัพยากรเพื่อเช่าหรือยืม", setResourceForRent)} />}
               label="ทรัพยากรเพื่อเช่าหรือยืม"
@@ -234,16 +251,10 @@ function Resource() {
           )}
 
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 40 }}>
-          <Button variant="contained" size="large" color="error" onClick={handleSubmit}>
-            ยกเลิก
-          </Button>
-          <Button variant="contained" size="large" color="warning" onClick={handleAddData}>
-            บันทึกข้อมูล
-          </Button>
-          <Button variant="contained" size="large" color="success" onClick={handleSubmit}>
-            เสร็จสิ้น
-          </Button>
+        <div style={{ display: "flex", justifyContent: 'space-between', marginTop: 30 }}>
+          <Button variant="contained" size="large" color="error" onClick={handleSubmit}>ยกเลิก</Button>
+          <Button variant="contained" size="large" color="warning" onClick={handleAddData}>บันทึกข้อมูล</Button>
+          <Button variant="contained" size="large" color="success" onClick={handleSubmit}>เสร็จสิ้น</Button>
         </div>
       </div>
     </div>

@@ -30,6 +30,8 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import { useEffect, useState } from 'react';
 import Axios from 'axios';
 import { ReactSession } from 'react-client-session';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 
 
 const drawerWidth = 240;
@@ -85,6 +87,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 export default function Bank() {
   const username = ReactSession.get("username");
+  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
   const [resources, setResources] = useState([]);
   const handleNext = () => {
@@ -93,6 +96,7 @@ export default function Bank() {
   const handleNextListbank = () => {
     navigate("/listbank");
   }
+  
 
   useEffect(() => {
 
@@ -100,17 +104,17 @@ export default function Bank() {
       .then((response) => {
         console.log("ข้อมูลที่ได้รับ:", response.data);
 
-    if (Array.isArray(response.data)) {
-      setResources(response.data);
-    } else {
-      console.error("Invalid response format. Expected an array.");
-    }
-  })
-  .catch((error) => {
-    console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
-  });
+        if (Array.isArray(response.data)) {
+          setResources(response.data);
+        } else {
+          console.error("Invalid response format. Expected an array.");
+        }
+      })
+      .catch((error) => {
+        console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+      });
   }, [username]);
-  
+
   return (
     <Box sx={{ display: 'flex' }}>
       <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -210,14 +214,20 @@ export default function Bank() {
           <StyledInputBase
             placeholder="Search…"
             inputProps={{ 'aria-label': 'search' }}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </Search>
         <Button variant="contained" color='error' sx={{ left: 1050, bottom: 35, borderRadius: 50 }} onClick={handleNext}>เพิ่มทรัพยากร</Button>
         <Grid container spacing={2}>
-        {resources && resources.length > 0 ? (
-            resources.map((resource) => (
+          {resources && resources.length > 0 ? (
+            resources
+            .filter((resource) =>
+              resource.product_name.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+            .map((resource) => (
               <Grid key={resource.product_id} item xs={3}>
-               <Card sx={{ maxWidth: 345, m: 1 }}>
+                <Card sx={{ maxWidth: 345, m: 1 }}>
                   <CardMedia
                     component="img"
                     height="300"

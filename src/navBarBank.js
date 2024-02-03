@@ -11,9 +11,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import { styled, useTheme , alpha} from '@mui/material/styles';
+import { styled, useTheme, alpha } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiAppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -28,10 +26,9 @@ import TextsmsOutlinedIcon from '@mui/icons-material/TextsmsOutlined';
 import { useNavigate } from "react-router-dom";
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import BookmarkIcon from '@mui/icons-material/Bookmark';
-import SettingsIcon from '@mui/icons-material/Settings';
 import ReviewsIcon from '@mui/icons-material/Reviews';
-import LogoutIcon from '@mui/icons-material/Logout';
+import HomeIcon from '@mui/icons-material/Home';
+
 
 const drawerWidth = 240;
 
@@ -72,7 +69,7 @@ function NavBarBank() {
     const handleDrawerClose = () => {
         setOpen(false);
     };
-    const handleClick = () =>{
+    const handleClick = () => {
         navigate("/profile")
     }
     return (
@@ -90,17 +87,17 @@ function NavBarBank() {
                     </IconButton>
                     <Typography><img src={logo} style={{ padding: 20, height: 80, width: 80, }} /></Typography>
                     <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, }}>AVB</p></Typography>
-                    <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, marginLeft:350}}>ธนาคาร Thailand</p></Typography>
+                    <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, marginLeft: 350 }}>ธนาคาร Thailand</p></Typography>
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                        <IconButton size="large"  color="inherit">
-                        <TextsmsOutlinedIcon />
+                        <IconButton size="large" color="inherit">
+                            <TextsmsOutlinedIcon />
                         </IconButton>
                         <IconButton
                             size="large"
                             color="inherit"
                         >
-                        <NotificationsIcon />
+                            <NotificationsIcon />
                         </IconButton>
                         <IconButton
                             size="large"
@@ -143,37 +140,47 @@ function NavBarBank() {
                 </DrawerHeader>
                 <Divider />
                 <List>
-                    {['ธนาคารของคุณ', 'กิจกรรมของคุณ'].map((text, index) => (
+                    {['หน้ากลัก'].map((text, index) => (
                         <ListItem key={text} disablePadding>
-                            <ListItemButton>
+                            <ListItemButton onClick={() => navigate(`/main`)}>
                                 <ListItemIcon>
-                                    {index % 2 === 0 ? <AccountBalanceIcon /> : <AccessTimeIcon /> }
+                                    <HomeIcon />
                                 </ListItemIcon>
                                 <ListItemText primary={text} />
                             </ListItemButton>
                         </ListItem>
                     ))}
                 </List>
-                <Divider />
                 <List>
-                    {['บุ๊คมาร์ค', 'ตั้งค่า'].map((text, index) => (
+                    {['ธนาคารของคุณ'].map((text, index) => (
                         <ListItem key={text} disablePadding>
-                            <ListItemButton>
+                            <ListItemButton onClick={() => navigate('/bank')}>
                                 <ListItemIcon>
-                                    {index % 2 === 0 ? <BookmarkIcon/> :<SettingsIcon/>}
+                                    <AccountBalanceIcon />
                                 </ListItemIcon>
                                 <ListItemText primary={text} />
                             </ListItemButton>
                         </ListItem>
                     ))}
                 </List>
-                <Divider />
                 <List>
-                    {['รีวีว','ออกจากระบบ'].map((text, index) => (
+                    {['กิจกรรมของคุณ'].map((text, index) => (
+                        <ListItem key={text} disablePadding>
+                            <ListItemButton onClick={() => navigate('/registerbank')}>
+                                <ListItemIcon>
+                                    <AccessTimeIcon />
+                                </ListItemIcon>
+                                <ListItemText primary={text} />
+                            </ListItemButton>
+                        </ListItem>
+                    ))}
+                </List>
+                <List>
+                    {['รีวีว'].map((text, index) => (
                         <ListItem key={text} disablePadding>
                             <ListItemButton>
                                 <ListItemIcon>
-                                {index % 2 === 0 ? <ReviewsIcon/> : <LogoutIcon />}
+                                    <ReviewsIcon />
                                 </ListItemIcon>
                                 <ListItemText primary={text} />
                             </ListItemButton>
