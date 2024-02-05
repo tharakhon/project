@@ -151,7 +151,9 @@ function Main12() {
   const [userImage, setUserImage] = useState('');
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [displayBookmarks, setDisplayBookmarks] = useState(false);
+  const [codename,setCodeName] = useState([]);
   console.log(username)
+  console.log('filteredProducts', filteredProducts)
 
 
   const handleBookmarkClick = (title) => {
@@ -177,7 +179,7 @@ function Main12() {
     );
     setFilteredProducts(filtered);
   };
-  
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -185,9 +187,6 @@ function Main12() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  const handleClick = () => {
-    navigate(`/profile`)
-  }
 
   const handleCloseUserMenu1 = () => {
     setAnchorElUser2(null);
@@ -202,6 +201,7 @@ function Main12() {
     switch (option) {
       case 'Profile':
         // Navigate to the profile page
+        ReactSession.set('username', username)
         navigate(`/profile`);
         break;
       case 'Logout':
@@ -250,15 +250,17 @@ function Main12() {
   useEffect(() => {
     Axios.get(`http://localhost:5000/showbank`)
       .then((response) => {
-        console.log("ข้อมูลที่ได้รับ:", response.data);
+        console.log("ข้อมูลที่ได้รับ:showbank", response.data);
         const fetchedProducts = response.data.map((item) => ({
           title: item.bank_name,
           rating: item.bank_rating,
           image: item.bank_image, // Update with the correct property name
           rank: item.bank_rank,   // Update with the correct property name
           lat: item.bank_latitude, // Update with the correct property name
-          lon: item.bank_longitude, // Update with the correct property name
+          lon: item.bank_longitude,
+          codename: item.bank_codename // Update with the correct property name
         }));
+        console.log('fetchedProducts', fetchedProducts)
         setFilteredProducts(fetchedProducts);
       })
       .catch((error) => {
@@ -271,7 +273,7 @@ function Main12() {
   }
   const handleOpenbankuser = (title) => {
     setDisplayBookmarks(false);
-    ReactSession.set("bank_name",title);
+    ReactSession.set("bank_name", title);
     navigate('/bankuser')
   }
 
@@ -285,7 +287,9 @@ function Main12() {
   const handleDisplayBookmarks = () => {
     setDisplayBookmarks(!displayBookmarks);
   };
-
+  const handleClickReviw = () => {
+    navigate('/review')
+  }
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -334,6 +338,22 @@ function Main12() {
   // useEffect(() => {
   //   localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
   // }, [bookmarks]);
+  useEffect(() => {
+    Axios.get(`http://localhost:5000/showcodename/${username}`)
+      .then((response) => {
+        console.log("ข้อมูลที่ได้รับ:showcodename", response.data[0]);
+        setCodeName(response.data[0]);
+      })
+      .catch((error) => {
+        console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+      })
+
+  }, [username]);
+  const handleToBank = () => {
+    ReactSession.set("username", username)
+    ReactSession.set("codename", codename.bank_codename);
+    navigate("/bank")
+  }
   return (
     <div >
       <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
@@ -446,7 +466,7 @@ function Main12() {
         <List>
           {['ธนาคารของคุณ'].map((text, index) => (
             <ListItem key={text} disablePadding>
-              <ListItemButton onClick={() => navigate('/bank')}>
+              <ListItemButton onClick={() => handleToBank()}>
                 <ListItemIcon>
                   <AccountBalanceIcon />
                 </ListItemIcon>
@@ -480,6 +500,8 @@ function Main12() {
           ))}
         </List>
       </Drawer>
+
+
       <div style={{ display: 'flex', margin: 10, justifyContent: 'space-between', flexWrap: 'nowrap' }}>
         <Box>
           <Tooltip title="Open fillter">
@@ -548,9 +570,9 @@ function Main12() {
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
                   {tab.title}
-                  
+
                 </Typography>
-                
+
                 <Box
                   sx={{
                     width: 200,
@@ -563,9 +585,10 @@ function Main12() {
                     value={tab.rating}
                     readOnly
                     precision={0.5}
+
                     emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
                   />
-                  <Box sx={{ ml: 2 }}>{tab.rating}</Box>
+                  <Box sx={{ ml: 2 }} onClick={handleClickReviw}>{tab.rating}</Box>
                 </Box>
                 {currentPosition && (
                   <Typography>

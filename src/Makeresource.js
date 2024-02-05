@@ -11,6 +11,7 @@ import Stack from "@mui/material";
 import NavBarBank from "./navBarBank";
 import { useNavigate, useParams } from "react-router-dom";
 import Axios from 'axios';
+import { ReactSession } from 'react-client-session';
 
 const currencies = [
   "ทรัพยากรทางการเกษตรใช้แล้วหมด เช่น ปุ๋ย ดิน",
@@ -23,25 +24,10 @@ const textStyle = {
   fontSize: "50px",
   fontWeight: "normal",
 };
-const classey = [
-  {
-    value: 'ชิ้น',
-    label: 'ชิ้น',
-  },
-  {
-    value: 'กิโลกรัม',
-    label: 'กก.',
-  },
-  {
-    value: 'เครื่อง',
-    label: 'เครื่อง',
-  },
-  {
-    value: 'กระสอบ',
-    label: 'กระสอบ',
-  },
-];
+
 function Resource() {
+  const username = ReactSession.get("username");
+  const codename = ReactSession.get("codename")
   const navigate = useNavigate();
   const [nameProduct, setNameProduct] = useState("");
   const [image, setImage] = useState(null);
@@ -54,7 +40,7 @@ function Resource() {
   const [resourceForRent, setResourceForRent] = useState("");
   const [resourceForSale, setResourceForSale] = useState("");
   const [resourceForExchange, setResourceForExchange] = useState("");
-  const [bank_codename, setCodeName] = useState('');
+
   const handleCheckboxChange = (value, setter) => {
     // Toggle the checkbox value
     setter((prevValue) => (prevValue === value ? "" : value));
@@ -75,7 +61,7 @@ function Resource() {
   const handleAddData = () => {
 
     Axios.post('http://localhost:5000/bank_product', {
-      bank_codename: bank_codename,
+      bank_codename: codename,
       product_name: nameProduct,
       product_image: image.name,
       product_type: resourceForRent,
@@ -156,17 +142,7 @@ function Resource() {
           </div>
         )}
         <div style={{ marginTop: 50 }}>
-          <FormLabel component="legend" style={{ color: "black" }}>
-            ใส่รหัสที่ของธนาคารของคุณ:
-          </FormLabel>
-          <TextField
-            id="outlined-basic"
-            label=""
-            variant="outlined"
-            sx={{ width: 400 }}
-            value={bank_codename}
-            onChange={(event) => setCodeName(event.target.value)}
-          />
+         
 
           <FormLabel component="legend" style={{ color: "black" }}>
             ชื่อทรัพยากร:

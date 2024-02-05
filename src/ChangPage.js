@@ -18,7 +18,9 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { ReactSession } from 'react-client-session';
 import Axios from "axios";
-import Typography from '@mui/material/Typography';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from "@mui/material/FormGroup";
 
 const ProSpan = styled('span')({
     display: 'inline-block',
@@ -90,7 +92,7 @@ function Changepage() {
         <div>
             <NavBarBank />
             {filteredProducts ? (
-                <>
+                <div>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
                         <Card sx={{ maxWidth: 345, m: 1 }} >
                             <CardMedia
@@ -102,27 +104,37 @@ function Changepage() {
                         </Card>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
-                        
+
                         <div style={{ marginTop: 50 }}>
-                            <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร : </FormLabel>
-                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProducts.product_name} sx={{ width: '50ch' }} />
+                            <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
+                            <TextField disabled id="outlined-disabled" label={filteredProducts.product_name} variant="outlined" sx={{ width: '50ch' }} />
                         </div>
 
-                        <div style={{ marginTop: 20 }}>
-                            <FormLabel component="legend" style={{ color: 'black' }}>ประเภทบริการ1 :</FormLabel>
-                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProducts.product_type} sx={{ width: '50ch' }} />
-
-                        </div>
-
-                        <div style={{ marginTop: 20 }}>
-                            <FormLabel component="legend" style={{ color: 'black' }}>ประเภทบริการ2 :</FormLabel>
-                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProducts.product_type2} sx={{ width: '50ch' }} />
-                        </div>
-
-                        <div style={{ marginTop: 20 }}>
-                            <FormLabel component="legend" style={{ color: 'black' }}>ประเภทบริการ3 :</FormLabel>
-                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProducts.product_type3} sx={{ width: '50ch' }} />
-                        </div>
+                        <FormControl sx={{ marginTop: 5 }} component="fieldset" variant="standard">
+                            <FormLabel component="legend" style={{ color: "black" }}>
+                                ประเภทบริการ :
+                            </FormLabel>
+                            <FormGroup sx={{ display: 'flex', flexDirection: 'column' }}>
+                                <div style={{ marginTop: 20 }}>
+                                    <FormControlLabel
+                                        control={<Checkbox disabled checked={Boolean(filteredProducts.product_type)} />}
+                                        label="ทรัพยากรเพื่อเช่าหรือยืม"
+                                    />
+                                </div>
+                                <div style={{ marginTop: 20 }}>
+                                    <FormControlLabel
+                                        control={<Checkbox disabled checked={Boolean(filteredProducts.product_type2)} />}
+                                        label="ทรัพยากรเพื่อการซื้อขาย"
+                                    />
+                                </div>
+                                <div style={{ marginTop: 20 }}>
+                                    <FormControlLabel
+                                        control={<Checkbox disabled checked={Boolean(filteredProducts.product_type3)} />}
+                                        label="ทรัพยากรเพื่อแลกเปลี่ยน"
+                                    />
+                                </div>
+                            </FormGroup>
+                        </FormControl>
 
                         <div style={{ marginTop: 20 }}>
                             <Box
@@ -134,13 +146,21 @@ function Changepage() {
                                 autoComplete="off"
                             ></Box>
                             <FormLabel component="legend" style={{ color: 'black' }}>ประเภททรัพยากรทางการเกษตร:</FormLabel>
-                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProducts.product_type4} sx={{ width: '50ch' }} />
+                            <TextField disabled id="outlined-disabled" label={filteredProducts.product_type4} variant="outlined" sx={{ width: '50ch' }} />
 
+                        </div>
+                        <div style={{ marginTop: 30 }}>
+                            <FormLabel component="legend" style={{ color: 'black' }}>รายละเอียดเพิ่มเติม:</FormLabel>
+                            <TextField
+                                disabled
+                                label={filteredProducts.product_details}
+                                id="outlined-disabled"
+                                sx={{ width: '50ch' }} />
                         </div>
 
                         <div style={{ marginTop: 30 }}>
                             <FormLabel component="legend" style={{ color: 'red' }}>จำนวนทรัพยากร : {filteredProducts.product_quantity}</FormLabel>
-                            <TextField id="outlined-disabled" label="" variant="outlined" defaultValue='ใส่จำนวนที่ต้องการ' sx={{ width: '50ch' }} />
+                            <TextField id="outlined-disabled" label="ใส่จำนวนที่ต้องการ" variant="outlined" sx={{ width: '50ch' }} />
                         </div>
 
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -155,20 +175,12 @@ function Changepage() {
                                 </DemoItem>
                             </DemoContainer>
                         </LocalizationProvider>
-                        <div style={{ marginTop: 30 }}>
-                            <FormLabel component="legend" style={{ color: 'black' }}>รายละเอียดเพิ่มเติม:</FormLabel>
-                            <TextField
-                                disabled
-                                defaultValue={filteredProducts.product_details}
-                                id="outlined-disabled"
-                                sx={{ width: '50ch' }} />
-                        </div>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: 40 }}>
+                    <div style={{ display: "flex", justifyContent: "space-around", margin: 40 }}>
                         <Button variant="contained" color="error" onClick={handleBackbankuser}>ย้อนกลับ</Button>
                         <Button variant="contained" color="warning" onClick={handleNextbankuser} >ต่อไป</Button>
                     </div>
-                </>
+                </div>
             ) : (
                 <p>Details not found.</p>
             )}

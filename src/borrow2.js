@@ -172,9 +172,6 @@ function Borroww() {
           <FormLabel component="legend" style={{ color: 'black' }}>รายละเอียดเพิ่มเติม:</FormLabel>
           <TextField
             id="outlined-multiline-static"
-
-            multiline
-            rows={4}
             sx={{ width: '50ch' }} />
         </div>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -191,7 +188,7 @@ function Borroww() {
 
 
 
-        <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: 40 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-around'  }}>
           <Button variant="contained" size="large" color="error" onClick={handleBack}> ย้อนกลับ </Button>
           <Button variant="contained" size="large" color="success" >เสร็จสิ้น</Button>
         </div>

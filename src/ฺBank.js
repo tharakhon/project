@@ -87,10 +87,16 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 export default function Bank() {
   const username = ReactSession.get("username");
+  const codename = ReactSession.get("codename");
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
   const [resources, setResources] = useState([]);
+  console.log(codename)
+  console.log(username)
   const handleNext = () => {
+    ReactSession.set("username",username)
+    ReactSession.set("codename",  codename);
+    console.log(codename)
     navigate("/addproduct");
   }
   const handleNextListbank = () => {

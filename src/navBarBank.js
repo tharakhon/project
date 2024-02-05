@@ -28,6 +28,9 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ReviewsIcon from '@mui/icons-material/Reviews';
 import HomeIcon from '@mui/icons-material/Home';
+import { ReactSession } from 'react-client-session';
+import { useEffect, useState } from 'react';
+import Axios from 'axios';
 
 
 const drawerWidth = 240;
@@ -60,7 +63,9 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 function NavBarBank() {
     const navigate = useNavigate();
-    const [open, setOpen] = React.useState(false);
+    const username = ReactSession.get("username");
+    const [open, setOpen] = useState(false);
+    const [bankname,setBankName] = useState([]);
     const theme = useTheme();
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -72,6 +77,17 @@ function NavBarBank() {
     const handleClick = () => {
         navigate("/profile")
     }
+    useEffect(() => {
+        Axios.get(`http://localhost:5000/showcodename/${username}`)
+          .then((response) => {
+            console.log("ข้อมูลที่ได้รับ:showcodename", response.data[0]);
+            setBankName(response.data[0]);
+          })
+          .catch((error) => {
+            console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+          })
+    
+      }, [username]);
     return (
         <div>
             <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
@@ -87,7 +103,7 @@ function NavBarBank() {
                     </IconButton>
                     <Typography><img src={logo} style={{ padding: 20, height: 80, width: 80, }} /></Typography>
                     <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, }}>AVB</p></Typography>
-                    <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, marginLeft: 350 }}>ธนาคาร Thailand</p></Typography>
+                    <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, marginLeft: 350 }}>{bankname.bank_name}</p></Typography>
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                         <IconButton size="large" color="inherit">

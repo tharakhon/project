@@ -17,6 +17,7 @@ import OrderBankUsers from './OrderBankUsers';
 import Bookmark from './Bookmark';
 import Changepage from './ChangPage';
 import Borroww from './borrow2';
+import Review from './review';
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
         <Route path="bookmark" element={<Bookmark/>}/>
         <Route path="changepage" element={<Changepage/>}/>
         <Route path="borroww" element={<Borroww/>}/>
+        <Route path="review" element={<Review/>}/>
         </Routes>
       </BrowserRouter>
    

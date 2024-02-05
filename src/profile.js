@@ -40,6 +40,7 @@ function Profile() {
   console.log(profile)
   console.log(username)
   const handleBack = () => {
+    ReactSession.set("username",username)
     navigate(`/main`);
   }
 
