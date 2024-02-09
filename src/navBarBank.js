@@ -103,7 +103,7 @@ function NavBarBank() {
                     </IconButton>
                     <Typography><img src={logo} style={{ padding: 20, height: 80, width: 80, }} /></Typography>
                     <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, }}>AVB</p></Typography>
-                    <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, marginLeft: 350 }}>{bankname.bank_name}</p></Typography>
+                    <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, marginLeft: 320 }}>ธนาคาร : {bankname.bank_name}</p></Typography>
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                         <IconButton size="large" color="inherit">

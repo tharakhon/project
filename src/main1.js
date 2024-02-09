@@ -52,19 +52,13 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ReviewsIcon from '@mui/icons-material/Reviews';
-import LogoutIcon from '@mui/icons-material/Logout';
-import TTB from '../src/image/TTB.jpg';
-import BAY from '../src/image/กรุงศรีอยุธยา.png';
-import Ribbon1 from '../src/image/ribbon1.png';
-import Ribbon2 from '../src/image/ribbon2.png';
-import Ribbon3 from '../src/image/ribbon3.png';
-import Ribbon4 from '../src/image/ribbon4.png';
 import CardHeader from '@mui/material/CardHeader';
 import LongdoMap, { map as longdoMap } from './LongdoMap';
 import Bookmark from "./Bookmark";
 import HomeIcon from '@mui/icons-material/Home';
 import { ReactSession } from 'react-client-session';
-import { background } from "@chakra-ui/react";
+import Popover from '@mui/material/Popover';
+
 const setting2 = ['Profile', 'Logout'];
 const settings = ['เรียงด้วยแรงค์', 'เรียงด้วยระยะทาง', 'เรียงด้วยเรตติ้ง'];
 const drawerWidth = 240;
@@ -151,7 +145,28 @@ function Main12() {
   const [userImage, setUserImage] = useState('');
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [displayBookmarks, setDisplayBookmarks] = useState(false);
-  const [codename,setCodeName] = useState([]);
+  const [codename, setCodeName] = useState([]);
+  const [anchorElPopover, setAnchorElPopover] = useState(null);
+  const [notifications, setNotifications] = useState([
+    { id: 1, content: 'Notification 1' },
+    { id: 2, content: 'Notification 2' },
+    { id: 3, content: 'Notification 3' },
+    { id: 4, content: 'Notification 4' },
+    // Add more notifications as needed
+  ]);
+
+  const handleNotificationClick = (notificationId) => {
+    // Handle click logic for the selected notification
+    console.log(`Clicked on Notification ${notificationId}`);
+  };
+
+  const handleOpenPopover = (event) => {
+    setAnchorElPopover(event.currentTarget);
+  };
+
+  const handleClosePopover = () => {
+    setAnchorElPopover(null);
+  };
   console.log(username)
   console.log('filteredProducts', filteredProducts)
 
@@ -343,6 +358,7 @@ function Main12() {
       .then((response) => {
         console.log("ข้อมูลที่ได้รับ:showcodename", response.data[0]);
         setCodeName(response.data[0]);
+
       })
       .catch((error) => {
         console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
@@ -388,9 +404,38 @@ function Main12() {
             <IconButton
               size="large"
               color="inherit"
+              onClick={handleOpenPopover}
             >
-              <NotificationsIcon />
+              <Badge color="secondary" badgeContent={notifications.length > 999 ? '999+' : notifications.length}>
+                <NotificationsIcon />
+              </Badge>
             </IconButton>
+            <Popover
+              open={Boolean(anchorElPopover)}
+              anchorEl={anchorElPopover}
+              onClose={handleClosePopover}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+            >
+              <List>
+                {/* Loop through notifications and create ListItems */}
+                {notifications.map((notification) => (
+                  <ListItem
+                    key={notification.id}
+                    button
+                    onClick={() => handleNotificationClick(notification.id)}
+                  >
+                    <ListItemText primary={notification.content} />
+                  </ListItem>
+                ))}
+              </List>
+            </Popover>
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu1} sx={{ p: 0 }}>
@@ -431,7 +476,7 @@ function Main12() {
             </IconButton>
           </Box>
         </Toolbar>
-      </AppBar>
+      </AppBar >
       <Drawer
         sx={{
           width: drawerWidth,
@@ -606,7 +651,7 @@ function Main12() {
           </Grid>
         ))}
       </Grid>
-    </div>
+    </div >
 
   );
 }

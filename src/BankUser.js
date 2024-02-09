@@ -41,6 +41,9 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import { useState, useEffect } from 'react';
 import Axios from "axios";
 import { ReactSession } from 'react-client-session';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import PropTypes from 'prop-types';
 const drawerWidth = 240;
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -91,25 +94,74 @@ const DrawerHeader = styled('div')(({ theme }) => ({
     // necessary for content to be below app bar
     ...theme.mixins.toolbar,
 }));
+function TabPanel(props) {
+    const { children, value, index, ...other } = props;
 
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`vertical-tabpanel-${index}`}
+            aria-labelledby={`vertical-tab-${index}`}
+            {...other}
+        >
+            {value === index && (
+                <Box sx={{ p: 3 }}>
+                    <Typography>{children}</Typography>
+                </Box>
+            )}
+        </div>
+    );
+}
+
+TabPanel.propTypes = {
+    children: PropTypes.node,
+    index: PropTypes.number.isRequired,
+    value: PropTypes.number.isRequired,
+};
+
+function a11yProps(index) {
+    return {
+        id: `vertical-tab-${index}`,
+        'aria-controls': `vertical-tabpanel-${index}`,
+    };
+}
 export default function BankUser() {
     const bank_name = ReactSession.get("bank_name");
+    const username = ReactSession.get("username");
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [searchInput, setSearchInput] = useState('');
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
     const theme = useTheme();
+    const [showUserInBank, setShowUserInBank] = useState([]);
+    const [value, setValue] = React.useState(0);
+
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
+    const productTypes = [
+        'ทรัพยากรทั้งหมด',
+        'ทรัพยากรเพื่อเช่าหรือยืม',
+        'ทรัพยากรเพื่อการซื้อขาย',
+        'ทรัพยากรเพื่อแลกเปลี่ยน',
+        'สมาชิกทั้งหมด',
+        'ทรัพยากรที่ทำรายการแล้ว',
+    ];
     const handleDrawerOpen = () => {
         setOpen(true);
     };
     const handleClick = () => {
+        ReactSession.set('username', username)
         navigate("/profile")
     }
     const handleDrawerClose = () => {
         setOpen(false);
     };
     const handleNext = (id) => {
-        ReactSession.set("id", id)
+        ReactSession.set('bank_name', bank_name);
+        ReactSession.set('username', username);
+        ReactSession.set("id", id);
         navigate(`/openbankusers`);
     };
     const handleNextListbankuser = () => {
@@ -126,8 +178,11 @@ export default function BankUser() {
                     id: item.product_id,
                     title: item.product_name,
                     quantity: item.product_quantity,
-                    image: item.product_image // Update with the correct property name
-                    // Update with the correct property name
+                    image: item.product_image,
+                    type: item.product_type,
+                    type2: item.product_type2,
+                    type3: item.product_type3,
+
                 }));
                 setFilteredProducts(fetchedProducts);
             })
@@ -136,8 +191,20 @@ export default function BankUser() {
             })
 
     }, []);
-    const filteredAndSearchedProducts = filteredProducts.filter((product) =>
-        product.title.toLowerCase().includes(searchInput.toLowerCase())
+    useEffect(() => {
+        Axios.get(`http://localhost:5000/showUserInBank/${bank_name}`)
+            .then((response) => {
+                console.log("ข้อมูลที่ได้รับ:showUserInBank", response.data);
+                setShowUserInBank(response.data);
+            })
+            .catch((error) => {
+                console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+            })
+
+    }, []);
+    const filteredAndSearchedProducts = filteredProducts.filter((resource) =>
+        (resource.title && resource.title.toLowerCase().includes(searchInput.toLowerCase())) &&
+        (value === 0 || (value === 1 && resource.type === 'ทรัพยากรเพื่อเช่าหรือยืม') || (value === 2 && resource.type2 === 'ทรัพยากรเพื่อการซื้อขาย') || (value === 3 && resource.type3 === 'ทรัพยากรเพื่อแลกเปลี่ยน'))
     );
     return (
         <Box sx={{ display: 'flex' }}>
@@ -155,7 +222,7 @@ export default function BankUser() {
                         </IconButton>
                         <Typography><img src={logo} style={{ padding: 20, height: 80, width: 80, }} /></Typography>
                         <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, }}>AVB</p></Typography>
-                        <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, marginLeft: 400 }}>{bank_name}</p></Typography>
+                        <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, marginLeft: 350 }}>ธนาคาร : {bank_name}</p></Typography>
                         <Box sx={{ flexGrow: 1 }} />
                         <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                             <IconButton size="large" color="inherit">
@@ -279,101 +346,138 @@ export default function BankUser() {
                             </ListItem>
                         ))}
                     </List>
-                    <Divider />
-                    <List>
-                        {['ทรัพยากรทั้งหมด'].map((text, index) => (
-                            <ListItem key={text} disablePadding>
-                                <ListItemButton>
-                                    <ListItemText primary={text} />
-                                </ListItemButton>
-                            </ListItem>
+                    <Tabs
+                        orientation="vertical"
+                        variant="scrollable"
+                        value={value}
+                        onChange={handleChange}
+                        aria-label="Vertical tabs example"
+                        sx={{ borderColor: 'divider', width: 200 }}
+                    >
+                        {productTypes.map((productType, index) => (
+                            <Tab label={productType} {...a11yProps(index)} key={index} />
                         ))}
-                    </List>
-                    <Divider />
-                    <List>
-                        {['เช่าหรือยืมทรัพยากร'].map((text, index) => (
-                            <ListItem key={text} disablePadding>
-                                <ListItemButton>
-                                    <ListItemText primary={text} />
-                                </ListItemButton>
-                            </ListItem>
-                        ))}
-                    </List>
-                    <Divider />
-                    <List>
-                        {['ซื้อทรัพยากร'].map((text, index) => (
-                            <ListItem key={text} disablePadding>
-                                <ListItemButton>
-                                    <ListItemText primary={text} />
-                                </ListItemButton>
-                            </ListItem>
-                        ))}
-                    </List>
-                    <Divider />
-                    <List>
-                        {['แลกเปลี่ยนทรัพยากร'].map((text, index) => (
-                            <ListItem key={text} disablePadding>
-                                <ListItemButton>
-                                    <ListItemText primary={text} />
-                                </ListItemButton>
-                            </ListItem>
-                        ))}
-                    </List>
-                    <Divider />
-                    <List>
-                        {['สมาชิก'].map((text, index) => (
-                            <ListItem key={text} disablePadding>
-                                <ListItemButton>
-                                    <ListItemText primary={text} />
-                                </ListItemButton>
-                            </ListItem>
-                        ))}
-                    </List>
+                    </Tabs>
                 </Box>
             </Drawer>
+
             <Box component="main" sx={{ flexGrow: 1, p: 3, marginTop: 8 }}>
                 <DrawerHeader />
-                <Search sx={{ m: 2 }}>
-                    <SearchIconWrapper>
-                        <SearchIcon />
-                    </SearchIconWrapper>
-                    <StyledInputBase
-                        placeholder="Search…"
-                        inputProps={{ 'aria-label': 'search' }}
-                        value={searchInput}
-                        onChange={(e) => setSearchInput(e.target.value)}
-                    />
-                </Search>
 
-                <Grid container spacing={2}>
-                    {filteredAndSearchedProducts.
-                        map((tab) => (
-                            <Grid item xs={3} key={tab.title}>
-                                <Card sx={{ maxWidth: 345, m: 1 }} >
+                {value !== 4 && (
+                    <Search sx={{ m: 2 }}>
+                        <SearchIconWrapper>
+                            <SearchIcon />
+                        </SearchIconWrapper>
+                        <StyledInputBase
+                            placeholder="Search…"
+                            inputProps={{ 'aria-label': 'search' }}
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
+                        />
+                    </Search>
+                )}
+                {value === 4 && showUserInBank && (
+                    <Grid container spacing={2}>
+                        {showUserInBank.map((user) => (
+                            <Grid item xs={12} key={user.id}>
+                                <Card sx={{ maxWidth: 345, m: 1 }}>
                                     <CardMedia
                                         component="img"
                                         height="300"
-                                        image={tab.image}
+                                        image={user.image}
                                         title="รูปภาพทรัพยากร"
                                     />
                                     <CardContent>
                                         <Typography gutterBottom variant="h5" component="div">
-                                            {tab.title}
+                                            {user.fullname}
                                         </Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            {`จำนวนทรัพยากรที่เหลืออยู่${tab.quantity}`}
+                                        <Typography variant="h6" color="text.secondary">
+                                            {`แรงค์ ${user.rank_name}`}
                                         </Typography>
                                     </CardContent>
-                                    <CardActions>
-                                        <Button size="small" onClick={() => handleNext(tab.id)}>
-                                            ดูทรัพยากร
-                                        </Button>
-                                    </CardActions>
                                 </Card>
                             </Grid>
                         ))}
-                </Grid>
-
+                    </Grid>
+                )}
+                {productTypes.map((productType, index) => (
+                    <TabPanel value={value} index={index} key={index}>
+                        <Grid container spacing={2}>
+                            {value === 0 ? (
+                                // Display all resources
+                                filteredAndSearchedProducts.map((resource) => (
+                                    <Grid item xs={3} key={resource.title}>
+                                        <Card sx={{ maxWidth: 345, m: 1 }} >
+                                            <CardMedia
+                                                component="img"
+                                                height="300"
+                                                image={resource.image}
+                                                title="รูปภาพทรัพยากร"
+                                            />
+                                            <CardContent>
+                                                <Typography gutterBottom variant="h5" component="div">
+                                                    {resource.title}
+                                                </Typography>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    {`จำนวนทรัพยากรที่เหลืออยู่${resource.quantity}`}
+                                                </Typography>
+                                            </CardContent>
+                                            <CardActions>
+                                                <Button size="small" onClick={() => handleNext(resource.id)}>
+                                                    ดูทรัพยากร
+                                                </Button>
+                                            </CardActions>
+                                        </Card>
+                                    </Grid>
+                                ))
+                            ) : (
+                                // Display resources based on tab selection
+                                filteredAndSearchedProducts.
+                                    filter((resource) => {
+                                        if (value === 1) {
+                                            return resource.type === 'ทรัพยากรเพื่อเช่าหรือยืม';
+                                        } else if (value === 2) {
+                                            return resource.type2 === 'ทรัพยากรเพื่อการซื้อขาย';
+                                        } else if (value === 3) {
+                                            return resource.type3 === 'ทรัพยากรเพื่อแลกเปลี่ยน';
+                                        } else if (value === 4) {
+                                            // Handle 'สมาชิกทั้งหมด' based on your actual data structure
+                                            return true; // Placeholder, adjust as needed
+                                        } else if (value === 5) {
+                                            return resource.transactions.length > 0;
+                                        }
+                                        return false;
+                                    })
+                                    .map((resource) => (
+                                        <Grid item xs={3} key={resource.title}>
+                                            <Card sx={{ maxWidth: 345, m: 1 }} >
+                                                <CardMedia
+                                                    component="img"
+                                                    height="300"
+                                                    image={resource.image}
+                                                    title="รูปภาพทรัพยากร"
+                                                />
+                                                <CardContent>
+                                                    <Typography gutterBottom variant="h5" component="div">
+                                                        {resource.title}
+                                                    </Typography>
+                                                    <Typography variant="body2" color="text.secondary">
+                                                        {`จำนวนทรัพยากรที่เหลืออยู่${resource.quantity}`}
+                                                    </Typography>
+                                                </CardContent>
+                                                <CardActions>
+                                                    <Button size="small" onClick={() => handleNext(resource.id)}>
+                                                        ดูทรัพยากร
+                                                    </Button>
+                                                </CardActions>
+                                            </Card>
+                                        </Grid>
+                                    ))
+                            )}
+                        </Grid>
+                    </TabPanel>
+                ))}
             </Box>
         </Box>
     );

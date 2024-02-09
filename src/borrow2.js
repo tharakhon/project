@@ -12,11 +12,45 @@ import Stack from '@mui/material/Stack';
 import { useNavigate } from "react-router-dom";
 import Navbar1 from "./NavBar1";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { styled } from '@mui/material/styles';
 import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import NavBarBank from "./navBarBank";
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import MoreIcon from '@mui/icons-material/MoreVert';
+import TextsmsOutlinedIcon from '@mui/icons-material/TextsmsOutlined';
+import logo from "../src/image/Logo.png";
+import { styled, useTheme, alpha } from '@mui/material/styles';
+import InputBase from '@mui/material/InputBase';
+import Divider from '@mui/material/Divider';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import List from '@mui/material/List';
+import HomeIcon from '@mui/icons-material/Home';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import ReviewsIcon from '@mui/icons-material/Reviews';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import Typography from '@mui/material/Typography';
+import Drawer from '@mui/material/Drawer';
+import { ReactSession } from 'react-client-session';
+const drawerWidth = 240;
+
+const DrawerHeader = styled('div')(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+}));
 
 const ProSpan = styled('span')({
   display: 'inline-block',
@@ -77,6 +111,21 @@ function Borroww() {
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [selectedDate, setSelectedDate] = useState("");
+  const bank_name = ReactSession.get("bank_name");
+  const [open, setOpen] = useState(false);
+  const username = ReactSession.get("username");
+  const theme = useTheme();
+  const handleDrawerOpen = () => {
+      setOpen(true);
+  };
+  const handleClick = () => {
+      ReactSession.set('username', username)
+      navigate("/profile")
+  }
+  const handleDrawerClose = () => {
+      setOpen(false);
+  };
+
 
   const handleImageChange = (event) => {
     const selectedImage = event.target.files[0];
@@ -98,14 +147,131 @@ function Borroww() {
     document.getElementById("image-upload").click();
   };
   const handleSubmit = () => {
-    navigate('/bank')
+    ReactSession.set('username', username)
+    ReactSession.set('bank_name', bank_name);
+    navigate('/bankuser')
   };
   const handleBack = () => {
+    ReactSession.set('bank_name', bank_name);
+    ReactSession.set('username', username);
     navigate('/changepage')
   };
   return (
     <div>
-      <NavBarBank />
+      <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            edge="start"
+            sx={{ mr: 2, ...(open && { display: 'none' }) }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography><img src={logo} style={{ padding: 20, height: 80, width: 80, }} /></Typography>
+          <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, }}>AVB</p></Typography>
+          <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, marginLeft: 360 }}>ธนาคาร : {bank_name}</p></Typography>
+          <Box sx={{ flexGrow: 1 }} />
+          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+            <IconButton size="large" color="inherit">
+              <TextsmsOutlinedIcon />
+            </IconButton>
+            <IconButton
+              size="large"
+              color="inherit"
+            >
+              <NotificationsIcon />
+            </IconButton>
+            <IconButton
+              size="large"
+              edge="end"
+              aria-haspopup="true"
+              color="inherit"
+              onClick={handleClick}
+            >
+              <AccountCircle />
+            </IconButton>
+          </Box>
+          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+            <IconButton
+              size="large"
+              aria-haspopup="true"
+              color="inherit"
+            >
+              <MoreIcon />
+            </IconButton>
+          </Box>
+        </Toolbar>
+      </AppBar>
+      <Drawer
+        sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            boxSizing: 'border-box',
+          },
+        }}
+        variant="persistent"
+        anchor="left"
+        open={open}
+      >
+        <DrawerHeader>
+          <IconButton onClick={handleDrawerClose}>
+            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+          </IconButton>
+        </DrawerHeader>
+        <Divider />
+        <List>
+          {['หน้ากลัก'].map((text, index) => (
+            <ListItem key={text} disablePadding>
+              <ListItemButton onClick={() => navigate(`/main`)}>
+                <ListItemIcon>
+                  <HomeIcon />
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <List>
+          {['ธนาคารของคุณ'].map((text, index) => (
+            <ListItem key={text} disablePadding>
+              <ListItemButton onClick={() => navigate('/bank')}>
+                <ListItemIcon>
+                  <AccountBalanceIcon />
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <List>
+          {['กิจกรรมของคุณ'].map((text, index) => (
+            <ListItem key={text} disablePadding>
+              <ListItemButton >
+                <ListItemIcon>
+                  <AccessTimeIcon />
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <List>
+          {['รีวีว'].map((text, index) => (
+            <ListItem key={text} disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                  <ReviewsIcon />
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Drawer>
 
       <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
         <h1 style={textStyle}> ทรัพยากรที่คุณนำไปแลกเปลี่ยน</h1>
@@ -166,7 +332,7 @@ function Borroww() {
         </div>
         <div style={{ marginTop: 30 }}>
           <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการแลกเปลี่ยน:</FormLabel>
-          <TextField sx={{ width: 435 }} defaultValue="ใส่จำนวนทรัพยากรที่คุณต้องการ"></TextField>
+          <TextField sx={{ width: 435 }} label="ใส่จำนวนทรัพยากรที่คุณต้องการ" ></TextField>
         </div>
         <div style={{ marginTop: 30 }}>
           <FormLabel component="legend" style={{ color: 'black' }}>รายละเอียดเพิ่มเติม:</FormLabel>
@@ -185,15 +351,11 @@ function Borroww() {
             </DemoItem>
           </DemoContainer>
         </LocalizationProvider>
-
-
-
-        <div style={{ display: 'flex', justifyContent: 'space-around'  }}>
-          <Button variant="contained" size="large" color="error" onClick={handleBack}> ย้อนกลับ </Button>
-          <Button variant="contained" size="large" color="success" >เสร็จสิ้น</Button>
-        </div>
       </div>
-
+      <div style={{ display: 'flex', justifyContent: 'space-around', margin: 40 }}>
+        <Button variant="contained" size="large" color="error" onClick={handleBack}> ย้อนกลับ </Button>
+        <Button variant="contained" size="large" color="success" onClick={handleSubmit}>เสร็จสิ้น</Button>
+      </div>
 
     </div>
   );

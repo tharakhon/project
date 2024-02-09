@@ -1,16 +1,11 @@
 import React from "react";
-import NavBarBank from "./navBarBank";
 import { useParams } from "react-router-dom";
-import Apple from '../src/image/a.jpg';
-import hoe from '../src/image/จอบ.jpg';
-import fertilizer from '../src/image/ปุ๋ย.png';
-import banana from '../src/image/กล้วย.jpg';
-import car from '../src/image/รถเกี่ยวข้าว.png';
+import Drawer from '@mui/material/Drawer';
 import { useState, useEffect } from "react";
 import CardMedia from '@mui/material/CardMedia';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Typography from '@mui/material/Typography';
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -23,14 +18,48 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormGroup from "@mui/material/FormGroup";
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import MoreIcon from '@mui/icons-material/MoreVert';
+import TextsmsOutlinedIcon from '@mui/icons-material/TextsmsOutlined';
+import logo from "../src/image/Logo.png";
+import { styled, useTheme, alpha } from '@mui/material/styles';
+import InputBase from '@mui/material/InputBase';
+import Divider from '@mui/material/Divider';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import List from '@mui/material/List';
+import HomeIcon from '@mui/icons-material/Home';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import ReviewsIcon from '@mui/icons-material/Reviews';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+const drawerWidth = 240;
 
+const DrawerHeader = styled('div')(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+}));
 
 function OpenBankUsers() {
     const id = ReactSession.get("id");
+    const bank_name = ReactSession.get("bank_name");
+    const [open, setOpen] = useState(false);
+    const username = ReactSession.get("username");
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [productDetails, setProductDetails] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    const theme = useTheme();
 
     useEffect(() => {
         Axios.get(`http://localhost:5000/showProductUser1/${id}`)
@@ -51,19 +80,197 @@ function OpenBankUsers() {
         navigate("/bankuser");
     }
     const handleMemberbankuser = () => {
-        // navigate("/member");
+        Axios.post('http://localhost:5000/RegisterUserForBank', {
+            userBank_email: username,
+            userBank_bankName: bank_name,
+            // ... other data
+        })
+            .then((response) => {
+                console.log(response.data);
+                alert("สมัครเป็นสมาชิกเสร็จสิ้น")
+                // Redirect to the bank page on successful registration
+
+            })
+            .catch((error) => {
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    console.error("Server Error:", error.response.data);
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    console.error("No Response from Server");
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.error("Error:", error.message);
+                }
+            });
     }
-    const handleOrderbankuser = (id) => {
-        ReactSession.set("id", id)
-        navigate(`/orderbankusers`);
+    const handleOrderbankuser = async (id) => {
+        // try {
+        //     const response = await Axios.get(`http://localhost:5000/CheckUserInBank/${username}`);
+        //     console.log("ข้อมูลที่ได้รับ:", response.data);
+        //     const isBankMember = response.data?.userBank_email;
+        //     const userBankName = response.data?.userBank_name;
+
+        //     if (isBankMember && userBankName===bank_name) {
+                ReactSession.set('bank_name', bank_name);
+                ReactSession.set('username', username);
+                ReactSession.set("id", id);
+                navigate(`/orderbankusers`);
+        //     } else {
+        //         alert("คุณไม่ได้เป็นสมาชิกของธนาคาร");
+        //     }
+        // } catch (error) {
+        //     console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+        // }
+    };
+    const handleExchangePage = async (id) => {
+        // try {
+        //     const response = await Axios.get(`http://localhost:5000/CheckUserInBank/${username}`);
+        //     console.log("ข้อมูลที่ได้รับ:CheckUserInBank", response.data);
+        //     const isBankMember = response.data.userBank_email;
+        //     const userBankName = response.data.userBank_name;
+
+
+        //     if (isBankMember && userBankName) {
+                ReactSession.set('bank_name', bank_name);
+                ReactSession.set('username', username);
+                ReactSession.set("id", id)
+                navigate(`/changepage`);
+        //     } else {
+        //         alert("คุณไม่ได้เป็นสมาชิกของธนาคาร");
+        //     }
+        // } catch (error) {
+        //     console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+        // }
+
+    };
+    const handleDrawerOpen = () => {
+        setOpen(true);
+    };
+    const handleClick = () => {
+        ReactSession.set('username', username)
+        navigate("/profile")
     }
-    const handleExchangePage = (id) => {
-        ReactSession.set("id", id)
-        navigate(`/changepage`);
+    const handleDrawerClose = () => {
+        setOpen(false);
     };
     return (
         <div>
-            <NavBarBank />
+            <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
+                <Toolbar>
+                    <IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        onClick={handleDrawerOpen}
+                        edge="start"
+                        sx={{ mr: 2, ...(open && { display: 'none' }) }}
+                    >
+                        <MenuIcon />
+                    </IconButton>
+                    <Typography><img src={logo} style={{ padding: 20, height: 80, width: 80, }} /></Typography>
+                    <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, }}>AVB</p></Typography>
+                    <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, marginLeft: 360 }}>ธนาคาร : {bank_name}</p></Typography>
+                    <Box sx={{ flexGrow: 1 }} />
+                    <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                        <IconButton size="large" color="inherit">
+                            <TextsmsOutlinedIcon />
+                        </IconButton>
+                        <IconButton
+                            size="large"
+                            color="inherit"
+                        >
+                            <NotificationsIcon />
+                        </IconButton>
+                        <IconButton
+                            size="large"
+                            edge="end"
+                            aria-haspopup="true"
+                            color="inherit"
+                            onClick={handleClick}
+                        >
+                            <AccountCircle />
+                        </IconButton>
+                    </Box>
+                    <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+                        <IconButton
+                            size="large"
+                            aria-haspopup="true"
+                            color="inherit"
+                        >
+                            <MoreIcon />
+                        </IconButton>
+                    </Box>
+                </Toolbar>
+            </AppBar>
+            <Drawer
+                sx={{
+                    width: drawerWidth,
+                    flexShrink: 0,
+                    '& .MuiDrawer-paper': {
+                        width: drawerWidth,
+                        boxSizing: 'border-box',
+                    },
+                }}
+                variant="persistent"
+                anchor="left"
+                open={open}
+            >
+                <DrawerHeader>
+                    <IconButton onClick={handleDrawerClose}>
+                        {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                    </IconButton>
+                </DrawerHeader>
+                <Divider />
+                <List>
+                    {['หน้ากลัก'].map((text, index) => (
+                        <ListItem key={text} disablePadding>
+                            <ListItemButton onClick={() => navigate(`/main`)}>
+                                <ListItemIcon>
+                                    <HomeIcon />
+                                </ListItemIcon>
+                                <ListItemText primary={text} />
+                            </ListItemButton>
+                        </ListItem>
+                    ))}
+                </List>
+                <List>
+                    {['ธนาคารของคุณ'].map((text, index) => (
+                        <ListItem key={text} disablePadding>
+                            <ListItemButton onClick={() => navigate('/bank')}>
+                                <ListItemIcon>
+                                    <AccountBalanceIcon />
+                                </ListItemIcon>
+                                <ListItemText primary={text} />
+                            </ListItemButton>
+                        </ListItem>
+                    ))}
+                </List>
+                <List>
+                    {['กิจกรรมของคุณ'].map((text, index) => (
+                        <ListItem key={text} disablePadding>
+                            <ListItemButton >
+                                <ListItemIcon>
+                                    <AccessTimeIcon />
+                                </ListItemIcon>
+                                <ListItemText primary={text} />
+                            </ListItemButton>
+                        </ListItem>
+                    ))}
+                </List>
+                <List>
+                    {['รีวีว'].map((text, index) => (
+                        <ListItem key={text} disablePadding>
+                            <ListItemButton>
+                                <ListItemIcon>
+                                    <ReviewsIcon />
+                                </ListItemIcon>
+                                <ListItemText primary={text} />
+                            </ListItemButton>
+                        </ListItem>
+                    ))}
+                </List>
+            </Drawer>
             {filteredProducts ? (
                 <>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>

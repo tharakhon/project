@@ -227,12 +227,13 @@ function Resource() {
           )}
 
         </div>
-        <div style={{ display: "flex", justifyContent: 'space-between', marginTop: 30 }}>
+        
+      </div>
+      <div style={{ display: "flex", justifyContent: 'space-around', marginTop: 30 }}>
           <Button variant="contained" size="large" color="error" onClick={handleSubmit}>ยกเลิก</Button>
           <Button variant="contained" size="large" color="warning" onClick={handleAddData}>บันทึกข้อมูล</Button>
           <Button variant="contained" size="large" color="success" onClick={handleSubmit}>เสร็จสิ้น</Button>
         </div>
-      </div>
     </div>
   );
 }
