@@ -145,8 +145,7 @@ export default function BankUser() {
         'ทรัพยากรเพื่อเช่าหรือยืม',
         'ทรัพยากรเพื่อการซื้อขาย',
         'ทรัพยากรเพื่อแลกเปลี่ยน',
-        'สมาชิกทั้งหมด',
-        'ทรัพยากรที่ทำรายการแล้ว',
+
     ];
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -182,6 +181,7 @@ export default function BankUser() {
                     type: item.product_type,
                     type2: item.product_type2,
                     type3: item.product_type3,
+                    unit: item.product_unit
 
                 }));
                 setFilteredProducts(fetchedProducts);
@@ -191,17 +191,7 @@ export default function BankUser() {
             })
 
     }, []);
-    useEffect(() => {
-        Axios.get(`http://localhost:5000/showUserInBank/${bank_name}`)
-            .then((response) => {
-                console.log("ข้อมูลที่ได้รับ:showUserInBank", response.data);
-                setShowUserInBank(response.data);
-            })
-            .catch((error) => {
-                console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
-            })
 
-    }, []);
     const filteredAndSearchedProducts = filteredProducts.filter((resource) =>
         (resource.title && resource.title.toLowerCase().includes(searchInput.toLowerCase())) &&
         (value === 0 || (value === 1 && resource.type === 'ทรัพยากรเพื่อเช่าหรือยืม') || (value === 2 && resource.type2 === 'ทรัพยากรเพื่อการซื้อขาย') || (value === 3 && resource.type3 === 'ทรัพยากรเพื่อแลกเปลี่ยน'))
@@ -363,56 +353,30 @@ export default function BankUser() {
 
             <Box component="main" sx={{ flexGrow: 1, p: 3, marginTop: 8 }}>
                 <DrawerHeader />
+                <Search sx={{ m: 2 }}>
+                    <SearchIconWrapper>
+                        <SearchIcon />
+                    </SearchIconWrapper>
+                    <StyledInputBase
+                        placeholder="Search…"
+                        inputProps={{ 'aria-label': 'search' }}
+                        value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)}
+                    />
+                </Search>
 
-                {value !== 4 && (
-                    <Search sx={{ m: 2 }}>
-                        <SearchIconWrapper>
-                            <SearchIcon />
-                        </SearchIconWrapper>
-                        <StyledInputBase
-                            placeholder="Search…"
-                            inputProps={{ 'aria-label': 'search' }}
-                            value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)}
-                        />
-                    </Search>
-                )}
-                {value === 4 && showUserInBank && (
-                    <Grid container spacing={2}>
-                        {showUserInBank.map((user) => (
-                            <Grid item xs={12} key={user.id}>
-                                <Card sx={{ maxWidth: 345, m: 1 }}>
-                                    <CardMedia
-                                        component="img"
-                                        height="300"
-                                        image={user.image}
-                                        title="รูปภาพทรัพยากร"
-                                    />
-                                    <CardContent>
-                                        <Typography gutterBottom variant="h5" component="div">
-                                            {user.fullname}
-                                        </Typography>
-                                        <Typography variant="h6" color="text.secondary">
-                                            {`แรงค์ ${user.rank_name}`}
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
-                            </Grid>
-                        ))}
-                    </Grid>
-                )}
                 {productTypes.map((productType, index) => (
                     <TabPanel value={value} index={index} key={index}>
                         <Grid container spacing={2}>
                             {value === 0 ? (
                                 // Display all resources
                                 filteredAndSearchedProducts.map((resource) => (
-                                    <Grid item xs={3} key={resource.title}>
+                                    <Grid item xs={3.75} key={resource.title}>
                                         <Card sx={{ maxWidth: 345, m: 1 }} >
                                             <CardMedia
                                                 component="img"
                                                 height="300"
-                                                image={resource.image}
+                                                image={`http://localhost:5000/image/${resource.image}`}
                                                 title="รูปภาพทรัพยากร"
                                             />
                                             <CardContent>
@@ -420,7 +384,7 @@ export default function BankUser() {
                                                     {resource.title}
                                                 </Typography>
                                                 <Typography variant="body2" color="text.secondary">
-                                                    {`จำนวนทรัพยากรที่เหลืออยู่${resource.quantity}`}
+                                                    {`จำนวนทรัพยากรที่เหลืออยู่ : ${resource.quantity} ${resource.unit}`}
                                                 </Typography>
                                             </CardContent>
                                             <CardActions>
@@ -441,21 +405,16 @@ export default function BankUser() {
                                             return resource.type2 === 'ทรัพยากรเพื่อการซื้อขาย';
                                         } else if (value === 3) {
                                             return resource.type3 === 'ทรัพยากรเพื่อแลกเปลี่ยน';
-                                        } else if (value === 4) {
-                                            // Handle 'สมาชิกทั้งหมด' based on your actual data structure
-                                            return true; // Placeholder, adjust as needed
-                                        } else if (value === 5) {
-                                            return resource.transactions.length > 0;
                                         }
                                         return false;
                                     })
                                     .map((resource) => (
-                                        <Grid item xs={3} key={resource.title}>
+                                        <Grid item xs={3.75} key={resource.title}>
                                             <Card sx={{ maxWidth: 345, m: 1 }} >
                                                 <CardMedia
                                                     component="img"
                                                     height="300"
-                                                    image={resource.image}
+                                                    image={`http://localhost:5000/image/${resource.image}`}
                                                     title="รูปภาพทรัพยากร"
                                                 />
                                                 <CardContent>
@@ -463,7 +422,7 @@ export default function BankUser() {
                                                         {resource.title}
                                                     </Typography>
                                                     <Typography variant="body2" color="text.secondary">
-                                                        {`จำนวนทรัพยากรที่เหลืออยู่${resource.quantity}`}
+                                                        {`จำนวนทรัพยากรที่เหลืออยู่ : ${resource.quantity} ${resource.unit}`}
                                                     </Typography>
                                                 </CardContent>
                                                 <CardActions>

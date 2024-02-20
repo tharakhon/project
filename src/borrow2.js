@@ -41,6 +41,8 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Typography from '@mui/material/Typography';
 import Drawer from '@mui/material/Drawer';
 import { ReactSession } from 'react-client-session';
+import Axios from 'axios';
+import Select from '@mui/material/Select';
 const drawerWidth = 240;
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -101,20 +103,49 @@ const textStyle = {
   fontSize: '50px',
   fontWeight: 'normal',
 };
+const UnitDropdown = ({ selectedUnit, handleUnitChange }) => {
+  const units = ['กรัม', 'กิโลกรัม', 'ชิ้น', 'คัน', 'ถุง', 'กระสอบ','ลูก','หวี']; // เพิ่มหน่วยตามที่ต้องการ
 
+  return (
+    <FormControl fullWidth>
+      <Select
+        labelId="unit-dropdown-label"
+        id="unit-dropdown"
+        value={selectedUnit}
+        onChange={handleUnitChange}
+      >
+        {units.map((unit) => (
+          <MenuItem key={unit} value={unit}>
+            {unit}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  );
+};
 function Borroww() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState();
-  const [email, setEmail] = useState();
-  const [tel, setTel] = useState("");
+  const [quantity, setQuantity] = useState();
+  const [selectedCurrency, setSelectedCurrency] = useState("");
+  const [additionalDetails, setAdditionalDetails] = useState("");
   const [flag, setflag] = useState(false);
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState(null);
   const bank_name = ReactSession.get("bank_name");
   const [open, setOpen] = useState(false);
   const username = ReactSession.get("username");
+  const [isDataSaved, setIsDataSaved] = useState(false);
   const theme = useTheme();
+  const [selectedUnit, setSelectedUnit] = useState('กรัม');
+  console.log(selectedUnit)
+
+  const handleUnitChange = (event) => {
+    setSelectedUnit(event.target.value);
+  };
+
+ 
   const handleDrawerOpen = () => {
       setOpen(true);
   };
@@ -125,7 +156,9 @@ function Borroww() {
   const handleDrawerClose = () => {
       setOpen(false);
   };
-
+  const handleCurrencyChange = (event, value) => {
+    setSelectedCurrency(value);
+  };
 
   const handleImageChange = (event) => {
     const selectedImage = event.target.files[0];
@@ -156,6 +189,41 @@ function Borroww() {
     ReactSession.set('username', username);
     navigate('/changepage')
   };
+
+  const handleAddData = () => {
+    Axios.post('http://localhost:5000/userbank_exchange', {
+      bank_name : bank_name,
+       userbank_email : username, 
+       userbank_productname : profile,
+       userbank_productimage : image.name,
+       userbank_producttype1 :selectedCurrency.label,
+       userbank_productquantity : quantity,
+       userbank_unit:selectedUnit,
+       userbank_productdetails : additionalDetails,
+       userbank_productdate : selectedDate,
+
+      // ... other data
+    })
+      .then((response) => {
+        console.log(response.data);
+        setIsDataSaved(true);
+        // Redirect to the bank page on successful registration
+
+      })
+      .catch((error) => {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.error("Server Error:", error.response.data);
+        } else if (error.request) {
+          // The request was made but no response was received
+          console.error("No Response from Server");
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.error("Error:", error.message);
+        }
+      });
+  }
   return (
     <div>
       <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
@@ -285,6 +353,7 @@ function Borroww() {
                 height: '100%',
                 objectFit: 'cover',
               }}
+              
             />
           </div>
         ) : (
@@ -309,7 +378,7 @@ function Borroww() {
         )}
         <div style={{ marginTop: 50 }}>
           <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร:</FormLabel>
-          <TextField id="outlined-basic" label="" variant="outlined" sx={{ width: '50ch' }} />
+          <TextField id="outlined-basic" label="" variant="outlined" sx={{ width: '50ch' }}onChange={(e) => setProfile(e.target.value)} />
         </div>
 
         <div style={{ marginTop: 20 }}>
@@ -325,6 +394,8 @@ function Borroww() {
           <Autocomplete disablePortal
             id="combo-box-demo"
             options={currencies}
+            value={selectedCurrency}
+            onChange={handleCurrencyChange}
             sx={{ width: 435 }}
             renderInput={(params) => <TextField {...params} label="" />}>
           </Autocomplete>
@@ -332,29 +403,49 @@ function Borroww() {
         </div>
         <div style={{ marginTop: 30 }}>
           <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการแลกเปลี่ยน:</FormLabel>
-          <TextField sx={{ width: 435 }} label="ใส่จำนวนทรัพยากรที่คุณต้องการ" ></TextField>
+          <TextField sx={{ width: 435 }} 
+          label="ใส่จำนวนทรัพยากรที่คุณต้องการ" 
+          value={ quantity} 
+          onChange={(e) => setQuantity(e.target.value)} 
+          InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <UnitDropdown
+                    selectedUnit={selectedUnit}
+                    handleUnitChange={handleUnitChange}
+                  />
+                </InputAdornment>
+              ),
+            }} ></TextField>
         </div>
         <div style={{ marginTop: 30 }}>
           <FormLabel component="legend" style={{ color: 'black' }}>รายละเอียดเพิ่มเติม:</FormLabel>
           <TextField
             id="outlined-multiline-static"
-            sx={{ width: '50ch' }} />
+            sx={{ width: '50ch' }}
+            value={additionalDetails} onChange={(e) => setAdditionalDetails(e.target.value)} 
+            />
         </div>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DemoContainer
             components={[
               'DatePicker',
             ]}
+            sx={{ width: '50ch' }}
           >
             <DemoItem label={<Label componentName="วันที่จะนำของมาแลกเปลี่ยน" valueType="date" />}>
-              <DatePicker />
+              <DatePicker 
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e)}
+              />
             </DemoItem>
           </DemoContainer>
         </LocalizationProvider>
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-around', margin: 40 }}>
         <Button variant="contained" size="large" color="error" onClick={handleBack}> ย้อนกลับ </Button>
-        <Button variant="contained" size="large" color="success" onClick={handleSubmit}>เสร็จสิ้น</Button>
+        <Button variant="contained" color='warning' onClick={handleAddData}>บันทึกข้อมูล</Button>
+        <Button variant="contained" size="large" color="success" onClick={handleSubmit} disabled={!isDataSaved}>เสร็จสิ้น</Button>
       </div>
 
     </div>

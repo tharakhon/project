@@ -12,7 +12,7 @@ import NavBarBank from "./navBarBank";
 import { useNavigate, useParams } from "react-router-dom";
 import Axios from 'axios';
 import { ReactSession } from 'react-client-session';
-
+import Select from '@mui/material/Select';
 const currencies = [
   "ทรัพยากรทางการเกษตรใช้แล้วหมด เช่น ปุ๋ย ดิน",
   "อุปกรณ์หรือเครื่องมือทางการเกษตรขนาดเล็ก",
@@ -23,6 +23,26 @@ const textStyle = {
   color: "black",
   fontSize: "50px",
   fontWeight: "normal",
+};
+const UnitDropdown = ({ selectedUnit, handleUnitChange }) => {
+  const units = ['กรัม', 'กิโลกรัม', 'ชิ้น', 'คัน', 'ถุง', 'กระสอบ', 'ลูก', 'หวี']; // เพิ่มหน่วยตามที่ต้องการ
+
+  return (
+    <FormControl fullWidth>
+      <Select
+        labelId="unit-dropdown-label"
+        id="unit-dropdown"
+        value={selectedUnit}
+        onChange={handleUnitChange}
+      >
+        {units.map((unit) => (
+          <MenuItem key={unit} value={unit}>
+            {unit}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  );
 };
 
 function Resource() {
@@ -40,6 +60,13 @@ function Resource() {
   const [resourceForRent, setResourceForRent] = useState("");
   const [resourceForSale, setResourceForSale] = useState("");
   const [resourceForExchange, setResourceForExchange] = useState("");
+  const [isDataSaved, setIsDataSaved] = useState(false);
+  const [selectedUnit, setSelectedUnit] = useState('กรัม');
+  console.log(selectedUnit)
+
+  const handleUnitChange = (event) => {
+    setSelectedUnit(event.target.value);
+  };
 
   const handleCheckboxChange = (value, setter) => {
     // Toggle the checkbox value
@@ -59,40 +86,35 @@ function Resource() {
   };
 
   const handleAddData = () => {
+    const formData = new FormData()
+    formData.append("bank_codename", codename);
+    formData.append("product_name", nameProduct);
+    formData.append("product_image", image);
+    formData.append('product_type', resourceForRent);
+    formData.append("product_type2", resourceForSale);
+    formData.append("product_type3", resourceForExchange);
+    formData.append("product_type4", selectedCurrency);
+    formData.append('product_quantity', amount);
+    formData.append('product_unit', selectedUnit);
+    formData.append('product_details', additionalDetails);
+    formData.append('product_price', resourcePrice)
 
-    Axios.post('http://localhost:5000/bank_product', {
-      bank_codename: codename,
-      product_name: nameProduct,
-      product_image: image.name,
-      product_type: resourceForRent,
-      product_type2: resourceForSale,
-      product_type3: resourceForExchange,
-      product_type4: selectedCurrency,
-      product_quantity: amount,
-      product_details: additionalDetails,
-      product_price: resourcePrice,
-
-      // ... other data
+    Axios.post('http://localhost:5000/bank_product', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
       .then((response) => {
         console.log(response.data);
-        // Redirect to the bank page on successful registration
-
-      })
-      .catch((error) => {
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          console.error("Server Error:", error.response.data);
-        } else if (error.request) {
-          // The request was made but no response was received
-          console.error("No Response from Server");
+        setIsDataSaved(true);
+        if (response.data.Status === 'Success') {
+          console.log("File Successfully Uploaded");
+          alert('บันทึกข้อมูลสำเร็จ')
         } else {
-          // Something happened in setting up the request that triggered an Error
-          console.error("Error:", error.message);
+          console.error("Error");
         }
-      });
+      })
+      .catch(er => console.log(er))
   }
+
   const handleImageChange = (event) => {
     const selectedImage = event.target.files[0];
 
@@ -105,6 +127,20 @@ function Resource() {
 
   const handleSubmit = () => {
     navigate(-1);
+  };
+  const handleReture = () => {
+    setNameProduct("");
+    setImage(null);
+    setImagePreview(null);
+    setSelectedResources([]);
+    setSelectedCurrency("");
+    setAmount("");
+    setAdditionalDetails("");
+    setResourcePrice("");
+    setResourceForRent("");
+    setResourceForSale("");
+    setResourceForExchange("");
+    setSelectedUnit("กรัม");
   };
 
   return (
@@ -142,7 +178,7 @@ function Resource() {
           </div>
         )}
         <div style={{ marginTop: 50 }}>
-         
+
 
           <FormLabel component="legend" style={{ color: "black" }}>
             ชื่อทรัพยากร:
@@ -201,7 +237,19 @@ function Resource() {
           <FormLabel component="legend" style={{ color: "black" }}>
             จำนวนทรัพยากร:
           </FormLabel>
-          <TextField sx={{ width: 400 }} value={amount} onChange={(e) => setAmount(e.target.value)} />
+          <TextField sx={{ width: 400 }}
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <UnitDropdown
+                    selectedUnit={selectedUnit}
+                    handleUnitChange={handleUnitChange}
+                  />
+                </InputAdornment>
+              ),
+            }} />
         </div>
         <div style={{ marginTop: 30 }}>
           <FormLabel component="legend" style={{ color: "black" }}>
@@ -227,13 +275,13 @@ function Resource() {
           )}
 
         </div>
-        
+
       </div>
       <div style={{ display: "flex", justifyContent: 'space-around', marginTop: 30 }}>
-          <Button variant="contained" size="large" color="error" onClick={handleSubmit}>ยกเลิก</Button>
-          <Button variant="contained" size="large" color="warning" onClick={handleAddData}>บันทึกข้อมูล</Button>
-          <Button variant="contained" size="large" color="success" onClick={handleSubmit}>เสร็จสิ้น</Button>
-        </div>
+        <Button variant="contained" size="large" color="error" onClick={handleSubmit}>ย้อนกลับ</Button>
+        <Button variant="contained" size="large" color="error" onClick={handleReture}>ลบข้อมูลที่กรอกเพื่อเพิ่มทรัพยากรใหม่</Button>
+        <Button variant="contained" size="large" color="warning" onClick={handleAddData}>บันทึกข้อมูล</Button>
+      </div>
     </div>
   );
 }

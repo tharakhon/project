@@ -33,7 +33,8 @@ import { ReactSession } from 'react-client-session';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import PropTypes from 'prop-types';
-
+import CardHeader from '@mui/material/CardHeader';
+import Avatar from '@mui/material/Avatar';
 
 
 const drawerWidth = 240;
@@ -124,7 +125,10 @@ function a11yProps(index) {
 
 export default function Bank() {
   const username = ReactSession.get("username");
+  const codename = ReactSession.get("codename");
+  const bank_name = ReactSession.get("bank_name");
   const [searchQuery, setSearchQuery] = useState('');
+  const [showUserInBank, setShowUserInBank] = useState([]);
   const navigate = useNavigate();
   const [resources, setResources] = useState([]);
   const [searchInput, setSearchInput] = useState('');
@@ -147,6 +151,13 @@ export default function Bank() {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+  const handleOpenBank = (id) => {
+    ReactSession.set('username', username);
+    ReactSession.set("id", id);
+    ReactSession.set("codename", codename);
+    ReactSession.set("bank_name", bank_name);
+    navigate(`/openbank`);
+  };
 
 
   useEffect(() => {
@@ -167,9 +178,25 @@ export default function Bank() {
   }, [username]);
 
   const filteredAndSearchedProducts = resources.filter((resource) =>
-  (resource.product_name.toLowerCase().includes(searchInput.toLowerCase())) &&
-  (value === 0 || (value === 1 && resource.product_type === 'ทรัพยากรเพื่อเช่าหรือยืม') || (value === 2 && resource.product_type2 === 'ทรัพยากรเพื่อการซื้อขาย') || (value === 3 && resource.product_type3 === 'ทรัพยากรเพื่อแลกเปลี่ยน'))
-);
+    (resource.product_name.toLowerCase().includes(searchInput.toLowerCase())) &&
+    (value === 0 || (value === 1 && resource.product_type === 'ทรัพยากรเพื่อเช่าหรือยืม') || (value === 2 && resource.product_type2 === 'ทรัพยากรเพื่อการซื้อขาย') || (value === 3 && resource.product_type3 === 'ทรัพยากรเพื่อแลกเปลี่ยน'))
+  );
+  useEffect(() => {
+    Axios.get(`http://localhost:5000/showUserInBank/${bank_name}`)
+      .then((response) => {
+        console.log("ข้อมูลที่ได้รับ:showUserInBank", response.data);
+
+        if (Array.isArray(response.data)) {
+          setShowUserInBank(response.data);
+        } else {
+          console.error("Invalid response format. Expected an array.");
+        }
+      })
+      .catch((error) => {
+        console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+      })
+
+  }, []);
   return (
     <Box sx={{ display: 'flex' }}>
       <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -220,30 +247,84 @@ export default function Bank() {
       <Box component="main" sx={{ flexGrow: 1, p: 3, marginTop: 10 }}>
 
         <DrawerHeader />
-        <Search>
-          <SearchIconWrapper>
-            <SearchIcon />
-          </SearchIconWrapper>
-          <StyledInputBase
-            placeholder="Search…"
-            inputProps={{ 'aria-label': 'search' }}
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-          />
-        </Search>
-        <Button variant="contained" color='error' sx={{ left: 1050, bottom: 35, borderRadius: 50 }} onClick={handleNext}>เพิ่มทรัพยากร</Button>
-        {productTypes.map((productType, index) => (
-          <TabPanel value={value} index={index} key={index}>
-            <Grid container spacing={2}>
-              {value === 0 ? (
-                // Display all resources
-                filteredAndSearchedProducts.map((resource) => (
-                  <Grid key={resource.product_id} item xs={3}>
+        {value !== 4 && (
+          <>
+            <Search sx={{ m: 2 }}>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Search…"
+                inputProps={{ 'aria-label': 'search' }}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+              />
+            </Search>
+            <Button variant="contained" color='error' sx={{ left: 1050, bottom: 35, borderRadius: 50 }} onClick={handleNext}>เพิ่มทรัพยากร</Button>
+          </>
+        )}
+        {value === 4 && (
+          <>
+            {showUserInBank.length === 0 ? (
+              <Typography variant="body1">ไม่มีสมาชิก</Typography>
+            ) : (
+              <Grid container spacing={2}>
+                {showUserInBank.map((user) => (
+                  <Grid item xs={3} key={user.id}>
                     <Card sx={{ maxWidth: 345, m: 1 }}>
+                      <CardHeader
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'row-reverse', // Move Avatar to the right
+                          justifyContent: 'space-between', // Add space between Avatar and content
+                          alignItems: 'center',
+                          background: 'linear-gradient(to right, #43e97b 0%, #38f9d7 100%)', // Customize background
+                          color: 'white', // Customize text color
+                        }}
+                        avatar={
+                          <Avatar
+                            src={`http://localhost:5000/image/${user.rank_image}`}
+                            alt=''
+                            sx={{
+                              backgroundColor: 'transparent', // Set a transparent background
+                            }}
+                          />
+                        }
+                      />
                       <CardMedia
                         component="img"
                         height="300"
-                        image={resource.product_image}
+                        image={user.image}
+                        title="รูปภาพทรัพยากร"
+                      />
+                      <CardContent>
+                        <Typography gutterBottom variant="h5" component="div">
+                          {user.fullname}
+                        </Typography>
+                        <Typography variant="h6" color="text.secondary">
+                          {`แรงค์ ${user.rank_name}`}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            )}
+          </>
+        )}
+
+        {productTypes.map((productType, index) => (
+          <TabPanel value={value} index={index} key={index}>
+            <Grid container spacing={4}>
+              {value === 0 ? (
+                // Display all resources
+                filteredAndSearchedProducts.map((resource) => (
+                  <Grid item xs={3.75} key={resource.product_name}>
+                    <Card sx={{ maxWidth: 345, m: 1 }} >
+                      <CardMedia
+                        component="img"
+                        height="300"
+                        image={`http://localhost:5000/image/${resource.product_image}`}
                         title="รูปภาพทรัพยากร"
                       />
                       <CardContent>
@@ -251,11 +332,13 @@ export default function Bank() {
                           {resource.product_name}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          {`จำนวนทรัพยากรที่เหลืออยู่: ${resource.product_quantity}`}
+                          {`จำนวนทรัพยากรที่เหลืออยู่ : ${resource.product_quantity} ${resource.product_unit}`}
                         </Typography>
                       </CardContent>
                       <CardActions>
-                        <Button size="small">ดูทรัพยากร</Button>
+                        <Button size="small" onClick={() => handleOpenBank(resource.product_id)}>
+                          ดูทรัพยากร
+                        </Button>
                       </CardActions>
                     </Card>
                   </Grid>
@@ -279,12 +362,12 @@ export default function Bank() {
                     return false;
                   })
                   .map((resource) => (
-                    <Grid key={resource.product_id} item xs={3}>
+                    <Grid key={resource.product_id} item xs={3.75}>
                       <Card sx={{ maxWidth: 345, m: 1 }}>
                         <CardMedia
                           component="img"
                           height="300"
-                          image={resource.product_image}
+                          image={`http://localhost:5000/image/${resource.product_image}`}
                           title="รูปภาพทรัพยากร"
                         />
                         <CardContent>
@@ -292,11 +375,11 @@ export default function Bank() {
                             {resource.product_name}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
-                            {`จำนวนทรัพยากรที่เหลืออยู่: ${resource.product_quantity}`}
+                            {`จำนวนทรัพยากรที่เหลืออยู่ : ${resource.product_quantity} ${resource.product_unit}`}
                           </Typography>
                         </CardContent>
                         <CardActions>
-                          <Button size="small">ดูทรัพยากร</Button>
+                          <Button size="small" onClick={() => handleOpenBank(resource.product_id)}>ดูทรัพยากร</Button>
                         </CardActions>
                       </Card>
                     </Grid>

@@ -95,15 +95,28 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 function Changepage() {
     const id = ReactSession.get("id");
     const [filteredProducts, setFilteredProducts] = useState([]);
-    const [selectedDate, setSelectedDate] = useState("");
+    const [borrowDate, setBorrowDate] = useState(null);
     const navigate = useNavigate();
     const bank_name = ReactSession.get("bank_name");
     const [open, setOpen] = useState(false);
     const username = ReactSession.get("username");
     const theme = useTheme();
+    const [inputQuantity, setInputQuantity] = useState('');
     const handleDrawerOpen = () => {
         setOpen(true);
     };
+    const handleBorrowDateChange = (date) => {
+        setBorrowDate(date);
+    };
+    const handleChange = (event) => {
+        const newValue = event.target.value;
+
+        // Ensure the input value is a valid number and does not exceed the available quantity
+        if (!isNaN(newValue) && newValue <= filteredProducts.product_quantity) {
+            setInputQuantity(newValue);
+        }
+    };
+
     const handleClick = () => {
         ReactSession.set('username', username)
         navigate("/profile")
@@ -134,9 +147,29 @@ function Changepage() {
     }
 
     const handleNextbankuser = () => {
-        ReactSession.set('bank_name', bank_name);
-        ReactSession.set('username', username);
-        navigate("/borroww");
+        Axios.post('http://localhost:5000/order_exchangeRequest', {
+            orderExchange_id: id,
+            bank_name: bank_name,
+            userbank_email: username,
+            orderExchange_quantity: inputQuantity,
+            orderExchange_borrowDate: borrowDate,
+        })
+            .then((response) => {
+                console.log(response.data);
+                ReactSession.set('bank_name', bank_name);
+                ReactSession.set('username', username);
+                navigate("/borroww");
+            })
+            .catch((error) => {
+                if (error.response) {
+                    console.error("Server Error:", error.response.data);
+                } else if (error.request) {
+                    console.error("No Response from Server");
+                } else {
+                    console.error("Error:", error.message);
+                }
+            });
+       
     }
 
     return (
@@ -262,7 +295,7 @@ function Changepage() {
                             <CardMedia
                                 component="img"
                                 height="300"
-                                image={filteredProducts.product_image}
+                                image={`http://localhost:5000/image/${filteredProducts.product_image}`}
                                 title="รูปภาพทรัพยากร"
                             />
                         </Card>
@@ -274,7 +307,7 @@ function Changepage() {
                             <TextField disabled id="outlined-disabled" label={filteredProducts.product_name} variant="outlined" sx={{ width: '50ch' }} />
                         </div>
 
-                        <FormControl sx={{ marginTop: 5 }} component="fieldset" variant="standard">
+                        <FormControl sx={{ marginTop: 5 ,width: '50ch' }} component="fieldset" variant="standard">
                             <FormLabel component="legend" style={{ color: "black" }}>
                                 ประเภทบริการ :
                             </FormLabel>
@@ -323,8 +356,21 @@ function Changepage() {
                         </div>
 
                         <div style={{ marginTop: 30 }}>
-                            <FormLabel component="legend" style={{ color: 'red' }}>จำนวนทรัพยากร : {filteredProducts.product_quantity}</FormLabel>
-                            <TextField id="outlined-disabled" label="ใส่จำนวนที่ต้องการ" variant="outlined" sx={{ width: '50ch' }} />
+                            <FormLabel component="legend" style={{ color: 'red' }}>จำนวนทรัพยากร : {filteredProducts.product_quantity} {filteredProducts.product_unit}</FormLabel>
+                            <TextField 
+                            id="outlined-disabled" 
+                            label="ใส่จำนวนที่ต้องการ" 
+                            variant="outlined" 
+                            value={inputQuantity}
+                            onChange={handleChange}
+                            sx={{ width: '50ch' }} 
+                            InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            {filteredProducts.product_unit}
+                                        </InputAdornment>
+                                    ),
+                                }}/>
                         </div>
 
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -332,10 +378,14 @@ function Changepage() {
                                 components={[
                                     'DatePicker',
                                 ]}
-
+                                sx={{ width: '50ch',marginTop: 3 }} 
                             >
                                 <DemoItem label={<Label componentName="วันที่จะนำของมาแลกเปลี่ยน" valueType="date" />} >
-                                    <DatePicker />
+                                    <DatePicker 
+                                     value={borrowDate}
+                                     onChange={handleBorrowDateChange}
+                                     renderInput={(params) => <TextField {...params} />}
+                                    />
                                 </DemoItem>
                             </DemoContainer>
                         </LocalizationProvider>

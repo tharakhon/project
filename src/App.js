@@ -14,10 +14,10 @@ import ListBank from './ListBank';
 import ListBankuser from './ListBankUser';
 import Member from './membank';
 import OrderBankUsers from './OrderBankUsers';
-import Bookmark from './Bookmark';
 import Changepage from './ChangPage';
 import Borroww from './borrow2';
 import Review from './review';
+import OpenBank from './openBank';
 
 function App() {
   return (
@@ -38,10 +38,10 @@ function App() {
         <Route path="listbankuser" element={<ListBankuser/>}/>
         <Route path="member" element={<Member/>}/>
         <Route path="orderbankusers" element={<OrderBankUsers/>}/>
-        <Route path="bookmark" element={<Bookmark/>}/>
         <Route path="changepage" element={<Changepage/>}/>
         <Route path="borroww" element={<Borroww/>}/>
         <Route path="review" element={<Review/>}/>
+        <Route path="openbank" element={<OpenBank/>}/>
         </Routes>
       </BrowserRouter>
    

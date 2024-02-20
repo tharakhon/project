@@ -53,8 +53,6 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ReviewsIcon from '@mui/icons-material/Reviews';
 import CardHeader from '@mui/material/CardHeader';
-import LongdoMap, { map as longdoMap } from './LongdoMap';
-import Bookmark from "./Bookmark";
 import HomeIcon from '@mui/icons-material/Home';
 import { ReactSession } from 'react-client-session';
 import Popover from '@mui/material/Popover';
@@ -147,6 +145,7 @@ function Main12() {
   const [displayBookmarks, setDisplayBookmarks] = useState(false);
   const [codename, setCodeName] = useState([]);
   const [anchorElPopover, setAnchorElPopover] = useState(null);
+  const [bankMembers, setBankMembers] = useState([]);
   const [notifications, setNotifications] = useState([
     { id: 1, content: 'Notification 1' },
     { id: 2, content: 'Notification 2' },
@@ -168,6 +167,7 @@ function Main12() {
     setAnchorElPopover(null);
   };
   console.log(username)
+  console.log("bankMembers",bankMembers)
   console.log('filteredProducts', filteredProducts)
 
 
@@ -262,27 +262,29 @@ function Main12() {
       })
 
   }, [username]);
+  
   useEffect(() => {
-    Axios.get(`http://localhost:5000/showbank`)
+    Axios.get("http://localhost:5000/showcountuser")
       .then((response) => {
-        console.log("ข้อมูลที่ได้รับ:showbank", response.data);
+        console.log("จำนวนสมาชิกของแต่ละธนาคาร:", response.data);
         const fetchedProducts = response.data.map((item) => ({
           title: item.bank_name,
           rating: item.bank_rating,
-          image: item.bank_image, // Update with the correct property name
-          rank: item.bank_rank,   // Update with the correct property name
-          lat: item.bank_latitude, // Update with the correct property name
+          image: item.bank_image,
+          rank: item.rank_image,
+          lat: item.bank_latitude,
           lon: item.bank_longitude,
-          codename: item.bank_codename // Update with the correct property name
+          codename: item.bank_codename,
+          bankMembers: item.member_count, // Assuming the number of members is available here
         }));
+  
         console.log('fetchedProducts', fetchedProducts)
         setFilteredProducts(fetchedProducts);
       })
       .catch((error) => {
-        console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
-      })
-
-  }, [username]);
+        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลจำนวนสมาชิก:", error);
+      });
+  }, []);
   const handleSubmit = () => {
     navigate(`/registerbank`)
   }
@@ -368,6 +370,8 @@ function Main12() {
   const handleToBank = () => {
     ReactSession.set("username", username)
     ReactSession.set("codename", codename.bank_codename);
+    ReactSession.set("bank_name", codename.bank_name);
+    console.log(filteredProducts.title)
     navigate("/bank")
   }
   return (
@@ -597,8 +601,8 @@ function Main12() {
                 }}
                 avatar={
                   <Avatar
-                    alt={`Rank ${tab.title}`}
-                    src={tab.rank}
+                    src={`http://localhost:5000/image/${tab.rank}`}
+                    alt=''
                     sx={{
                       backgroundColor: 'transparent', // Set a transparent background
                     }}
@@ -609,12 +613,16 @@ function Main12() {
               <CardMedia
                 component="img"
                 height="300"
-                image={`image/${tab.image}`}
+                image={`http://localhost:5000/image/${tab.image}`}
                 title="รูปภาพธนาคาร"
               />
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
                   {tab.title}
+
+                </Typography>
+                <Typography gutterBottom variant="body1" component="div">
+                  จำนวนสมาชิกทั้งหมด {tab.bankMembers} คน
 
                 </Typography>
 

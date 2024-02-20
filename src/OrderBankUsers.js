@@ -45,6 +45,8 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Typography from '@mui/material/Typography';
 import Drawer from '@mui/material/Drawer';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
 const drawerWidth = 240;
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -91,17 +93,62 @@ function Label({ componentName, isProOnly }) {
 
     return content;
 }
+const UnitDropdown = ({ selectedUnit, handleUnitChange }) => {
+    const units = ['กรัม', 'กิโลกรัม', 'ชิ้น', 'คัน', 'ถุง', 'กระสอบ']; // เพิ่มหน่วยตามที่ต้องการ
 
+    return (
+        <FormControl fullWidth>
+            <Select
+                labelId="unit-dropdown-label"
+                id="unit-dropdown"
+                value={selectedUnit}
+                onChange={handleUnitChange}
+            >
+                {units.map((unit) => (
+                    <MenuItem key={unit} value={unit}>
+                        {unit}
+                    </MenuItem>
+                ))}
+            </Select>
+        </FormControl>
+    );
+};
 
 function OrderBankUsers() {
     const id = ReactSession.get("id");
     const bank_name = ReactSession.get("bank_name");
     const [open, setOpen] = useState(false);
     const username = ReactSession.get("username");
-    const [selectedDate, setSelectedDate] = useState("");
+    const [borrowDate, setBorrowDate] = useState(null);
+    const [returnDate, setReturnDate] = useState(null);
     const [filteredProduct, setFilteredProduct] = useState(null);
     const navigate = useNavigate();
     const theme = useTheme();
+    const [selectedUnit, setSelectedUnit] = useState('กรัม');
+    const [inputQuantity, setInputQuantity] = useState('');
+    console.log(selectedUnit)
+    console.log(inputQuantity)
+    console.log(borrowDate)
+    console.log(returnDate)
+    const handleBorrowDateChange = (date) => {
+        setBorrowDate(date);
+    };
+
+    const handleReturnDateChange = (date) => {
+        setReturnDate(date);
+    };
+    const handleChange = (event) => {
+        const newValue = event.target.value;
+
+        // Ensure the input value is a valid number and does not exceed the available quantity
+        if (!isNaN(newValue) && newValue <= filteredProduct.product_quantity) {
+            setInputQuantity(newValue);
+        }
+    };
+
+    const handleUnitChange = (event) => {
+        setSelectedUnit(event.target.value);
+    };
     const handleDrawerOpen = () => {
         setOpen(true);
     };
@@ -118,8 +165,32 @@ function OrderBankUsers() {
     }
 
     const handleNext = () => {
-        ReactSession.set('username', username)
-        navigate("/bankuser");
+        Axios.post('http://localhost:5000/order_request', {
+            order_id: id,
+            bank_name: bank_name,
+            userbank_email: username,
+            order_quantity: inputQuantity,
+            order_borrowDate: borrowDate,
+            order_returnDate:returnDate,
+
+            // ... other data
+        })
+            .then((response) => {
+                console.log(response.data);
+                ReactSession.set('username', username)
+                alert("ส่งข้อมูลไปให้ทางธนาคารเรียบร้อยแล้วรอทางธนาคารตรวจสอบข้อมูล")
+                navigate("/bankuser");
+            })
+            .catch((error) => {
+                if (error.response) {
+                    console.error("Server Error:", error.response.data);
+                } else if (error.request) {
+                    console.error("No Response from Server");
+                } else {
+                    console.error("Error:", error.message);
+                }
+            });
+
     }
     useEffect(() => {
         // Fetch data from the server
@@ -136,7 +207,9 @@ function OrderBankUsers() {
                 console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
             })
     }, []);
+    const handleAddData = () => {
 
+    }
     return (
         <div>
             <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
@@ -260,7 +333,7 @@ function OrderBankUsers() {
                             <CardMedia
                                 component="img"
                                 height="300"
-                                image={filteredProduct.product_image}
+                                image={`http://localhost:5000/image/${filteredProduct.product_image}`}
                                 title="รูปภาพทรัพยากร"
                             />
                         </Card>
@@ -270,7 +343,7 @@ function OrderBankUsers() {
                             <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
                             <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProduct.product_name} sx={{ width: '50ch' }} />
                         </div>
-                        <FormControl sx={{ marginTop: 5 }} component="fieldset" variant="standard">
+                        <FormControl sx={{ marginTop: 5, width: '50ch' }} component="fieldset" variant="standard">
                             <FormLabel component="legend" style={{ color: "black" }}>
                                 ประเภทบริการ :
                             </FormLabel>
@@ -295,7 +368,7 @@ function OrderBankUsers() {
                                 </div>
                             </FormGroup>
                         </FormControl>
-                        <div style={{ marginTop: 20 }}>
+                        <div style={{ marginTop: 30 }}>
                             <Box
                                 component="form"
                                 sx={{
@@ -331,18 +404,40 @@ function OrderBankUsers() {
                                 </>
                             )}
                         </div>
-                        <div style={{ marginTop: 5 }}>
-                            <FormLabel component="legend" style={{ color: 'red' }}>จำนวนทรัพยากร : {filteredProduct.product_quantity}</FormLabel>
-                            <TextField id="outlined-disabled" label="ใส่จำนวนที่ต้องการ" variant="outlined" defaultValue='' sx={{ width: '50ch' }} />
+                        <div style={{ marginTop: 30 }}>
+                            <FormLabel component="legend" style={{ color: 'red' }}>
+                                จำนวนทรัพยากร : {filteredProduct.product_quantity} {filteredProduct.product_unit}
+                            </FormLabel>
+                            <TextField
+                                id="unit-input"
+                                label="ใส่จำนวนที่คุณต้องการ"
+                                variant="outlined"
+                                value={inputQuantity}
+                                onChange={handleChange}
+                                sx={{ width: '50ch', }}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            {filteredProduct.product_unit}
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+
                         </div>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DemoContainer
                                 components={[
                                     'DatePicker',
                                 ]}
+                                sx={{ width: '50ch', marginTop: 3 }}
                             >
                                 <DemoItem label={<Label componentName="วันที่ต้องการยืมทรัพยากร" valueType="date" />}>
-                                    <DatePicker />
+                                    <DatePicker
+                                        value={borrowDate}
+                                        onChange={handleBorrowDateChange}
+                                        renderInput={(params) => <TextField {...params} />}
+                                    />
                                 </DemoItem>
                             </DemoContainer>
                         </LocalizationProvider>
@@ -351,9 +446,14 @@ function OrderBankUsers() {
                                 components={[
                                     'DatePicker',
                                 ]}
+                                sx={{ width: '50ch', marginTop: 3 }}
                             >
                                 <DemoItem label={<Label componentName="วันที่ต้องการคืนทรัพยากร" valueType="date" />}>
-                                    <DatePicker />
+                                    <DatePicker
+                                        value={returnDate}
+                                        onChange={handleReturnDateChange}
+                                        renderInput={(params) => <TextField {...params} />}
+                                    />
                                 </DemoItem>
                             </DemoContainer>
                         </LocalizationProvider>
@@ -362,7 +462,7 @@ function OrderBankUsers() {
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-around', margin: 40 }}>
                         <Button variant="contained" color="error" onClick={handleBackbankuser}>ย้อนกลับ</Button>
-                        <Button variant="contained" color="warning"onClick={handleNext}>เสร็จสิ้น</Button>
+                        <Button variant="contained" color="warning" onClick={handleNext}>เสร็จสิ้น</Button>
                     </div>
                 </>
             ) : (

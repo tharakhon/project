@@ -24,6 +24,7 @@ function RegisterBank() {
   const navigate = useNavigate();
   const [currentPosition, setCurrentPosition] = useState(null);
   const [codename,setCodeName] =useState('');
+  const [isDataSaved, setIsDataSaved] = useState(false);
   const [medals, setMedals] = useState({
     bronze: '',
     silver: '',
@@ -87,44 +88,32 @@ function RegisterBank() {
       });
   }, []);
   const handleSubmit = () => {
-    if (!username || !tel || !profile || !currentPosition || !image || !address || !medals || !codename) {
-      console.error('Missing required data. Cannot submit the form.');
-      return;
-    }
-    Axios.post('http://localhost:5000/bank_create', {
-      bank_codename: codename,
-      bank_email: username,
-      bank_telephone: tel,
-      bank_name: profile,
-      bank_latitude: currentPosition.lat,
-      bank_longitude: currentPosition.lon,
-      bank_image: image.name,
-      bank_address: address,
-      bank_bronze: medals.bronze,
-      bank_silver: medals.silver,
-      bank_gold: medals.gold,
-      bank_platinum: medals.phat
-      // ... other data
+    const formData = new FormData()
+        formData.append("bank_codename", codename);
+        formData.append("bank_email", username);
+        formData.append("bank_telephone", tel);
+        formData.append('bank_address', address);
+        formData.append("bank_name", profile);
+        formData.append("bank_latitude", currentPosition.lat);
+        formData.append("bank_longitude", currentPosition.lon);
+        formData.append('bank_image', image);
+        formData.append('bank_bronze', medals.bronze);
+        formData.append('bank_silver', medals.silver);
+        formData.append('bank_gold', medals.gold);
+        formData.append('bank_platinum', medals.phat)
+    Axios.post('http://localhost:5000/bank_create' ,formData , {
+      headers: {'Content-Type': 'multipart/form-data'}, 
     })
       .then((response) => {
         console.log(response.data);
-        
-        // Redirect to the bank page on successful registration
-
-      })
-      .catch((error) => {
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          console.error("Server Error:", error.response.data);
-        } else if (error.request) {
-          // The request was made but no response was received
-          console.error("No Response from Server");
-        } else {
-          // Something happened in setting up the request that triggered an Error
-          console.error("Error:", error.message);
-        }
-      });
+        setIsDataSaved(true);
+        if(response.data.Status === 'Success') {
+          console.log("File Successfully Uploaded");
+      }else{
+        console.error("Error");
+      }
+  })
+  .catch(er => console.log(er))
   }
   const handleBack = () => {
     navigate('/main');
@@ -340,7 +329,7 @@ function RegisterBank() {
       <div style={{ display: 'flex', justifyContent: 'space-around', margin: 10 }}>
         <Button variant="contained" color='error' sx={{ top: 100 }} onClick={handleBack}>ย้อนกลับ</Button>
         <Button variant="contained" color='warning' sx={{ top: 100 }} onClick={handleSubmit}>บันทึกข้อมูล</Button>
-        <Button variant="contained" color='success' sx={{ backgroundColor: '#07C27F', top: 100 }} onClick={handleNext}>เสร็จสิ้น</Button>
+        <Button variant="contained" color='success' sx={{ backgroundColor: '#07C27F', top: 100 }} onClick={handleNext} disabled={!isDataSaved}>เสร็จสิ้น</Button>
       </div>
     </div>
 

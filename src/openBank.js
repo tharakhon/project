@@ -50,7 +50,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
     ...theme.mixins.toolbar,
 }));
 
-function OpenBankUsers() {
+function OpenBank() {
     const id = ReactSession.get("id");
     const bank_name = ReactSession.get("bank_name");
     const [open, setOpen] = useState(false);
@@ -78,129 +78,12 @@ function OpenBankUsers() {
             })
 
     }, []);
-    useEffect(() => {
-        Axios.get(`http://localhost:5000/CheckUserInBank/${username}`)
-            .then((response) => {
-                console.log("ข้อมูลที่ได้รับ:", response.data);
-
-                // Assuming response.data is an array
-                const userEntries = response.data;
-
-                // Check if the user is a member
-                const isMember = userEntries.some((userEntry) => {
-                    const userBankEmail = userEntry?.userBank_email;
-                    const userBankName = userEntry?.userBank_bankName;
-                    return userBankEmail === username && userBankName === bank_name;
-                });
-
-                setIsBankMember(isMember);
-            })
-            .catch((error) => {
-                console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
-            });
-    }, [username, bank_name]);
-    const handleBackbankuser = () => {
-        navigate("/bankuser");
+    
+    const handleBackbank = () => {
+        ReactSession.set("username", username);
+        navigate("/bank");
     }
-    const handleMemberbankuser = () => {
-        Axios.post('http://localhost:5000/RegisterUserForBank', {
-            userBank_email: username,
-            userBank_bankName: bank_name,
-            // ... other data
-        })
-            .then((response) => {
-                console.log(response.data);
-                alert("สมัครเป็นสมาชิกเสร็จสิ้น")
-                // Redirect to the bank page on successful registration
-
-            })
-            .catch((error) => {
-                if (error.response) {
-                    // The request was made and the server responded with a status code
-                    // that falls out of the range of 2xx
-                    console.error("Server Error:", error.response.data);
-                } else if (error.request) {
-                    // The request was made but no response was received
-                    console.error("No Response from Server");
-                } else {
-                    // Something happened in setting up the request that triggered an Error
-                    console.error("Error:", error.message);
-                }
-            });
-    }
-    const handleOrderbankuser = async (id) => {
-        try {
-            const response = await Axios.get(`http://localhost:5000/CheckUserInBank/${username}`);
-            console.log("ข้อมูลที่ได้รับ:", response.data);
-
-            // Assuming response.data is an array
-            const userEntries = response.data;
-
-            // Flag to check if a match is found
-            let isBankMember = false;
-
-            // Iterate through the array
-            for (const userEntry of userEntries) {
-                const userBankEmail = userEntry?.userBank_email;
-                const userBankName = userEntry?.userBank_bankName;
-
-                // Check if the current entry matches the expected values
-                if (userBankEmail === username && userBankName === bank_name) {
-                    isBankMember = true;
-                    ReactSession.set('bank_name', bank_name);
-                    ReactSession.set('username', username);
-                    ReactSession.set("id", id);
-                    navigate(`/orderbankusers`);
-                    // Exit the loop once a match is found
-                    break;
-                }
-            }
-
-            // If no match is found after the loop, show an alert
-            if (!isBankMember) {
-                alert("คุณไม่ได้เป็นสมาชิกของธนาคาร");
-
-            }
-        } catch (error) {
-            console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
-        }
-    }
-    const handleExchangePage = async (id) => {
-        try {
-            const response = await Axios.get(`http://localhost:5000/CheckUserInBank/${username}`);
-            console.log("ข้อมูลที่ได้รับ:", response.data);
-
-            // Assuming response.data is an array
-            const userEntries = response.data;
-
-            // Flag to check if a match is found
-            let isBankMember = false;
-
-            // Iterate through the array
-            for (const userEntry of userEntries) {
-                const userBankEmail = userEntry?.userBank_email;
-                const userBankName = userEntry?.userBank_bankName;
-
-                // Check if the current entry matches the expected values
-                if (userBankEmail === username && userBankName === bank_name) {
-                    isBankMember = true;
-                    ReactSession.set('bank_name', bank_name);
-                    ReactSession.set('username', username);
-                    ReactSession.set("id", id);
-                    navigate(`/changepage`);
-                    // Exit the loop once a match is found
-                    break;
-                }
-            }
-
-            // If no match is found after the loop, show an alert
-            if (!isBankMember) {
-                alert("คุณไม่ได้เป็นสมาชิกของธนาคาร");
-            }
-        } catch (error) {
-            console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
-        }
-    };
+    
     const handleDrawerOpen = () => {
         setOpen(true);
     };
@@ -390,17 +273,7 @@ function OpenBankUsers() {
                         </div>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-around', margin: 30 }}>
-                        <Button variant="contained" color="error" onClick={handleBackbankuser}>ย้อนกลับ</Button>
-
-                        {filteredProducts.product_type3 === 'ทรัพยากรเพื่อแลกเปลี่ยน' && (
-                            <Button variant="contained" color="secondary" onClick={() => handleExchangePage(id)}>ไปหน้าแลกเปลี่ยน</Button>
-                        )}
-                        {(filteredProducts.product_type === 'ทรัพยากรเพื่อเช่าหรือยืม' || filteredProducts.product_type2 === 'ทรัพยากรเพื่อการซื้อขาย') && (
-                            <Button variant="contained" color="warning" onClick={() => handleOrderbankuser(id)} >ทำรายการ</Button>
-                        )}
-                        {!isBankMember && (
-                            <Button variant="contained" color="primary" onClick={handleMemberbankuser}>สมัครสมาชิก</Button>
-                        )}
+                        <Button variant="contained" color="error" onClick={handleBackbank}>ย้อนกลับ</Button>
                     </div>
                 </>
             ) : (
@@ -409,4 +282,4 @@ function OpenBankUsers() {
         </div>
     );
 }
-export default OpenBankUsers;
+export default OpenBank;
