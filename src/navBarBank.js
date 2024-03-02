@@ -75,7 +75,12 @@ function NavBarBank() {
         setOpen(false);
     };
     const handleClick = () => {
+        ReactSession.set("username", username)
         navigate("/profile")
+    }
+    const handleClickToMain = () => {
+        ReactSession.set("username", username)
+        navigate("/main")
     }
     useEffect(() => {
         Axios.get(`http://localhost:5000/showcodename/${username}`)
@@ -158,7 +163,7 @@ function NavBarBank() {
                 <List>
                     {['หน้ากลัก'].map((text, index) => (
                         <ListItem key={text} disablePadding>
-                            <ListItemButton onClick={() => navigate(`/main`)}>
+                            <ListItemButton onClick={handleClickToMain}>
                                 <ListItemIcon>
                                     <HomeIcon />
                                 </ListItemIcon>
@@ -182,7 +187,7 @@ function NavBarBank() {
                 <List>
                     {['กิจกรรมของคุณ'].map((text, index) => (
                         <ListItem key={text} disablePadding>
-                            <ListItemButton onClick={() => navigate('/registerbank')}>
+                            <ListItemButton >
                                 <ListItemIcon>
                                     <AccessTimeIcon />
                                 </ListItemIcon>

@@ -192,14 +192,15 @@ function Resource() {
             onChange={(e) => setNameProduct(e.target.value)}
           />
         </div>
-        <FormControl sx={{ marginTop: 5 }} component="fieldset" variant="standard">
+        <FormControl sx={{ marginTop: 5, width: '46ch' }} component="fieldset" variant="standard">
           <FormLabel component="legend" style={{ color: "black" }}>
-            เลือกประเภทบริการ
+            เลือกประเภทบริการ :
           </FormLabel>
           <FormGroup sx={{ display: 'flex', flexDirection: 'column' }}>
             <FormControlLabel
               control={<Checkbox checked={resourceForRent !== ""} onChange={() => handleCheckboxChange("ทรัพยากรเพื่อเช่าหรือยืม", setResourceForRent)} />}
               label="ทรัพยากรเพื่อเช่าหรือยืม"
+              
             />
             <FormControlLabel
               control={<Checkbox checked={resourceForSale !== ""} onChange={() => handleCheckboxChange("ทรัพยากรเพื่อการซื้อขาย", setResourceForSale)} />}

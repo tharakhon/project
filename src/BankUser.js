@@ -336,20 +336,24 @@ export default function BankUser() {
                             </ListItem>
                         ))}
                     </List>
-                    <Tabs
-                        orientation="vertical"
-                        variant="scrollable"
-                        value={value}
-                        onChange={handleChange}
-                        aria-label="Vertical tabs example"
-                        sx={{ borderColor: 'divider', width: 200 }}
+                    <Box
+                        sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex', height: 500 }}
                     >
-                        {productTypes.map((productType, index) => (
-                            <Tab label={productType} {...a11yProps(index)} key={index} />
-                        ))}
-                    </Tabs>
+                        <Tabs
+                            orientation="vertical"
+                            variant="scrollable"
+                            value={value}
+                            onChange={handleChange}
+                            aria-label="Vertical tabs example"
+                            sx={{ borderColor: 'divider', width: 240 }}
+                        >
+                            {productTypes.map((productType, index) => (
+                                <Tab label={productType} {...a11yProps(index)} key={index} />
+                            ))}
+                        </Tabs>
+                    </Box>
                 </Box>
-            </Drawer>
+            </Drawer >
 
             <Box component="main" sx={{ flexGrow: 1, p: 3, marginTop: 8 }}>
                 <DrawerHeader />
@@ -438,6 +442,6 @@ export default function BankUser() {
                     </TabPanel>
                 ))}
             </Box>
-        </Box>
+        </Box >
     );
 }

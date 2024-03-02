@@ -39,6 +39,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ReviewsIcon from '@mui/icons-material/Reviews';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import { Autocomplete, FormHelperText, InputAdornment, MenuItem, OutlinedInput } from "@mui/material";
 const drawerWidth = 240;
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -61,7 +62,15 @@ function OpenBank() {
     const [isBankMember, setIsBankMember] = useState(false);
     const navigate = useNavigate();
     const theme = useTheme();
-
+    const [editedData, setEditedData] = useState({
+        product_name: "",
+        product_type: "",
+        product_type2: "",
+        product_type3: "",
+        product_quantity: 0,
+        product_unit: "",
+        product_price: 0
+    });
 
     useEffect(() => {
         Axios.get(`http://localhost:5000/showProductUser1/${id}`)
@@ -71,6 +80,15 @@ function OpenBank() {
                 // Choose the first product for now
                 if (response.data.length > 0) {
                     setFilteredProducts(response.data[0]);
+                    setEditedData({
+                        product_name: response.data[0].product_name || "",
+                        product_type: Boolean(response.data[0].product_type === 'ทรัพยากรเพื่อเช่าหรือยืม'),
+                        product_type2: Boolean(response.data[0].product_type2 === 'ทรัพยากรเพื่อการซื้อขาย'),
+                        product_type3: Boolean(response.data[0].product_type3 === 'ทรัพยากรเพื่อแลกเปลี่ยน'),
+                        product_quantity: response.data[0].product_quantity || 0,
+                        product_unit: response.data[0].product_unit || "",
+                        product_price: response.data[0].product_price || 0
+                    });
                 }
             })
             .catch((error) => {
@@ -78,12 +96,28 @@ function OpenBank() {
             })
 
     }, []);
-    
+    const handleUpdate = () => {
+        Axios.put(`http://localhost:5000/updateProduct/${id}` , {
+            ...editedData,
+            product_type: editedData.product_type ? 'ทรัพยากรเพื่อเช่าหรือยืม' : '',
+            product_type2: editedData.product_type2 ? 'ทรัพยากรเพื่อการซื้อขาย' : '',
+            product_type3: editedData.product_type3 ? 'ทรัพยากรเพื่อแลกเปลี่ยน' : '',
+        })
+            .then((response) => {
+                console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
+                setFilteredProducts(response.data);
+                navigate("/bank");
+            })
+            .catch((error) => {
+                console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
+            });
+    };
+
     const handleBackbank = () => {
         ReactSession.set("username", username);
         navigate("/bank");
     }
-    
+
     const handleDrawerOpen = () => {
         setOpen(true);
     };
@@ -226,28 +260,28 @@ function OpenBank() {
 
                         <div style={{ marginTop: 50 }}>
                             <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
-                            <TextField disabled id="outlined-disabled" label={filteredProducts.product_name} variant="outlined" sx={{ width: '50ch' }} />
+                            <TextField id="outlined-disabled" label={filteredProducts.product_name} variant="outlined" sx={{ width: '50ch' }} onChange={(e) => setEditedData({ ...editedData, product_name: e.target.value })} />
                         </div>
-                        <FormControl sx={{ marginTop: 5,width: '50ch'  }} component="fieldset" variant="standard">
+                        <FormControl sx={{ marginTop: 5, width: '50ch' }} component="fieldset" variant="standard">
                             <FormLabel component="legend" style={{ color: "black" }}>
                                 ประเภทบริการ :
                             </FormLabel>
                             <FormGroup sx={{ display: 'flex', flexDirection: 'column' }}>
                                 <div style={{ marginTop: 20 }}>
                                     <FormControlLabel
-                                        control={<Checkbox disabled checked={Boolean(filteredProducts.product_type)} />}
+                                        control={<Checkbox checked={editedData.product_type} onChange={(e) => setEditedData({ ...editedData, product_type: e.target.checked ? 'ทรัพยากรเพื่อเช่าหรือยืม' : '' })} />}
                                         label="ทรัพยากรเพื่อเช่าหรือยืม"
                                     />
                                 </div>
                                 <div style={{ marginTop: 20 }}>
                                     <FormControlLabel
-                                        control={<Checkbox disabled checked={Boolean(filteredProducts.product_type2)} />}
+                                        control={<Checkbox checked={editedData.product_type2} onChange={(e) => setEditedData({ ...editedData, product_type2: e.target.checked ? 'ทรัพยากรเพื่อการซื้อขาย' : '' })} />}
                                         label="ทรัพยากรเพื่อการซื้อขาย"
                                     />
                                 </div>
                                 <div style={{ marginTop: 20 }}>
                                     <FormControlLabel
-                                        control={<Checkbox disabled checked={Boolean(filteredProducts.product_type3)} />}
+                                        control={<Checkbox checked={editedData.product_type3} onChange={(e) => setEditedData({ ...editedData, product_type3: e.target.checked ? 'ทรัพยากรเพื่อแลกเปลี่ยน' : '' })} />}
                                         label="ทรัพยากรเพื่อแลกเปลี่ยน"
                                     />
                                 </div>
@@ -269,11 +303,39 @@ function OpenBank() {
 
                         <div style={{ marginTop: 30 }}>
                             <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากร : </FormLabel>
-                            <TextField disabled id="outlined-disabled" label={`${filteredProducts.product_quantity} ${filteredProducts.product_unit}`} variant="outlined" sx={{ width: '50ch' }} />
+                            <OutlinedInput
+                                id="outlined-adornment-weight"
+                                startAdornment={<InputAdornment position="start">{`${filteredProducts.product_quantity} `}</InputAdornment>}
+                                endAdornment={<InputAdornment position="end">{`${filteredProducts.product_unit}`}</InputAdornment>}
+                                label="จำนวนทรัพยากร"
+                                variant="outlined"
+                                sx={{ width: '48ch' }}
+                                onChange={(e) => setEditedData({ ...editedData, product_quantity: e.target.value })}
+                            />
+                           
+                        </div>
+
+                        <div style={{ marginTop: 30 }}>
+                            <FormControl sx={{ display: editedData.product_type2 ? 'block' : 'none' }}>
+                                <FormLabel component="legend" style={{ color: "black" }}>
+                                    ราคาของทรัพยากร:
+                                </FormLabel>
+                                <OutlinedInput
+                                    id="outlined-adornment-weight"
+                                    startAdornment={<InputAdornment position="start">{`${filteredProducts.product_price} `}</InputAdornment>}
+                                    endAdornment={<InputAdornment position="end">บาท</InputAdornment>}
+                                    label={filteredProducts.product_price}
+                                    sx={{ width: '48ch' }}
+                                    onChange={(e) => setEditedData({ ...editedData, product_price: e.target.value })}
+                                />
+                            </FormControl>
                         </div>
                     </div>
+
+
                     <div style={{ display: 'flex', justifyContent: 'space-around', margin: 30 }}>
                         <Button variant="contained" color="error" onClick={handleBackbank}>ย้อนกลับ</Button>
+                        <Button variant="contained" color='primary' onClick={handleUpdate}>บันทึกข้อมูล</Button>
                     </div>
                 </>
             ) : (

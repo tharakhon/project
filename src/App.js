@@ -18,6 +18,7 @@ import Changepage from './ChangPage';
 import Borroww from './borrow2';
 import Review from './review';
 import OpenBank from './openBank';
+import Notifications from './Notifications';
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
         <Route path="borroww" element={<Borroww/>}/>
         <Route path="review" element={<Review/>}/>
         <Route path="openbank" element={<OpenBank/>}/>
+        <Route path="notifications" element={<Notifications/>}/>
         </Routes>
       </BrowserRouter>
    

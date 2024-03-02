@@ -19,10 +19,12 @@ import Menu from '@mui/material/Menu';
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import bk from "../src/image/กรุงเทพ.jpg";
-import ktb from "../src/image/กรุงไทย.jpg";
-import k from "../src/image/กสิกร.jpg";
-import scb from "../src/image/ไทยพานิช.png";
+import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import logo from "../src/image/Logo.png";
 import MenuIcon from '@mui/icons-material/Menu';
 import Drawer from '@mui/material/Drawer';
@@ -32,8 +34,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { styled, useTheme, alpha } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiAppBar from '@mui/material/AppBar';
@@ -56,6 +57,19 @@ import CardHeader from '@mui/material/CardHeader';
 import HomeIcon from '@mui/icons-material/Home';
 import { ReactSession } from 'react-client-session';
 import Popover from '@mui/material/Popover';
+import InboxIcons from '@mui/icons-material/Inbox';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import dayjs from 'dayjs';
+import TextField from '@mui/material/TextField';
+import FormLabel from '@mui/material/FormLabel';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormGroup from "@mui/material/FormGroup";
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import Stack from '@mui/material/Stack';
 
 const setting2 = ['Profile', 'Logout'];
 const settings = ['เรียงด้วยแรงค์', 'เรียงด้วยระยะทาง', 'เรียงด้วยเรตติ้ง'];
@@ -128,6 +142,41 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
+function Label({ componentName, isProOnly }) {
+  const content = (
+    <span>
+      <strong>{componentName}</strong>
+    </span>
+  );
+
+  if (isProOnly) {
+    return (
+      <Stack direction="row" spacing={0.5} component="span">
+        <Tooltip title="Included on Pro package">
+          <a href="https://mui.com/x/introduction/licensing/#pro-plan">
+            <ProSpan />
+          </a>
+        </Tooltip>
+        {content}
+      </Stack>
+    );
+  }
+
+  return content;
+}
+
+const ProSpan = styled('span')({
+  display: 'inline-block',
+  height: '1em',
+  width: '1em',
+  verticalAlign: 'middle',
+  marginLeft: '0.3em',
+  marginBottom: '0.08em',
+  backgroundSize: 'contain',
+  backgroundRepeat: 'no-repeat',
+  backgroundImage: 'url(https://mui.com/static/x/pro.svg)',
+});
+
 function Main12() {
   const username = ReactSession.get("username");
   const [profile, setProfile] = useState([]);
@@ -142,32 +191,85 @@ function Main12() {
   const [bookmarks, setBookmarks] = useState([]);
   const [userImage, setUserImage] = useState('');
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [filteredProduct, setFilteredProduct] = useState([]);
   const [displayBookmarks, setDisplayBookmarks] = useState(false);
   const [codename, setCodeName] = useState([]);
   const [anchorElPopover, setAnchorElPopover] = useState(null);
   const [bankMembers, setBankMembers] = useState([]);
-  const [notifications, setNotifications] = useState([
-    { id: 1, content: 'Notification 1' },
-    { id: 2, content: 'Notification 2' },
-    { id: 3, content: 'Notification 3' },
-    { id: 4, content: 'Notification 4' },
-    // Add more notifications as needed
-  ]);
+  const [notifications, setNotifications] = useState([]);
+  const [originalData, setOriginalData] = useState([]);
+  const [currentView, setCurrentView] = useState('main');
+  const [borrowDate, setBorrowDate] = useState(dayjs());
+  const [returnDate, setReturnDate] = useState(dayjs());
+  const [openOrder, setOpenOrder] = React.useState(false);
+  const [scroll, setScroll] = React.useState('paper');
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const handleNotificationClick = (notificationId) => {
-    // Handle click logic for the selected notification
-    console.log(`Clicked on Notification ${notificationId}`);
+  const descriptionElementRef = React.useRef(null);
+  React.useEffect(() => {
+    if (openOrder) {
+      const { current: descriptionElement } = descriptionElementRef;
+      if (descriptionElement !== null) {
+        descriptionElement.focus();
+      }
+    }
+  }, [openOrder]);
+
+  const handleClickOpen = (product) => () => {
+    setSelectedProduct(product);
+    setBorrowDate(product.order_borrowDate instanceof dayjs ? product.order_borrowDate : dayjs());
+    setReturnDate(product.order_returnDate instanceof dayjs ? product.order_returnDate : dayjs());
+    setOpenOrder(true);
+    setScroll('body');
   };
 
-  const handleOpenPopover = (event) => {
-    setAnchorElPopover(event.currentTarget);
+
+  const switchToInboxView = () => {
+    setCurrentView('inbox');
+  };
+
+
+  const switchToMainView = () => {
+    setCurrentView('main');
+  };
+
+  const switchToActiveView = () => {
+    setCurrentView('active');
+  };
+
+  const handleClose = () => {
+    setOpenOrder(false);
+  };
+
+  console.log('notifications:', notifications);
+
+  const handleOpenPopover = () => {
+    ReactSession.set('username', username)
+    ReactSession.set('bank_name', codename.bank_name)
+    navigate("/notifications");
+  };
+  const calculateTotalPendingNotifications = () => {
+    if (!notifications || !Array.isArray(notifications)) {
+      console.error('Invalid notifications data:', notifications);
+      return 0;
+    }
+    const pendingNotifications = notifications.filter(notification => {
+      return notification.order_status === 'รอการตรวจสอบ';
+    });
+    const totalPendingNotifications = pendingNotifications.reduce((sum, notification) => {
+      return sum + notification.notification_count;
+    }, 0);
+
+    console.log('Total Pending Notifications:', totalPendingNotifications);
+
+    return totalPendingNotifications;
   };
 
   const handleClosePopover = () => {
     setAnchorElPopover(null);
   };
   console.log(username)
-  console.log("bankMembers",bankMembers)
+  console.log("bankMembers", bankMembers)
   console.log('filteredProducts', filteredProducts)
 
 
@@ -185,8 +287,17 @@ function Main12() {
   const handleSearchChange = (event) => {
     const query = event.target.value;
     setSearchQuery(query);
-    filterProducts(query);
+
+    // Check if the query is empty
+    if (query.trim() === "") {
+      // If empty, reset filteredProducts to the original data
+      setFilteredProducts(originalData);
+    } else {
+      // If not empty, filter the products based on the query
+      filterProducts(query);
+    }
   };
+
 
   const filterProducts = (query) => {
     const filtered = filteredProducts.filter((product) =>
@@ -209,6 +320,12 @@ function Main12() {
   const handleOpenUserMenu1 = (event) => {
     setAnchorElUser2(event.currentTarget);
   };
+  const [activeTab, setActiveTab] = useState('pending');
+
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
+  };
+
   const handleMenuOptionClick = (option) => {
     handleCloseUserMenu1();
 
@@ -262,7 +379,21 @@ function Main12() {
       })
 
   }, [username]);
-  
+  useEffect(() => {
+    if (!codename.bank_name) {
+      console.warn('codename.bank_name is null or undefined.');
+      return;
+    }
+    Axios.get(`http://localhost:5000/notifications/${codename.bank_name}`)
+      .then((response) => {
+        console.log("จำนวน notifications:", response.data);
+        setNotifications(response.data);
+      })
+      .catch((error) => {
+        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลจำนวนสมาชิก:", error);
+      });
+  }, [codename.bank_name]);
+
   useEffect(() => {
     Axios.get("http://localhost:5000/showcountuser")
       .then((response) => {
@@ -277,9 +408,10 @@ function Main12() {
           codename: item.bank_codename,
           bankMembers: item.member_count, // Assuming the number of members is available here
         }));
-  
+
         console.log('fetchedProducts', fetchedProducts)
         setFilteredProducts(fetchedProducts);
+        setOriginalData(fetchedProducts);
       })
       .catch((error) => {
         console.error("เกิดข้อผิดพลาดในการดึงข้อมูลจำนวนสมาชิก:", error);
@@ -367,6 +499,39 @@ function Main12() {
       })
 
   }, [username]);
+
+  useEffect(() => {
+    Axios.get(`http://localhost:5000/Inbox/${username}`)
+      .then((response) => {
+        console.log("ข้อมูลที่ได้รับ Inbox:", response.data);
+        const fetchedProducts = response.data.map((item) => ({
+          bank_name: item.bank_name,
+          fullname: item.fullname,
+          image: item.image,
+          bank_image: item.bank_image,
+          order_borrowDate: dayjs(item.order_borrowDate),
+          order_returnDate: dayjs(item.order_returnDate),
+          order_quantity: item.order_quantity,
+          order_status: item.order_status,
+          product_image: item.product_image,
+          product_name: item.product_name,
+          product_quantity: item.product_quantity,
+          product_type: item.product_type,
+          product_type2: item.product_type2,
+          product_type3: item.product_type3,
+          product_type4: item.product_type4,
+          product_unit: item.product_unit,
+        }));
+
+        setFilteredProduct(fetchedProducts);
+
+      })
+      .catch((error) => {
+        console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+      })
+
+  }, []);
+
   const handleToBank = () => {
     ReactSession.set("username", username)
     ReactSession.set("codename", codename.bank_codename);
@@ -410,36 +575,11 @@ function Main12() {
               color="inherit"
               onClick={handleOpenPopover}
             >
-              <Badge color="secondary" badgeContent={notifications.length > 999 ? '999+' : notifications.length}>
+              <Badge color="secondary" badgeContent={calculateTotalPendingNotifications()}>
                 <NotificationsIcon />
               </Badge>
             </IconButton>
-            <Popover
-              open={Boolean(anchorElPopover)}
-              anchorEl={anchorElPopover}
-              onClose={handleClosePopover}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-            >
-              <List>
-                {/* Loop through notifications and create ListItems */}
-                {notifications.map((notification) => (
-                  <ListItem
-                    key={notification.id}
-                    button
-                    onClick={() => handleNotificationClick(notification.id)}
-                  >
-                    <ListItemText primary={notification.content} />
-                  </ListItem>
-                ))}
-              </List>
-            </Popover>
+
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu1} sx={{ p: 0 }}>
@@ -503,7 +643,7 @@ function Main12() {
         <List>
           {['หน้ากลัก'].map((text, index) => (
             <ListItem key={text} disablePadding>
-              <ListItemButton onClick={() => navigate(`/main`)}>
+              <ListItemButton onClick={switchToMainView}>
                 <ListItemIcon>
                   <HomeIcon />
                 </ListItemIcon>
@@ -527,7 +667,7 @@ function Main12() {
         <List>
           {['กิจกรรมของคุณ'].map((text, index) => (
             <ListItem key={text} disablePadding>
-              <ListItemButton onClick={() => navigate('/registerbank')}>
+              <ListItemButton onClick={switchToActiveView}>
                 <ListItemIcon>
                   <AccessTimeIcon />
                 </ListItemIcon>
@@ -548,117 +688,432 @@ function Main12() {
             </ListItem>
           ))}
         </List>
+        <List>
+          {['กล่องข้อความ'].map((text, index) => (
+            <ListItem key={text} disablePadding>
+              <ListItemButton onClick={switchToInboxView}>
+                <ListItemIcon>
+                  <InboxIcons />
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
       </Drawer>
 
-
-      <div style={{ display: 'flex', margin: 10, justifyContent: 'space-between', flexWrap: 'nowrap' }}>
-        <Box>
-          <Tooltip title="Open fillter">
-            <IconButton onClick={handleOpenUserMenu} >
-              <FilterAltSharpIcon fontSize='large' color='info' />
-            </IconButton>
-          </Tooltip>
-          <Menu
-            sx={{ mt: '45px' }}
-            id="menu-appbar"
-            anchorEl={anchorElUser}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            open={Boolean(anchorElUser)}
-            onClose={handleCloseUserMenu}
-          >
-            {settings.map((setting) => (
-              <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                <Typography textAlign="center">{setting}</Typography>
-              </MenuItem>
-            ))}
-          </Menu>
-        </Box>
-
-        <Button variant='contained' sx={{ borderRadius: 20, backgroundColor: '#D62828', color: 'white' }} onClick={handleSubmit}>สร้างธนาคาร</Button></div>
-      <Button variant='contained' sx={{ borderRadius: 20, backgroundColor: '#2196F3', color: 'white' }} onClick={handleDisplayBookmarks}>
-        {displayBookmarks ? 'แสดงทั้งหมด' : 'แสดงบุ๊คมาร์ค'}
-      </Button>
-      <Grid container spacing={2}>
-        {(displayBookmarks ? bookmarks : filteredProducts).map((tab, index) => (
-          <Grid key={index} xs={3}>
-            <Card sx={{ maxWidth: 345, m: 1 }} >
-              <CardHeader
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row-reverse', // Move Avatar to the right
-                  justifyContent: 'space-between', // Add space between Avatar and content
-                  alignItems: 'center',
-                  background: 'linear-gradient(to right, #43e97b 0%, #38f9d7 100%)', // Customize background
-                  color: 'white', // Customize text color
+      {currentView === 'main' && (
+        <>
+          <div style={{ display: 'flex', margin: 10, justifyContent: 'space-between', flexWrap: 'nowrap' }}>
+            <Box>
+              <Tooltip title="Open fillter">
+                <IconButton onClick={handleOpenUserMenu} >
+                  <FilterAltSharpIcon fontSize='large' color='info' />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
                 }}
-                avatar={
-                  <Avatar
-                    src={`http://localhost:5000/image/${tab.rank}`}
-                    alt=''
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                {settings.map((setting) => (
+                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                    <Typography textAlign="center">{setting}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+
+            <Button variant='contained' sx={{ borderRadius: 20, backgroundColor: '#D62828', color: 'white' }} onClick={handleSubmit}>สร้างธนาคาร</Button></div>
+          <Button variant='contained' sx={{ borderRadius: 20, backgroundColor: '#2196F3', color: 'white' }} onClick={handleDisplayBookmarks}>
+            {displayBookmarks ? 'แสดงทั้งหมด' : 'แสดงบุ๊คมาร์ค'}
+          </Button>
+        </>
+      )}
+      {currentView === 'main' && (
+         <Grid container spacing={2}>
+         {filteredProducts.map((bank) => (
+           <Grid item key={bank.title} xs={12} sm={6} md={4} lg={3}>
+             <Card sx={{ maxWidth: 345, m: 1 }}>
+               {/* Card content here */}
+               <CardHeader
+                 sx={{
+                   display: 'flex',
+                   flexDirection: 'row-reverse',
+                   justifyContent: 'space-between',
+                   alignItems: 'center',
+                   background: 'linear-gradient(to right, #43e97b 0%, #38f9d7 100%)',
+                   color: 'white',
+                 }}
+                 avatar={
+                   <Avatar
+                     src={`http://localhost:5000/image/${bank.rank}`}
+                     alt=''
+                     sx={{
+                       backgroundColor: 'transparent',
+                     }}
+                   />
+                 }
+               />
+               <CardMedia
+                 component="img"
+                 height="300"
+                 image={`http://localhost:5000/image/${bank.image}`}
+                 title="รูปภาพธนาคาร"
+               />
+               <CardContent>
+                 <Typography gutterBottom variant="h5" component="div">
+                   {bank.title}
+                 </Typography>
+                 <Typography gutterBottom variant="body1" component="div">
+                   จำนวนสมาชิกทั้งหมด {bank.bankMembers} คน
+                 </Typography>
+                 <Box
                     sx={{
-                      backgroundColor: 'transparent', // Set a transparent background
+                      width: 200,
+                      display: 'flex',
+                      alignItems: 'center',
                     }}
-                  />
-                }
-              />
+                  >
+                    <Rating
+                      name="text-feedback"
+                      value={bank.rating}
+                      readOnly
+                      precision={0.5}
 
-              <CardMedia
-                component="img"
-                height="300"
-                image={`http://localhost:5000/image/${tab.image}`}
-                title="รูปภาพธนาคาร"
-              />
-              <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  {tab.title}
+                      emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+                    />
+                    <Box sx={{ ml: 2 }} onClick={handleClickReviw}>{bank.rating}</Box>
+                  </Box>
+                  {currentPosition && (
+                    <Typography>
+                      Distance: {bank.distance ? bank.distance.toFixed(2) : 'N/A'} km
+                    </Typography>
+                  )}
+               </CardContent>
+               <CardActions>
+                 <Button size="medium" onClick={() => handleOpenbankuser(bank.title)}>
+                   เปิดดูทรัพยากรในธนาคาร
+                 </Button>
+                 <Button size="medium" onClick={() => handleBookmarkClick(bank.title)}>
+                   {bookmarks.some((item) => item.title === bank.title) ? 'ยกเลิกบุ๊คมาร์ค' : 'บุ๊คมาร์ค'}
+                 </Button>
+               </CardActions>
+             </Card>
+           </Grid>
+         ))}
+       </Grid>
+      )}
+      {currentView === 'active' && (
+        <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
+          {filteredProduct.length > 0 ? (
+            <>
+              {filteredProduct.map((item) => (
+                item.order_status === 'รอการตรวจสอบ' && (
+                  <Grid item key={item.order_id} xs={12}>
+                    <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
+                      <CardMedia
+                        component="img"
+                        sx={{ width: 151 }}
+                        image={item.image}
+                        alt="รูป user"
+                      />
+                      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                        <CardContent sx={{ flex: '1 0 auto' }}>
+                          <Typography component="div" variant="h5">
+                            {item.fullname}
+                          </Typography>
+                          <Typography variant="subtitle1" color="text.secondary" component="div">
+                            ได้ทำรายการของ ธนาคาร : {item.bank_name}
+                          </Typography>
+                          <Typography variant="subtitle1" color="text.secondary" component="div">
+                            สถานะปัจจุบัน : {item.order_status}
+                          </Typography>
+                        </CardContent>
+                        <CardActions>
+                          <Button onClick={handleClickOpen(item)} size="medium">เปิดอ่าน</Button>
+                        </CardActions>
+                      </Box>
+                    </Card>
+                  </Grid>
+                )
+              ))}
+            </>
+          ) : (
+            <p>ไม่มีกิจกรรม</p>
+          )}
+        </Grid>
+      )}
+      {currentView === 'inbox' && (
+        <div>
 
-                </Typography>
-                <Typography gutterBottom variant="body1" component="div">
-                  จำนวนสมาชิกทั้งหมด {tab.bankMembers} คน
+          <Tabs value={activeTab} onChange={handleTabChange}>
+            <Tab label="รอการตรวจสอบ" value="pending" />
+            <Tab label="อนุมัติแล้ว" value="approved" />
+            <Tab label="ไม่อนุมัติ" value="rejected" />
+          </Tabs>
 
-                </Typography>
 
-                <Box
-                  sx={{
-                    width: 200,
-                    display: 'flex',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Rating
-                    name="text-feedback"
-                    value={tab.rating}
-                    readOnly
-                    precision={0.5}
-
-                    emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
-                  />
-                  <Box sx={{ ml: 2 }} onClick={handleClickReviw}>{tab.rating}</Box>
-                </Box>
-                {currentPosition && (
-                  <Typography>
-                    Distance: {tab.distance ? tab.distance.toFixed(2) : 'N/A'} km
-                  </Typography>
+          {activeTab === 'pending' && (
+            <div>
+              <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
+                {filteredProduct.length > 0 ? (
+                  <>
+                    {filteredProduct.map((item) => (
+                      item.order_status === 'รอการตรวจสอบ' && (
+                        <Grid item key={item.order_id} xs={12}>
+                          <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
+                            <CardMedia
+                              component="img"
+                              sx={{ width: 151 }}
+                              image={item.image}
+                              alt="รูป user"
+                            />
+                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                              <CardContent sx={{ flex: '1 0 auto' }}>
+                                <Typography component="div" variant="h5">
+                                  {item.fullname}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  ได้ทำรายการของ ธนาคาร : {item.bank_name}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  สถานะปัจจุบัน : {item.order_status}
+                                </Typography>
+                              </CardContent>
+                              <CardActions>
+                                <Button onClick={handleClickOpen(item)} size="medium">เปิดอ่าน</Button>
+                              </CardActions>
+                            </Box>
+                          </Card>
+                        </Grid>
+                      )
+                    ))}
+                  </>
+                ) : (
+                  <p>ไม่มีรายการที่รอการตรวจสอบ</p>
                 )}
-              </CardContent>
-              <CardActions>
-                <Button size="medium" onClick={() => handleOpenbankuser(tab.title)}>เปิดดูทรัพยากรในธนาคาร</Button>
-                <Button size="medium" onClick={() => handleBookmarkClick(tab.title)}>
-                  {bookmarks.some((item) => item.title === tab.title) ? 'ยกเลิกบุ๊คมาร์ค' : 'บุ๊คมาร์ค'}
-                </Button>
-              </CardActions>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+              </Grid>
+            </div>
+          )}
+
+          {activeTab === 'approved' && (
+            <div>
+              <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
+                {filteredProduct.length > 0 ? (
+                  <>
+                    {filteredProduct.map((item) => (
+                      item.order_status === 'อนุมัติให้ทำรายการ' && (
+                        <Grid item key={item.order_id} xs={12}>
+                          <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
+                            <CardMedia
+                              component="img"
+                              sx={{ width: 151 }}
+                              image={item.image}
+                              alt="รูป user"
+                            />
+                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                              <CardContent sx={{ flex: '1 0 auto' }}>
+                                <Typography component="div" variant="h5">
+                                  {item.fullname}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  ได้ทำรายการของ ธนาคาร : {item.bank_name}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  สถานะปัจจุบัน : {item.order_status}
+                                </Typography>
+                              </CardContent>
+                              <CardActions>
+                                <Button onClick={handleClickOpen(item)} size="medium">เปิดอ่าน</Button>
+                              </CardActions>
+                            </Box>
+                          </Card>
+                        </Grid>
+                      )
+                    ))}
+                  </>
+                ) : (
+                  <p>ไม่มีรายการที่รอการตรวจสอบ</p>
+                )}
+              </Grid>
+            </div>
+          )}
+
+          {activeTab === 'rejected' && (
+            <div>
+              <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
+                {filteredProduct.length > 0 ? (
+                  <>
+                    {filteredProduct.map((item) => (
+                      item.order_status === 'ไม่อนุมัติให้ทำรายการ' && (
+                        <Grid item key={item.order_id} xs={12}>
+                          <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
+                            <CardMedia
+                              component="img"
+                              sx={{ width: 151 }}
+                              image={item.image}
+                              alt="รูป user"
+                            />
+                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                              <CardContent sx={{ flex: '1 0 auto' }}>
+                                <Typography component="div" variant="h5">
+                                  {item.fullname}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  ได้ทำรายการของ ธนาคาร : {item.bank_name}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  สถานะปัจจุบัน : {item.order_status}
+                                </Typography>
+                              </CardContent>
+                              <CardActions>
+                                <Button onClick={handleClickOpen(item)} size="medium">เปิดอ่าน</Button>
+                              </CardActions>
+                            </Box>
+                          </Card>
+                        </Grid>
+                      )
+                    ))}
+                  </>
+                ) : (
+                  <p>ไม่มีรายการที่รอการตรวจสอบ</p>
+                )}
+              </Grid>
+            </div>
+          )}
+        </div>
+      )}
+      <Dialog
+        open={openOrder}
+        onClose={handleClose}
+        scroll={scroll}
+        aria-labelledby="scroll-dialog-title"
+        aria-describedby="scroll-dialog-description"
+      >
+        <DialogTitle id="scroll-dialog-title" sx={{ textAlign: "center" }}>คุณได้ทำรายการของธนาคาร {selectedProduct ? selectedProduct.bank_name : 'N/A'} </DialogTitle>
+        <DialogContent dividers={scroll === 'paper'}>
+          <DialogContentText
+            id="scroll-dialog-description"
+            ref={descriptionElementRef}
+            tabIndex={-1}
+          >
+            {selectedProduct ? (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <Card sx={{ maxWidth: 345, m: 1 }} >
+                    <CardMedia
+                      component="img"
+                      height="300"
+                      image={`http://localhost:5000/image/${selectedProduct.product_image}`}
+                      title="รูปภาพทรัพยากร"
+                    />
+                  </Card>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+
+                  <div style={{ marginTop: 50 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
+                    <TextField disabled id="outlined-disabled" label={selectedProduct.product_name} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
+                  <FormControl sx={{ marginTop: 5, width: '50ch' }} component="fieldset" variant="standard">
+                    <FormLabel component="legend" style={{ color: "black" }}>
+                      ประเภทบริการ :
+                    </FormLabel>
+                    <FormGroup sx={{ display: 'flex', flexDirection: 'column' }}>
+                      <div style={{ marginTop: 20 }}>
+                        <FormControlLabel
+                          control={<Checkbox disabled checked={Boolean(selectedProduct.product_type)} />}
+                          label="ทรัพยากรเพื่อเช่าหรือยืม"
+                        />
+                      </div>
+                      <div style={{ marginTop: 20 }}>
+                        <FormControlLabel
+                          control={<Checkbox disabled checked={Boolean(selectedProduct.product_type2)} />}
+                          label="ทรัพยากรเพื่อการซื้อขาย"
+                        />
+                      </div>
+                      <div style={{ marginTop: 20 }}>
+                        <FormControlLabel
+                          control={<Checkbox disabled checked={Boolean(selectedProduct.product_type3)} />}
+                          label="ทรัพยากรเพื่อแลกเปลี่ยน"
+                        />
+                      </div>
+                    </FormGroup>
+                  </FormControl>
+                  <div style={{ marginTop: 20 }}>
+                    <Box
+                      component="form"
+                      sx={{
+                        '& .MuiTextField-root': { m: 1, width: '25ch' },
+                      }}
+                      noValidate
+                      autoComplete="off"
+                    ></Box>
+                    <FormLabel component="legend" style={{ color: 'black' }}>ประเภททรัพยากรทางการเกษตร:</FormLabel>
+                    <TextField disabled id="outlined-disabled" label={selectedProduct.product_type4} variant="outlined" sx={{ width: '50ch' }} />
+
+                  </div>
+
+                  <div style={{ marginTop: 30 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการทำรายการ : </FormLabel>
+                    <TextField disabled id="outlined-disabled" label={`${selectedProduct.order_quantity} ${selectedProduct.product_unit}`} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
+                  <div >
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer
+                        components={[
+                          'DatePicker',
+                        ]}
+                        sx={{ width: '50ch', marginTop: 3 }}
+                      >
+                        <DemoItem label={<Label componentName="วันที่จะมารับทรัพยากร" valueType="date" />} >
+                          <DatePicker
+                            disabled
+                            value={borrowDate}
+                            renderInput={(params) => <TextField {...params} variant="outlined" />}
+                          />
+                        </DemoItem>
+                      </DemoContainer>
+                    </LocalizationProvider>
+                  </div>
+                  <div >
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer
+                        components={[
+                          'DatePicker',
+                        ]}
+                        sx={{ width: '50ch', marginTop: 3 }}
+                      >
+                        <DemoItem label={<Label componentName="วันที่จะนำทรัพยากรมาคืน" valueType="date" />} >
+                          <DatePicker
+                            disabled
+                            value={returnDate}
+                            renderInput={(params) => <TextField {...params} variant="outlined" />}
+                          />
+                        </DemoItem>
+                      </DemoContainer>
+                    </LocalizationProvider>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p>Details not found.</p>
+            )}
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
     </div >
 
   );

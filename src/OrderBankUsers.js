@@ -404,7 +404,7 @@ function OrderBankUsers() {
                                 </>
                             )}
                         </div>
-                        <div style={{ marginTop: 30 }}>
+                        <div style={{ marginTop: 20 }}>
                             <FormLabel component="legend" style={{ color: 'red' }}>
                                 จำนวนทรัพยากร : {filteredProduct.product_quantity} {filteredProduct.product_unit}
                             </FormLabel>
