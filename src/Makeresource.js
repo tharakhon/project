@@ -143,6 +143,10 @@ function Resource() {
     setSelectedUnit("กรัม");
   };
 
+  const handleRemoveImage = () => {
+    setImage(null);
+    setImagePreview(null);
+  };
   return (
     <div>
       <NavBarBank />
@@ -150,16 +154,25 @@ function Resource() {
       <div style={{ display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center" }}>
         <h1 style={textStyle}> เพิ่มทรัพยากรของคุณ</h1>
         {imagePreview ? (
-          <div style={{ width: "150px", height: "150px", borderRadius: "50%", overflow: "hidden" }}>
+          <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
             <img
               src={imagePreview}
               alt="Selected"
               style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
+                width: '30ch',
+                height: '30ch',
+                objectFit: 'cover',
               }}
             />
+            <Button
+              variant="outlined"
+              size="small"
+              color="error"
+              onClick={handleRemoveImage}
+              sx={{ marginTop: 1 }}
+            >
+              Remove Image
+            </Button>
           </div>
         ) : (
           <div>
@@ -167,19 +180,21 @@ function Resource() {
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              style={{ display: "none" }}
+              style={{ display: 'none' }}
               id="image-upload"
             />
             <label htmlFor="image-upload">
-              <Button variant="outlined" component="span" sx={{ margin: 1 }}>
+              <Button
+                variant="outlined"
+                component="span"
+                sx={{ margin: 1 }}
+              >
                 Upload Image
               </Button>
             </label>
           </div>
         )}
         <div style={{ marginTop: 50 }}>
-
-
           <FormLabel component="legend" style={{ color: "black" }}>
             ชื่อทรัพยากร:
           </FormLabel>
@@ -200,7 +215,7 @@ function Resource() {
             <FormControlLabel
               control={<Checkbox checked={resourceForRent !== ""} onChange={() => handleCheckboxChange("ทรัพยากรเพื่อเช่าหรือยืม", setResourceForRent)} />}
               label="ทรัพยากรเพื่อเช่าหรือยืม"
-              
+
             />
             <FormControlLabel
               control={<Checkbox checked={resourceForSale !== ""} onChange={() => handleCheckboxChange("ทรัพยากรเพื่อการซื้อขาย", setResourceForSale)} />}

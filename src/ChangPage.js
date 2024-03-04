@@ -157,6 +157,8 @@ function Changepage() {
             .then((response) => {
                 console.log(response.data);
                 ReactSession.set('bank_name', bank_name);
+                ReactSession.set('id', id);
+                ReactSession.set('bank_codename', filteredProducts.bank_codename);
                 ReactSession.set('username', username);
                 navigate("/borroww");
             })

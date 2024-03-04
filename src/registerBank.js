@@ -23,7 +23,7 @@ function RegisterBank() {
   const [address, setAddress] = useState('');
   const navigate = useNavigate();
   const [currentPosition, setCurrentPosition] = useState(null);
-  const [codename,setCodeName] =useState('');
+  const [codename, setCodeName] = useState('');
   const [isDataSaved, setIsDataSaved] = useState(false);
   const [medals, setMedals] = useState({
     bronze: '',
@@ -33,7 +33,7 @@ function RegisterBank() {
   });
   console.log(medals)
   console.log(profile)
-  
+
 
   console.log(address)
   console.log(tel)
@@ -89,37 +89,37 @@ function RegisterBank() {
   }, []);
   const handleSubmit = () => {
     const formData = new FormData()
-        formData.append("bank_codename", codename);
-        formData.append("bank_email", username);
-        formData.append("bank_telephone", tel);
-        formData.append('bank_address', address);
-        formData.append("bank_name", profile);
-        formData.append("bank_latitude", currentPosition.lat);
-        formData.append("bank_longitude", currentPosition.lon);
-        formData.append('bank_image', image);
-        formData.append('bank_bronze', medals.bronze);
-        formData.append('bank_silver', medals.silver);
-        formData.append('bank_gold', medals.gold);
-        formData.append('bank_platinum', medals.phat)
-    Axios.post('http://localhost:5000/bank_create' ,formData , {
-      headers: {'Content-Type': 'multipart/form-data'}, 
+    formData.append("bank_codename", codename);
+    formData.append("bank_email", username);
+    formData.append("bank_telephone", tel);
+    formData.append('bank_address', address);
+    formData.append("bank_name", profile);
+    formData.append("bank_latitude", currentPosition.lat);
+    formData.append("bank_longitude", currentPosition.lon);
+    formData.append('bank_image', image);
+    formData.append('bank_bronze', medals.bronze);
+    formData.append('bank_silver', medals.silver);
+    formData.append('bank_gold', medals.gold);
+    formData.append('bank_platinum', medals.phat)
+    Axios.post('http://localhost:5000/bank_create', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
       .then((response) => {
         console.log(response.data);
         setIsDataSaved(true);
-        if(response.data.Status === 'Success') {
+        if (response.data.Status === 'Success') {
           console.log("File Successfully Uploaded");
-      }else{
-        console.error("Error");
-      }
-  })
-  .catch(er => console.log(er))
+        } else {
+          console.error("Error");
+        }
+      })
+      .catch(er => console.log(er))
   }
   const handleBack = () => {
     navigate('/main');
   }
   const handleNext = () => {
-    ReactSession.set("codename",  codename);
+    ReactSession.set("codename", codename);
     navigate(`/bank`);
   }
 
@@ -132,15 +132,14 @@ function RegisterBank() {
       setImagePreview(imageUrl);
     }
   };
-  const circularImageContainer = {
-    width: '150px',
-    height: '150px',
-    borderRadius: '50%',
-    overflow: 'hidden',
-  };
   const handleImageClick = () => {
     // Trigger the file input when the image is clicked
     document.getElementById("image-upload").click();
+  };
+
+  const handleRemoveImage = () => {
+    setImage(null);
+    setImagePreview(null);
   };
   return (
     <div>
@@ -159,16 +158,25 @@ function RegisterBank() {
         <div style={{ display: 'flex', flexDirection: 'column', width: '50ch' }}>
           <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
             {imagePreview ? (
-              <div style={circularImageContainer}>
+              <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
                 <img
                   src={imagePreview}
                   alt="Selected"
                   style={{
-                    width: '100%',
-                    height: '100%',
+                    width: '30ch',
+                    height: '30ch',
                     objectFit: 'cover',
                   }}
                 />
+                <Button
+                  variant="outlined"
+                  size="small"
+                  color="error"
+                  onClick={handleRemoveImage}
+                  sx={{ marginTop: 1 }}
+                >
+                  Remove Image
+                </Button>
               </div>
             ) : (
               <div>

@@ -46,12 +46,12 @@ import Select from '@mui/material/Select';
 const drawerWidth = 240;
 
 const DrawerHeader = styled('div')(({ theme }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
 }));
 
 const ProSpan = styled('span')({
@@ -104,7 +104,7 @@ const textStyle = {
   fontWeight: 'normal',
 };
 const UnitDropdown = ({ selectedUnit, handleUnitChange }) => {
-  const units = ['กรัม', 'กิโลกรัม', 'ชิ้น', 'คัน', 'ถุง', 'กระสอบ','ลูก','หวี']; // เพิ่มหน่วยตามที่ต้องการ
+  const units = ['กรัม', 'กิโลกรัม', 'ชิ้น', 'คัน', 'ถุง', 'กระสอบ', 'ลูก', 'หวี']; // เพิ่มหน่วยตามที่ต้องการ
 
   return (
     <FormControl fullWidth>
@@ -134,27 +134,29 @@ function Borroww() {
   const [imagePreview, setImagePreview] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const bank_name = ReactSession.get("bank_name");
+  const bank_codename = ReactSession.get("bank_codename");
+  const id = ReactSession.get("id");
   const [open, setOpen] = useState(false);
   const username = ReactSession.get("username");
   const [isDataSaved, setIsDataSaved] = useState(false);
   const theme = useTheme();
   const [selectedUnit, setSelectedUnit] = useState('กรัม');
-  console.log(selectedUnit)
+  console.log(bank_codename)
 
   const handleUnitChange = (event) => {
     setSelectedUnit(event.target.value);
   };
 
- 
+
   const handleDrawerOpen = () => {
-      setOpen(true);
+    setOpen(true);
   };
   const handleClick = () => {
-      ReactSession.set('username', username)
-      navigate("/profile")
+    ReactSession.set('username', username)
+    navigate("/profile")
   }
   const handleDrawerClose = () => {
-      setOpen(false);
+    setOpen(false);
   };
   const handleCurrencyChange = (event, value) => {
     setSelectedCurrency(value);
@@ -169,15 +171,13 @@ function Borroww() {
       setImagePreview(imageUrl);
     }
   };
-  const circularImageContainer = {
-    width: '150px',
-    height: '150px',
-    borderRadius: '50%',
-    overflow: 'hidden',
-  };
   const handleImageClick = () => {
     // Trigger the file input when the image is clicked
     document.getElementById("image-upload").click();
+  };
+  const handleRemoveImage = () => {
+    setImage(null);
+    setImagePreview(null);
   };
   const handleSubmit = () => {
     ReactSession.set('username', username)
@@ -191,38 +191,29 @@ function Borroww() {
   };
 
   const handleAddData = () => {
-    Axios.post('http://localhost:5000/userbank_exchange', {
-      bank_name : bank_name,
-       userbank_email : username, 
-       userbank_productname : profile,
-       userbank_productimage : image.name,
-       userbank_producttype1 :selectedCurrency.label,
-       userbank_productquantity : quantity,
-       userbank_unit:selectedUnit,
-       userbank_productdetails : additionalDetails,
-       userbank_productdate : selectedDate,
-
-      // ... other data
+    const formData = new FormData()
+    formData.append("orderExchange_id", id);
+    formData.append("bank_codename", bank_codename);
+    formData.append("bank_name", bank_name);
+    formData.append("userbank_email", username);
+    formData.append('userbank_productname', profile);
+    formData.append("userbank_productimage", image);
+    formData.append("userbank_producttype1", selectedCurrency.label);
+    formData.append("userbank_productquantity", quantity);
+    formData.append('userbank_unit', selectedUnit);
+    formData.append('userbank_productdetails', additionalDetails);
+    Axios.post('http://localhost:5000/userbank_exchange', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
       .then((response) => {
         console.log(response.data);
         setIsDataSaved(true);
-        // Redirect to the bank page on successful registration
-
-      })
-      .catch((error) => {
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          console.error("Server Error:", error.response.data);
-        } else if (error.request) {
-          // The request was made but no response was received
-          console.error("No Response from Server");
+        if (response.data.Status === 'Success') {
+          console.log("File Successfully Uploaded");
         } else {
-          // Something happened in setting up the request that triggered an Error
-          console.error("Error:", error.message);
+          console.error("Error");
         }
-      });
+      })
   }
   return (
     <div>
@@ -344,17 +335,25 @@ function Borroww() {
       <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
         <h1 style={textStyle}> ทรัพยากรที่คุณนำไปแลกเปลี่ยน</h1>
         {imagePreview ? (
-          <div style={circularImageContainer}>
+          <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
             <img
               src={imagePreview}
               alt="Selected"
               style={{
-                width: '100%',
-                height: '100%',
+                width: '30ch',
+                height: '30ch',
                 objectFit: 'cover',
               }}
-              
             />
+            <Button
+              variant="outlined"
+              size="small"
+              color="error"
+              onClick={handleRemoveImage}
+              sx={{ marginTop: 1 }}
+            >
+              Remove Image
+            </Button>
           </div>
         ) : (
           <div>
@@ -378,7 +377,7 @@ function Borroww() {
         )}
         <div style={{ marginTop: 50 }}>
           <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร:</FormLabel>
-          <TextField id="outlined-basic" label="" variant="outlined" sx={{ width: '50ch' }}onChange={(e) => setProfile(e.target.value)} />
+          <TextField id="outlined-basic" label="" variant="outlined" sx={{ width: '50ch' }} onChange={(e) => setProfile(e.target.value)} />
         </div>
 
         <div style={{ marginTop: 20 }}>
@@ -403,13 +402,13 @@ function Borroww() {
         </div>
         <div style={{ marginTop: 30 }}>
           <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการแลกเปลี่ยน:</FormLabel>
-          <TextField sx={{ width: 435 }} 
-          label="ใส่จำนวนทรัพยากรที่คุณต้องการ" 
-          value={ quantity} 
-          onChange={(e) => setQuantity(e.target.value)} 
-          InputProps={{
+          <TextField sx={{ width: 435 }}
+            label="ใส่จำนวนทรัพยากรที่คุณต้องการ"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            InputProps={{
               endAdornment: (
-                <InputAdornment position="end">
+                <InputAdornment position="end" sx={{ display: 'flex', justifyContent: 'end' }}>
                   <UnitDropdown
                     selectedUnit={selectedUnit}
                     handleUnitChange={handleUnitChange}
@@ -423,24 +422,9 @@ function Borroww() {
           <TextField
             id="outlined-multiline-static"
             sx={{ width: '50ch' }}
-            value={additionalDetails} onChange={(e) => setAdditionalDetails(e.target.value)} 
-            />
+            value={additionalDetails} onChange={(e) => setAdditionalDetails(e.target.value)}
+          />
         </div>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DemoContainer
-            components={[
-              'DatePicker',
-            ]}
-            sx={{ width: '50ch' }}
-          >
-            <DemoItem label={<Label componentName="วันที่จะนำของมาแลกเปลี่ยน" valueType="date" />}>
-              <DatePicker 
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e)}
-              />
-            </DemoItem>
-          </DemoContainer>
-        </LocalizationProvider>
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-around', margin: 40 }}>
         <Button variant="contained" size="large" color="error" onClick={handleBack}> ย้อนกลับ </Button>

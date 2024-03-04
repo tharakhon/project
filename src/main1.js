@@ -192,6 +192,7 @@ function Main12() {
   const [userImage, setUserImage] = useState('');
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [filteredProduct, setFilteredProduct] = useState([]);
+  const [filteredProductInbox, setFilteredProductInbox] = useState([]);
   const [displayBookmarks, setDisplayBookmarks] = useState(false);
   const [codename, setCodeName] = useState([]);
   const [anchorElPopover, setAnchorElPopover] = useState(null);
@@ -202,9 +203,13 @@ function Main12() {
   const [borrowDate, setBorrowDate] = useState(dayjs());
   const [returnDate, setReturnDate] = useState(dayjs());
   const [openOrder, setOpenOrder] = React.useState(false);
+  const [openOrder1, setOpenOrder1] = React.useState(false);
   const [scroll, setScroll] = React.useState('paper');
   const [selectedProduct, setSelectedProduct] = useState(null);
-
+  const [selectedProducts, setSelectedProducts] = useState(null);
+  const [orderExchange_borrowDate, setOrderExchange_borrowDate] = useState(dayjs());
+  const [openNextDialog, setOpenNextDialog] = React.useState(false);
+console.log("notifications",notifications)
   const descriptionElementRef = React.useRef(null);
   React.useEffect(() => {
     if (openOrder) {
@@ -214,7 +219,15 @@ function Main12() {
       }
     }
   }, [openOrder]);
-
+  const descriptionElementRefs = React.useRef(null);
+  React.useEffect(() => {
+    if (openOrder1) {
+      const { current: descriptionElement } = descriptionElementRef;
+      if (descriptionElement !== null) {
+        descriptionElement.focus();
+      }
+    }
+  }, [openOrder1]);
   const handleClickOpen = (product) => () => {
     setSelectedProduct(product);
     setBorrowDate(product.order_borrowDate instanceof dayjs ? product.order_borrowDate : dayjs());
@@ -222,7 +235,12 @@ function Main12() {
     setOpenOrder(true);
     setScroll('body');
   };
-
+  const handleClickOpen1 = (product) => () => {
+    setSelectedProducts(product);
+    setOrderExchange_borrowDate(product.orderExchange_borrowDate instanceof dayjs ? product.orderExchange_borrowDate : dayjs());
+    setOpenOrder1(true);
+    setScroll('body');
+  };
 
   const switchToInboxView = () => {
     setCurrentView('inbox');
@@ -240,8 +258,10 @@ function Main12() {
   const handleClose = () => {
     setOpenOrder(false);
   };
-
-  console.log('notifications:', notifications);
+  const handleClose1 = () => {
+    setOpenOrder1(false);
+    setOpenNextDialog(false);
+  };
 
   const handleOpenPopover = () => {
     ReactSession.set('username', username)
@@ -254,10 +274,13 @@ function Main12() {
       return 0;
     }
     const pendingNotifications = notifications.filter(notification => {
-      return notification.order_status === 'รอการตรวจสอบ';
+      return (
+        notification.order_status === 'รอการตรวจสอบ' ||
+        notification.userbank_status === 'รอการตรวจสอบ'
+      );
     });
     const totalPendingNotifications = pendingNotifications.reduce((sum, notification) => {
-      return sum + notification.notification_count;
+      return sum + notification.combined_count;
     }, 0);
 
     console.log('Total Pending Notifications:', totalPendingNotifications);
@@ -268,10 +291,6 @@ function Main12() {
   const handleClosePopover = () => {
     setAnchorElPopover(null);
   };
-  console.log(username)
-  console.log("bankMembers", bankMembers)
-  console.log('filteredProducts', filteredProducts)
-
 
   const handleBookmarkClick = (title) => {
     const isBookmarked = bookmarks.some((item) => item.title === title);
@@ -378,7 +397,7 @@ function Main12() {
         console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
       })
 
-  }, [username]);
+  }, [username, userImage]);
   useEffect(() => {
     if (!codename.bank_name) {
       console.warn('codename.bank_name is null or undefined.');
@@ -416,7 +435,7 @@ function Main12() {
       .catch((error) => {
         console.error("เกิดข้อผิดพลาดในการดึงข้อมูลจำนวนสมาชิก:", error);
       });
-  }, []);
+  }, [filteredProducts]);
   const handleSubmit = () => {
     navigate(`/registerbank`)
   }
@@ -531,6 +550,42 @@ function Main12() {
       })
 
   }, []);
+  useEffect(() => {
+    Axios.get(`http://localhost:5000/Inbox1/${username}`)
+      .then((response) => {
+        console.log("ข้อมูลที่ได้รับ:", response.data);
+        const fetchedProduct = response.data.map((item) => ({
+          orderExchange_id: item.orderExchange_id,
+          bank_name: item.bank_name,
+          fullname: item.fullname,
+          image: item.image,
+          product_name: item.product_name,
+          product_image: item.product_image,
+          product_type: item.product_type,
+          product_type2: item.product_type2,
+          product_type3: item.product_type3,
+          product_type4: item.product_type4,
+          product_unit: item.product_unit,
+          product_details: item.product_details,
+          orderExchange_borrowDate: dayjs(item.orderExchange_borrowDate),
+          orderExchange_quantity: item.orderExchange_quantity,
+          userbank_status: item.userbank_status,
+          userbank_productname: item.userbank_productname,
+          userbank_productimage: item.userbank_productimage,
+          userbank_producttype1: item.userbank_producttype1,
+          userbank_productquantity: item.userbank_productquantity,
+          userbank_unit: item.userbank_unit,
+          userbank_productdetails: item.userbank_productdetails,
+        }));
+
+        setFilteredProductInbox(fetchedProduct);
+
+      })
+      .catch((error) => {
+        console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+      })
+
+  }, [username]);
 
   const handleToBank = () => {
     ReactSession.set("username", username)
@@ -742,44 +797,44 @@ function Main12() {
         </>
       )}
       {currentView === 'main' && (
-         <Grid container spacing={2}>
-         {filteredProducts.map((bank) => (
-           <Grid item key={bank.title} xs={12} sm={6} md={4} lg={3}>
-             <Card sx={{ maxWidth: 345, m: 1 }}>
-               {/* Card content here */}
-               <CardHeader
-                 sx={{
-                   display: 'flex',
-                   flexDirection: 'row-reverse',
-                   justifyContent: 'space-between',
-                   alignItems: 'center',
-                   background: 'linear-gradient(to right, #43e97b 0%, #38f9d7 100%)',
-                   color: 'white',
-                 }}
-                 avatar={
-                   <Avatar
-                     src={`http://localhost:5000/image/${bank.rank}`}
-                     alt=''
-                     sx={{
-                       backgroundColor: 'transparent',
-                     }}
-                   />
-                 }
-               />
-               <CardMedia
-                 component="img"
-                 height="300"
-                 image={`http://localhost:5000/image/${bank.image}`}
-                 title="รูปภาพธนาคาร"
-               />
-               <CardContent>
-                 <Typography gutterBottom variant="h5" component="div">
-                   {bank.title}
-                 </Typography>
-                 <Typography gutterBottom variant="body1" component="div">
-                   จำนวนสมาชิกทั้งหมด {bank.bankMembers} คน
-                 </Typography>
-                 <Box
+        <Grid container spacing={2}>
+          {filteredProducts.map((bank) => (
+            <Grid item key={bank.title} xs={12} sm={6} md={4} lg={3}>
+              <Card sx={{ maxWidth: 345, m: 1 }}>
+                {/* Card content here */}
+                <CardHeader
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row-reverse',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    background: 'linear-gradient(to right, #43e97b 0%, #38f9d7 100%)',
+                    color: 'white',
+                  }}
+                  avatar={
+                    <Avatar
+                      src={`http://localhost:5000/image/${bank.rank}`}
+                      alt=''
+                      sx={{
+                        backgroundColor: 'transparent',
+                      }}
+                    />
+                  }
+                />
+                <CardMedia
+                  component="img"
+                  height="300"
+                  image={`http://localhost:5000/image/${bank.image}`}
+                  title="รูปภาพธนาคาร"
+                />
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                    {bank.title}
+                  </Typography>
+                  <Typography gutterBottom variant="body1" component="div">
+                    จำนวนสมาชิกทั้งหมด {bank.bankMembers} คน
+                  </Typography>
+                  <Box
                     sx={{
                       width: 200,
                       display: 'flex',
@@ -801,53 +856,85 @@ function Main12() {
                       Distance: {bank.distance ? bank.distance.toFixed(2) : 'N/A'} km
                     </Typography>
                   )}
-               </CardContent>
-               <CardActions>
-                 <Button size="medium" onClick={() => handleOpenbankuser(bank.title)}>
-                   เปิดดูทรัพยากรในธนาคาร
-                 </Button>
-                 <Button size="medium" onClick={() => handleBookmarkClick(bank.title)}>
-                   {bookmarks.some((item) => item.title === bank.title) ? 'ยกเลิกบุ๊คมาร์ค' : 'บุ๊คมาร์ค'}
-                 </Button>
-               </CardActions>
-             </Card>
-           </Grid>
-         ))}
-       </Grid>
+                </CardContent>
+                <CardActions>
+                  <Button size="medium" onClick={() => handleOpenbankuser(bank.title)}>
+                    เปิดดูทรัพยากรในธนาคาร
+                  </Button>
+                  <Button size="medium" onClick={() => handleBookmarkClick(bank.title)}>
+                    {bookmarks.some((item) => item.title === bank.title) ? 'ยกเลิกบุ๊คมาร์ค' : 'บุ๊คมาร์ค'}
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
       )}
       {currentView === 'active' && (
         <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
           {filteredProduct.length > 0 ? (
             <>
               {filteredProduct.map((item) => (
-                item.order_status === 'รอการตรวจสอบ' && (
-                  <Grid item key={item.order_id} xs={12}>
-                    <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
-                      <CardMedia
-                        component="img"
-                        sx={{ width: 151 }}
-                        image={item.image}
-                        alt="รูป user"
-                      />
-                      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                        <CardContent sx={{ flex: '1 0 auto' }}>
-                          <Typography component="div" variant="h5">
-                            {item.fullname}
-                          </Typography>
-                          <Typography variant="subtitle1" color="text.secondary" component="div">
-                            ได้ทำรายการของ ธนาคาร : {item.bank_name}
-                          </Typography>
-                          <Typography variant="subtitle1" color="text.secondary" component="div">
-                            สถานะปัจจุบัน : {item.order_status}
-                          </Typography>
-                        </CardContent>
-                        <CardActions>
-                          <Button onClick={handleClickOpen(item)} size="medium">เปิดอ่าน</Button>
-                        </CardActions>
-                      </Box>
-                    </Card>
-                  </Grid>
-                )
+                <Grid item key={item.order_id} xs={12}>
+                  <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
+                    <CardMedia
+                      component="img"
+                      sx={{ width: 151 }}
+                      image={item.image}
+                      alt="รูป user"
+                    />
+                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                      <CardContent sx={{ flex: '1 0 auto' }}>
+                        <Typography component="div" variant="h5">
+                          {item.fullname}
+                        </Typography>
+                        <Typography variant="subtitle1" color="text.secondary" component="div">
+                          ได้ทำรายการของ ธนาคาร : {item.bank_name}
+                        </Typography>
+                        <Typography variant="subtitle1" color="text.secondary" component="div">
+                          สถานะปัจจุบัน : {item.order_status}
+                        </Typography>
+                      </CardContent>
+                      <CardActions>
+                        <Button onClick={handleClickOpen(item)} size="medium">เปิดอ่าน</Button>
+                      </CardActions>
+                    </Box>
+                  </Card>
+                </Grid>
+              ))}
+            </>
+          ) : (
+            <p>ไม่มีกิจกรรม</p>
+          )}
+          {filteredProductInbox.length > 0 ? (
+            <>
+              {filteredProductInbox.map((inboxItem) => (
+                <Grid item key={inboxItem.orderExchange_id} xs={12}>
+                  <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
+                    <CardMedia
+                      component="img"
+                      sx={{ width: 151 }}
+                      image={inboxItem.image}
+                      alt="รูป user"
+                    />
+                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                      <CardContent sx={{ flex: '1 0 auto' }}>
+                        <Typography component="div" variant="h5">
+                          {inboxItem.fullname}
+                        </Typography>
+                        <Typography variant="subtitle1" color="text.secondary" component="div">
+                          ได้ทำรายการของ ธนาคาร : {inboxItem.bank_name}
+                        </Typography>
+                        <Typography variant="subtitle1" color="text.secondary" component="div">
+                          สถานะปัจจุบัน : {inboxItem.userbank_status}
+                        </Typography>
+                      </CardContent>
+                      <CardActions>
+                        <Button onClick={handleClickOpen1(inboxItem)} size="medium">เปิดอ่าน</Button>
+                      </CardActions>
+                    </Box>
+                  </Card>
+                </Grid>
               ))}
             </>
           ) : (
@@ -905,6 +992,44 @@ function Main12() {
                   <p>ไม่มีรายการที่รอการตรวจสอบ</p>
                 )}
               </Grid>
+              <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
+                {filteredProductInbox.length > 0 ? (
+                  <>
+                    {filteredProductInbox.map((inboxItem) => (
+                      inboxItem.userbank_status === 'รอการตรวจสอบ' && (
+                        <Grid item key={inboxItem.orderExchange_id} xs={12}>
+                          <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
+                            <CardMedia
+                              component="img"
+                              sx={{ width: 151 }}
+                              image={inboxItem.image}
+                              alt="รูป user"
+                            />
+                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                              <CardContent sx={{ flex: '1 0 auto' }}>
+                                <Typography component="div" variant="h5">
+                                  {inboxItem.fullname}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  ได้ทำรายการของ ธนาคาร : {inboxItem.bank_name}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  สถานะปัจจุบัน : {inboxItem.userbank_status}
+                                </Typography>
+                              </CardContent>
+                              <CardActions>
+                                <Button onClick={handleClickOpen1(inboxItem)} size="medium">เปิดอ่าน</Button>
+                              </CardActions>
+                            </Box>
+                          </Card>
+                        </Grid>
+                      )
+                    ))}
+                  </>
+                ) : (
+                  <p>ไม่มีกิจกรรม</p>
+                )}
+              </Grid>
             </div>
           )}
 
@@ -948,6 +1073,44 @@ function Main12() {
                   <p>ไม่มีรายการที่รอการตรวจสอบ</p>
                 )}
               </Grid>
+              <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
+                {filteredProductInbox.length > 0 ? (
+                  <>
+                    {filteredProductInbox.map((inboxItem) => (
+                      inboxItem.userbank_status === 'อนุมัติให้ทำรายการ' && (
+                        <Grid item key={inboxItem.orderExchange_id} xs={12}>
+                          <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
+                            <CardMedia
+                              component="img"
+                              sx={{ width: 151 }}
+                              image={inboxItem.image}
+                              alt="รูป user"
+                            />
+                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                              <CardContent sx={{ flex: '1 0 auto' }}>
+                                <Typography component="div" variant="h5">
+                                  {inboxItem.fullname}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  ได้ทำรายการของ ธนาคาร : {inboxItem.bank_name}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  สถานะปัจจุบัน : {inboxItem.userbank_status}
+                                </Typography>
+                              </CardContent>
+                              <CardActions>
+                                <Button onClick={handleClickOpen1(inboxItem)} size="medium">เปิดอ่าน</Button>
+                              </CardActions>
+                            </Box>
+                          </Card>
+                        </Grid>
+                      )
+                    ))}
+                  </>
+                ) : (
+                  <p>ไม่มีกิจกรรม</p>
+                )}
+              </Grid>
             </div>
           )}
 
@@ -989,6 +1152,44 @@ function Main12() {
                   </>
                 ) : (
                   <p>ไม่มีรายการที่รอการตรวจสอบ</p>
+                )}
+              </Grid>
+              <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
+                {filteredProductInbox.length > 0 ? (
+                  <>
+                    {filteredProductInbox.map((inboxItem) => (
+                      inboxItem.userbank_status === 'ไม่อนุมัติให้ทำรายการ' && (
+                        <Grid item key={inboxItem.orderExchange_id} xs={12}>
+                          <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
+                            <CardMedia
+                              component="img"
+                              sx={{ width: 151 }}
+                              image={inboxItem.image}
+                              alt="รูป user"
+                            />
+                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                              <CardContent sx={{ flex: '1 0 auto' }}>
+                                <Typography component="div" variant="h5">
+                                  {inboxItem.fullname}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  ได้ทำรายการของ ธนาคาร : {inboxItem.bank_name}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  สถานะปัจจุบัน : {inboxItem.userbank_status}
+                                </Typography>
+                              </CardContent>
+                              <CardActions>
+                                <Button onClick={handleClickOpen1(inboxItem)} size="medium">เปิดอ่าน</Button>
+                              </CardActions>
+                            </Box>
+                          </Card>
+                        </Grid>
+                      )
+                    ))}
+                  </>
+                ) : (
+                  <p>ไม่มีกิจกรรม</p>
                 )}
               </Grid>
             </div>
@@ -1106,6 +1307,173 @@ function Main12() {
                       </DemoContainer>
                     </LocalizationProvider>
                   </div>
+                </div>
+              </>
+            ) : (
+              <p>Details not found.</p>
+            )}
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
+
+
+      <Dialog
+        open={openOrder1}
+        onClose={() => setOpenNextDialog(false)}
+        scroll={scroll}
+        aria-labelledby="scroll-dialog-title"
+        aria-describedby="scroll-dialog-description"
+      >
+        <DialogTitle id="scroll-dialog-title" sx={{ textAlign: "center" }}>รายการที่ {selectedProducts ? selectedProducts.fullname : 'N/A'} ได้ทำรายการ</DialogTitle>
+        <DialogContent dividers={scroll === 'paper'}>
+          <DialogContentText
+            id="scroll-dialog-description"
+            ref={descriptionElementRefs}
+            tabIndex={-1}
+          >
+            {selectedProducts ? (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <Card sx={{ maxWidth: 345, m: 1 }} >
+                    <CardMedia
+                      component="img"
+                      height="300"
+                      image={`http://localhost:5000/image/${selectedProducts.product_image}`}
+                      title="รูปภาพทรัพยากร"
+                    />
+                  </Card>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+
+                  <div style={{ marginTop: 50 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
+                    <TextField disabled id="outlined-disabled" label={selectedProducts.product_name} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
+                  <div style={{ marginTop: 20 }}>
+                    <Box
+                      component="form"
+                      sx={{
+                        '& .MuiTextField-root': { m: 1, width: '25ch' },
+                      }}
+                      noValidate
+                      autoComplete="off"
+                    ></Box>
+                    <FormLabel component="legend" style={{ color: 'black' }}>ประเภททรัพยากรทางการเกษตร:</FormLabel>
+                    <TextField disabled id="outlined-disabled" label={selectedProducts.product_type4} variant="outlined" sx={{ width: '50ch' }} />
+
+                  </div>
+
+                  <div style={{ marginTop: 30 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการทำรายการ : </FormLabel>
+                    <TextField disabled id="outlined-disabled" label={`${selectedProducts.orderExchange_quantity} ${selectedProducts.product_unit}`} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
+                  <FormControl sx={{ marginTop: 5, width: '50ch' }} component="fieldset" variant="standard">
+                    <FormLabel component="legend" style={{ color: "black" }}>
+                      ประเภทบริการ :
+                    </FormLabel>
+                    <FormGroup sx={{ display: 'flex', flexDirection: 'column' }}>
+                      <div style={{ marginTop: 20 }}>
+                        <FormControlLabel
+                          control={<Checkbox disabled checked={Boolean(selectedProducts.product_type)} />}
+                          label="ทรัพยากรเพื่อเช่าหรือยืม"
+                        />
+                      </div>
+                      <div style={{ marginTop: 20 }}>
+                        <FormControlLabel
+                          control={<Checkbox disabled checked={Boolean(selectedProducts.product_type2)} />}
+                          label="ทรัพยากรเพื่อการซื้อขาย"
+                        />
+                      </div>
+                      <div style={{ marginTop: 20 }}>
+                        <FormControlLabel
+                          control={<Checkbox disabled checked={Boolean(selectedProducts.product_type3)} />}
+                          label="ทรัพยากรเพื่อแลกเปลี่ยน"
+                        />
+                      </div>
+                    </FormGroup>
+                  </FormControl>
+                  <div >
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer
+                        components={[
+                          'DatePicker',
+                        ]}
+                        sx={{ width: '50ch', marginTop: 3 }}
+                      >
+                        <DemoItem label={<Label componentName="วันที่จะมารับทรัพยากร" valueType="date" />} >
+                          <DatePicker
+                            disabled
+                            value={orderExchange_borrowDate}
+                            renderInput={(params) => <TextField {...params} variant="outlined" />}
+                          />
+                        </DemoItem>
+                      </DemoContainer>
+                    </LocalizationProvider>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p>Details not found.</p>
+            )}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: 'space-around' }}>
+          <Button onClick={() => handleClose1()} color='error'>ปิด</Button>
+          <Button onClick={() => setOpenNextDialog(true)} >ถัดไป</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={openNextDialog}
+        onClose={handleClose1}
+        scroll={scroll}
+        aria-labelledby="scroll-dialog-title"
+        aria-describedby="scroll-dialog-description"
+      >
+        <DialogTitle id="scroll-dialog-title" sx={{ textAlign: "center" }}>รายการที่ {selectedProducts ? selectedProducts.fullname : 'N/A'} จะนำมาแลกเปลี่ยน</DialogTitle>
+        <DialogContent dividers={scroll === 'paper'}>
+          <DialogContentText
+            id="scroll-dialog-description"
+            ref={descriptionElementRefs}
+            tabIndex={-1}
+          >
+            {selectedProducts ? (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <Card sx={{ maxWidth: 345, m: 1 }} >
+                    <CardMedia
+                      component="img"
+                      height="300"
+                      image={`http://localhost:5000/image/${selectedProducts.userbank_productimage}`}
+                      title="รูปภาพทรัพยากร"
+                    />
+                  </Card>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+
+                  <div style={{ marginTop: 50 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
+                    <TextField disabled id="outlined-disabled" label={selectedProducts.userbank_productname} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
+                  <div style={{ marginTop: 20 }}>
+                    <Box
+                      component="form"
+                      sx={{
+                        '& .MuiTextField-root': { m: 1, width: '25ch' },
+                      }}
+                      noValidate
+                      autoComplete="off"
+                    ></Box>
+                    <FormLabel component="legend" style={{ color: 'black' }}>ประเภททรัพยากรทางการเกษตร:</FormLabel>
+                    <TextField disabled id="outlined-disabled" label={selectedProducts.userbank_producttype1} variant="outlined" sx={{ width: '50ch' }} />
+
+                  </div>
+
+                  <div style={{ marginTop: 30 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการทำรายการ : </FormLabel>
+                    <TextField disabled id="outlined-disabled" label={`${selectedProducts.userbank_productquantity} ${selectedProducts.userbank_unit}`} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
+                  
                 </div>
               </>
             ) : (
