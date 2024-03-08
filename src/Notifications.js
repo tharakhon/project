@@ -139,21 +139,21 @@ function Notifications() {
     console.log(bank_name)
     const handleClickOpen = (product) => () => {
         setSelectedProduct(product);
-        setBorrowDate(product.order_borrowDate instanceof dayjs ? product.order_borrowDate : dayjs());
-        setReturnDate(product.order_returnDate instanceof dayjs ? product.order_returnDate : dayjs());
+        setBorrowDate(dayjs(product.order_borrowDate));
+        setReturnDate(dayjs(product.order_returnDate));
         setOpenOrder(true);
         setScroll('body');
     };
     const handleClickOpen1 = (product) => () => {
         setSelectedProducts(product);
-        setOrderExchange_borrowDate(product.orderExchange_borrowDate instanceof dayjs ? product.orderExchange_borrowDate : dayjs());
+        setOrderExchange_borrowDate(dayjs(product.orderExchange_borrowDate));
         setOpenOrder1(true);
         setScroll('body');
     };
 
     const handleClose = () => {
         setOpenOrder(false);
-        
+
     };
     const handleClose1 = () => {
         setOpenOrder1(false);
@@ -181,6 +181,8 @@ function Notifications() {
                     product_type3: item.product_type3,
                     product_type4: item.product_type4,
                     product_unit: item.product_unit,
+                    order_rental: item.order_rental,
+                    order_date: dayjs(item.order_date)
                 }));
 
                 setFilteredProducts(fetchedProducts);
@@ -200,14 +202,14 @@ function Notifications() {
                     bank_name: item.bank_name,
                     fullname: item.fullname,
                     image: item.image,
-                    product_name:item.product_name,
-                    product_image:item.product_image,
-                    product_type:item.product_type,
-                    product_type2:item.product_type2,
-                    product_type3:item.product_type3,
-                    product_type4:item.product_type4,
-                    product_unit:item.product_unit,
-                    product_details:item.product_details,
+                    product_name: item.product_name,
+                    product_image: item.product_image,
+                    product_type: item.product_type,
+                    product_type2: item.product_type2,
+                    product_type3: item.product_type3,
+                    product_type4: item.product_type4,
+                    product_unit: item.product_unit,
+                    product_details: item.product_details,
                     orderExchange_borrowDate: dayjs(item.orderExchange_borrowDate),
                     orderExchange_quantity: item.orderExchange_quantity,
                     userbank_status: item.userbank_status,
@@ -217,6 +219,8 @@ function Notifications() {
                     userbank_productquantity: item.userbank_productquantity,
                     userbank_unit: item.userbank_unit,
                     userbank_productdetails: item.userbank_productdetails,
+                    order_exchange: item.order_exchange,
+                    exchange_date: dayjs(item.exchange_date)
                 }));
 
                 setFilteredProduct(fetchedProduct);
@@ -436,6 +440,12 @@ function Notifications() {
                                                 <Typography variant="subtitle1" color="text.secondary" component="div">
                                                     สถานะปัจจุบัน : {item.order_status}
                                                 </Typography>
+                                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                                    สถานะการทำรายการ : {item.order_rental}
+                                                </Typography>
+                                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                                    เวลาที่ทำรายการ : {dayjs(item.order_date).format("DD-MM-YYYY HH:mm:ss")}
+                                                </Typography>
                                             </CardContent>
                                             <CardActions>
                                                 <Button onClick={handleClickOpen(item)} size="medium">เปิดอ่าน</Button>
@@ -484,31 +494,10 @@ function Notifications() {
                                         <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
                                         <TextField disabled id="outlined-disabled" label={selectedProduct.product_name} variant="outlined" sx={{ width: '50ch' }} />
                                     </div>
-                                    <FormControl sx={{ marginTop: 5, width: '50ch' }} component="fieldset" variant="standard">
-                                        <FormLabel component="legend" style={{ color: "black" }}>
-                                            ประเภทบริการ :
-                                        </FormLabel>
-                                        <FormGroup sx={{ display: 'flex', flexDirection: 'column' }}>
-                                            <div style={{ marginTop: 20 }}>
-                                                <FormControlLabel
-                                                    control={<Checkbox disabled checked={Boolean(selectedProduct.product_type)} />}
-                                                    label="ทรัพยากรเพื่อเช่าหรือยืม"
-                                                />
-                                            </div>
-                                            <div style={{ marginTop: 20 }}>
-                                                <FormControlLabel
-                                                    control={<Checkbox disabled checked={Boolean(selectedProduct.product_type2)} />}
-                                                    label="ทรัพยากรเพื่อการซื้อขาย"
-                                                />
-                                            </div>
-                                            <div style={{ marginTop: 20 }}>
-                                                <FormControlLabel
-                                                    control={<Checkbox disabled checked={Boolean(selectedProduct.product_type3)} />}
-                                                    label="ทรัพยากรเพื่อแลกเปลี่ยน"
-                                                />
-                                            </div>
-                                        </FormGroup>
-                                    </FormControl>
+                                    <div style={{ marginTop: 30 }}>
+                                        <FormLabel component="legend" style={{ color: 'black' }}>สถานะการทำรายการ : </FormLabel>
+                                        <TextField disabled id="outlined-disabled" label={`${selectedProduct.order_rental}`} variant="outlined" sx={{ width: '50ch' }} />
+                                    </div>
                                     <div style={{ marginTop: 20 }}>
                                         <Box
                                             component="form"
@@ -535,11 +524,11 @@ function Notifications() {
                                                 ]}
                                                 sx={{ width: '50ch', marginTop: 3 }}
                                             >
-                                                <DemoItem label={<Label componentName="วันที่จะมารับทรัพยากร" valueType="date" />} >
+                                                <DemoItem label={<Label componentName="วันที่จะมารับทรัพยากร :" valueType="date" />} >
                                                     <DatePicker
                                                         disabled
                                                         value={borrowDate}
-                                                        renderInput={(params) => <TextField {...params} variant="outlined" />}
+                                                        renderInput={(params) => <TextField {...params} variant="outlined" value={borrowDate.format("DD-MM-YYYY")} />}
                                                     />
                                                 </DemoItem>
                                             </DemoContainer>
@@ -553,11 +542,11 @@ function Notifications() {
                                                 ]}
                                                 sx={{ width: '50ch', marginTop: 3 }}
                                             >
-                                                <DemoItem label={<Label componentName="วันที่จะนำทรัพยากรมาคืน" valueType="date" />} >
+                                                <DemoItem label={<Label componentName="วันที่จะนำทรัพยากรมาคืน :" valueType="date" />} >
                                                     <DatePicker
                                                         disabled
                                                         value={returnDate}
-                                                        renderInput={(params) => <TextField {...params} variant="outlined" />}
+                                                        renderInput={(params) => <TextField {...params} variant="outlined" value={returnDate.format("DD-MM-YYYY")} />}
                                                     />
                                                 </DemoItem>
                                             </DemoContainer>
@@ -599,6 +588,12 @@ function Notifications() {
                                                 </Typography>
                                                 <Typography variant="subtitle1" color="text.secondary" component="div">
                                                     สถานะปัจจุบัน : {item.userbank_status}
+                                                </Typography>
+                                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                                    สถานะการทำรายการ : {item.order_exchange}
+                                                </Typography>
+                                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                                    เวลาที่ทำรายการ : {dayjs(item.exchange_date).format("DD-MM-YYYY HH:mm:ss")}
                                                 </Typography>
                                             </CardContent>
                                             <CardActions>
@@ -660,36 +655,14 @@ function Notifications() {
                                         <TextField disabled id="outlined-disabled" label={selectedProducts.product_type4} variant="outlined" sx={{ width: '50ch' }} />
 
                                     </div>
-
+                                    <div style={{ marginTop: 30 }}>
+                                        <FormLabel component="legend" style={{ color: 'black' }}>สถานะการทำรายการ : </FormLabel>
+                                        <TextField disabled id="outlined-disabled" label={`${selectedProducts.order_exchange}`} variant="outlined" sx={{ width: '50ch' }} />
+                                    </div>
                                     <div style={{ marginTop: 30 }}>
                                         <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการทำรายการ : </FormLabel>
                                         <TextField disabled id="outlined-disabled" label={`${selectedProducts.orderExchange_quantity} ${selectedProducts.product_unit}`} variant="outlined" sx={{ width: '50ch' }} />
                                     </div>
-                                    <FormControl sx={{ marginTop: 5, width: '50ch' }} component="fieldset" variant="standard">
-                                        <FormLabel component="legend" style={{ color: "black" }}>
-                                            ประเภทบริการ :
-                                        </FormLabel>
-                                        <FormGroup sx={{ display: 'flex', flexDirection: 'column' }}>
-                                            <div style={{ marginTop: 20 }}>
-                                                <FormControlLabel
-                                                    control={<Checkbox disabled checked={Boolean(selectedProducts.product_type)} />}
-                                                    label="ทรัพยากรเพื่อเช่าหรือยืม"
-                                                />
-                                            </div>
-                                            <div style={{ marginTop: 20 }}>
-                                                <FormControlLabel
-                                                    control={<Checkbox disabled checked={Boolean(selectedProducts.product_type2)} />}
-                                                    label="ทรัพยากรเพื่อการซื้อขาย"
-                                                />
-                                            </div>
-                                            <div style={{ marginTop: 20 }}>
-                                                <FormControlLabel
-                                                    control={<Checkbox disabled checked={Boolean(selectedProducts.product_type3)} />}
-                                                    label="ทรัพยากรเพื่อแลกเปลี่ยน"
-                                                />
-                                            </div>
-                                        </FormGroup>
-                                    </FormControl>
                                     <div >
                                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                                             <DemoContainer
@@ -698,7 +671,7 @@ function Notifications() {
                                                 ]}
                                                 sx={{ width: '50ch', marginTop: 3 }}
                                             >
-                                                <DemoItem label={<Label componentName="วันที่จะมารับทรัพยากร" valueType="date" />} >
+                                                <DemoItem label={<Label componentName="วันที่จะมารับทรัพยากร :" valueType="date" />} >
                                                     <DatePicker
                                                         disabled
                                                         value={orderExchange_borrowDate}
@@ -771,24 +744,6 @@ function Notifications() {
                                     <div style={{ marginTop: 30 }}>
                                         <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการทำรายการ : </FormLabel>
                                         <TextField disabled id="outlined-disabled" label={`${selectedProducts.userbank_productquantity} ${selectedProducts.userbank_unit}`} variant="outlined" sx={{ width: '50ch' }} />
-                                    </div>
-                                    <div >
-                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                            <DemoContainer
-                                                components={[
-                                                    'DatePicker',
-                                                ]}
-                                                sx={{ width: '50ch', marginTop: 3 }}
-                                            >
-                                                <DemoItem label={<Label componentName="วันที่จะมารับทรัพยากร" valueType="date" />} >
-                                                    <DatePicker
-                                                        disabled
-                                                        value={orderExchange_borrowDate}
-                                                        renderInput={(params) => <TextField {...params} variant="outlined" />}
-                                                    />
-                                                </DemoItem>
-                                            </DemoContainer>
-                                        </LocalizationProvider>
                                     </div>
                                 </div>
                             </>

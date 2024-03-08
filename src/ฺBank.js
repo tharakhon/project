@@ -197,15 +197,15 @@ export default function Bank() {
   ];
   const handleClickOpen = (product) => () => {
     setSelectedProduct(product);
-    setBorrowDate(product.order_borrowDate instanceof dayjs ? product.order_borrowDate : dayjs());
-    setReturnDate(product.order_returnDate instanceof dayjs ? product.order_returnDate : dayjs());
+    setBorrowDate(dayjs(product.order_borrowDate));
+    setReturnDate(dayjs(product.order_returnDate));
     setOpenOrder(true);
     setScroll('body');
   };
 
   const handleClickOpen1 = (product) => () => {
     setSelectedProducts(product);
-    setOrderExchange_borrowDate(product.orderExchange_borrowDate instanceof dayjs ? product.orderExchange_borrowDate : dayjs());
+    setOrderExchange_borrowDate(dayjs(product.orderExchange_borrowDate));
     setOpenOrder1(true);
     setScroll('body');
   };
@@ -318,6 +318,8 @@ export default function Bank() {
           product_type3: item.product_type3,
           product_type4: item.product_type4,
           product_unit: item.product_unit,
+          order_rental: item.order_rental,
+          order_date: dayjs(item.order_date)
         }));
 
         setFilteredProducts(fetchedProducts);
@@ -400,6 +402,8 @@ export default function Bank() {
           userbank_productquantity: item.userbank_productquantity,
           userbank_unit: item.userbank_unit,
           userbank_productdetails: item.userbank_productdetails,
+          order_exchange: item.order_exchange,
+          exchange_date: dayjs(item.exchange_date)
         }));
 
         setFilteredProductInbox(fetchedProduct);
@@ -551,6 +555,12 @@ export default function Bank() {
                               <Typography variant="subtitle1" color="text.secondary" component="div">
                                 สถานะปัจจุบัน : {item.order_status}
                               </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                สถานะการทำรายการ : {item.order_rental}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                เวลาที่ทำรายการ : {dayjs(item.order_date).format("DD-MM-YYYY HH:mm:ss")}
+                              </Typography>
                             </CardContent>
                             <CardActions>
                               <Button onClick={handleClickOpen(item)} size="medium">เปิดอ่าน</Button>
@@ -588,6 +598,12 @@ export default function Bank() {
                               </Typography>
                               <Typography variant="subtitle1" color="text.secondary" component="div">
                                 สถานะปัจจุบัน : {item.userbank_status}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                สถานะการทำรายการ : {item.order_exchange}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                เวลาที่ทำรายการ : {dayjs(item.exchange_date).format("DD-MM-YYYY HH:mm:ss")}
                               </Typography>
                             </CardContent>
                             <CardActions>
@@ -631,6 +647,12 @@ export default function Bank() {
                               <Typography variant="subtitle1" color="text.secondary" component="div">
                                 สถานะปัจจุบัน : {item.order_status}
                               </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                สถานะการทำรายการ : {item.order_rental}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                เวลาที่ทำรายการ : {dayjs(item.order_date).format("DD-MM-YYYY HH:mm:ss")}
+                              </Typography>
                             </CardContent>
                             <CardActions>
                               <Button onClick={handleClickOpen(item)} size="medium">เปิดอ่าน</Button>
@@ -668,6 +690,12 @@ export default function Bank() {
                               </Typography>
                               <Typography variant="subtitle1" color="text.secondary" component="div">
                                 สถานะปัจจุบัน : {item.userbank_status}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                สถานะการทำรายการ : {item.order_exchange}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                เวลาที่ทำรายการ : {dayjs(item.exchange_date).format("DD-MM-YYYY HH:mm:ss")}
                               </Typography>
                             </CardContent>
                             <CardActions>
@@ -718,31 +746,6 @@ export default function Bank() {
                       <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
                       <TextField disabled id="outlined-disabled" label={selectedProduct.product_name} variant="outlined" sx={{ width: '50ch' }} />
                     </div>
-                    <FormControl sx={{ marginTop: 5, width: '50ch' }} component="fieldset" variant="standard">
-                      <FormLabel component="legend" style={{ color: "black" }}>
-                        ประเภทบริการ :
-                      </FormLabel>
-                      <FormGroup sx={{ display: 'flex', flexDirection: 'column' }}>
-                        <div style={{ marginTop: 20 }}>
-                          <FormControlLabel
-                            control={<Checkbox disabled checked={Boolean(selectedProduct.product_type)} />}
-                            label="ทรัพยากรเพื่อเช่าหรือยืม"
-                          />
-                        </div>
-                        <div style={{ marginTop: 20 }}>
-                          <FormControlLabel
-                            control={<Checkbox disabled checked={Boolean(selectedProduct.product_type2)} />}
-                            label="ทรัพยากรเพื่อการซื้อขาย"
-                          />
-                        </div>
-                        <div style={{ marginTop: 20 }}>
-                          <FormControlLabel
-                            control={<Checkbox disabled checked={Boolean(selectedProduct.product_type3)} />}
-                            label="ทรัพยากรเพื่อแลกเปลี่ยน"
-                          />
-                        </div>
-                      </FormGroup>
-                    </FormControl>
                     <div style={{ marginTop: 20 }}>
                       <Box
                         component="form"
@@ -756,7 +759,10 @@ export default function Bank() {
                       <TextField disabled id="outlined-disabled" label={selectedProduct.product_type4} variant="outlined" sx={{ width: '50ch' }} />
 
                     </div>
-
+                    <div style={{ marginTop: 30 }}>
+                      <FormLabel component="legend" style={{ color: 'black' }}>สถานะการทำรายการ : </FormLabel>
+                      <TextField disabled id="outlined-disabled" label={`${selectedProduct.order_rental}`} variant="outlined" sx={{ width: '50ch' }} />
+                    </div>
                     <div style={{ marginTop: 30 }}>
                       <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการทำรายการ : </FormLabel>
                       <TextField disabled id="outlined-disabled" label={`${selectedProduct.order_quantity} ${selectedProduct.product_unit}`} variant="outlined" sx={{ width: '50ch' }} />
@@ -855,36 +861,14 @@ export default function Bank() {
                       <TextField disabled id="outlined-disabled" label={selectedProducts.product_type4} variant="outlined" sx={{ width: '50ch' }} />
 
                     </div>
-
+                    <div style={{ marginTop: 30 }}>
+                      <FormLabel component="legend" style={{ color: 'black' }}>สถานะการทำรายการ : </FormLabel>
+                      <TextField disabled id="outlined-disabled" label={`${selectedProducts.order_exchange}`} variant="outlined" sx={{ width: '50ch' }} />
+                    </div>
                     <div style={{ marginTop: 30 }}>
                       <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการทำรายการ : </FormLabel>
                       <TextField disabled id="outlined-disabled" label={`${selectedProducts.orderExchange_quantity} ${selectedProducts.product_unit}`} variant="outlined" sx={{ width: '50ch' }} />
                     </div>
-                    <FormControl sx={{ marginTop: 5, width: '50ch' }} component="fieldset" variant="standard">
-                      <FormLabel component="legend" style={{ color: "black" }}>
-                        ประเภทบริการ :
-                      </FormLabel>
-                      <FormGroup sx={{ display: 'flex', flexDirection: 'column' }}>
-                        <div style={{ marginTop: 20 }}>
-                          <FormControlLabel
-                            control={<Checkbox disabled checked={Boolean(selectedProducts.product_type)} />}
-                            label="ทรัพยากรเพื่อเช่าหรือยืม"
-                          />
-                        </div>
-                        <div style={{ marginTop: 20 }}>
-                          <FormControlLabel
-                            control={<Checkbox disabled checked={Boolean(selectedProducts.product_type2)} />}
-                            label="ทรัพยากรเพื่อการซื้อขาย"
-                          />
-                        </div>
-                        <div style={{ marginTop: 20 }}>
-                          <FormControlLabel
-                            control={<Checkbox disabled checked={Boolean(selectedProducts.product_type3)} />}
-                            label="ทรัพยากรเพื่อแลกเปลี่ยน"
-                          />
-                        </div>
-                      </FormGroup>
-                    </FormControl>
                     <div >
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DemoContainer
@@ -893,7 +877,7 @@ export default function Bank() {
                           ]}
                           sx={{ width: '50ch', marginTop: 3 }}
                         >
-                          <DemoItem label={<Label componentName="วันที่จะมารับทรัพยากร" valueType="date" />} >
+                          <DemoItem label={<Label componentName="วันที่จะมารับทรัพยากร :" valueType="date" />} >
                             <DatePicker
                               disabled
                               value={orderExchange_borrowDate}
@@ -911,7 +895,7 @@ export default function Bank() {
             </DialogContentText>
           </DialogContent>
           <DialogActions sx={{ justifyContent: 'space-around' }}>
-            <Button onClick={() => handleClose1()}>ปิด</Button>
+            <Button onClick={() => handleClose1()} color='error'>ปิด</Button>
             <Button onClick={() => setOpenNextDialog(true)} >ถัดไป</Button>
           </DialogActions>
         </Dialog>
@@ -966,24 +950,6 @@ export default function Bank() {
                     <div style={{ marginTop: 30 }}>
                       <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการทำรายการ : </FormLabel>
                       <TextField disabled id="outlined-disabled" label={`${selectedProducts.userbank_productquantity} ${selectedProducts.userbank_unit}`} variant="outlined" sx={{ width: '50ch' }} />
-                    </div>
-                    <div >
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DemoContainer
-                          components={[
-                            'DatePicker',
-                          ]}
-                          sx={{ width: '50ch', marginTop: 3 }}
-                        >
-                          <DemoItem label={<Label componentName="วันที่จะมารับทรัพยากร" valueType="date" />} >
-                            <DatePicker
-                              disabled
-                              value={orderExchange_borrowDate}
-                              renderInput={(params) => <TextField {...params} variant="outlined" />}
-                            />
-                          </DemoItem>
-                        </DemoContainer>
-                      </LocalizationProvider>
                     </div>
                   </div>
                 </>

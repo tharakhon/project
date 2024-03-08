@@ -393,10 +393,13 @@ function OpenBankUsers() {
                         <Button variant="contained" color="error" onClick={handleBackbankuser}>ย้อนกลับ</Button>
 
                         {filteredProducts.product_type3 === 'ทรัพยากรเพื่อแลกเปลี่ยน' && (
-                            <Button variant="contained" color="secondary" onClick={() => handleExchangePage(id)}>ไปหน้าแลกเปลี่ยน</Button>
+                            <Button variant="contained" color="warning" onClick={() => handleExchangePage(id)}>ไปหน้าแลกเปลี่ยน</Button>
                         )}
-                        {(filteredProducts.product_type === 'ทรัพยากรเพื่อเช่าหรือยืม' || filteredProducts.product_type2 === 'ทรัพยากรเพื่อการซื้อขาย') && (
-                            <Button variant="contained" color="warning" onClick={() => handleOrderbankuser(id)} >ทำรายการ</Button>
+                        {filteredProducts.product_type === 'ทรัพยากรเพื่อเช่าหรือยืม' && (
+                            <Button variant="contained" color="warning" onClick={() => handleOrderbankuser(id)} >ไปหน้าเช่าหรือยืม</Button>
+                        )}
+                        {filteredProducts.product_type2 === 'ทรัพยากรเพื่อการซื้อขาย' && (
+                            <Button variant="contained" color="warning" onClick={() => handleOrderbankuser(id)} >ไปหน้าซื้อขาย</Button>
                         )}
                         {!isBankMember && (
                             <Button variant="contained" color="primary" onClick={handleMemberbankuser}>สมัครสมาชิก</Button>

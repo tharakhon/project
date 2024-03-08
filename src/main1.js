@@ -209,7 +209,7 @@ function Main12() {
   const [selectedProducts, setSelectedProducts] = useState(null);
   const [orderExchange_borrowDate, setOrderExchange_borrowDate] = useState(dayjs());
   const [openNextDialog, setOpenNextDialog] = React.useState(false);
-console.log("notifications",notifications)
+  console.log("notifications", notifications)
   const descriptionElementRef = React.useRef(null);
   React.useEffect(() => {
     if (openOrder) {
@@ -230,14 +230,14 @@ console.log("notifications",notifications)
   }, [openOrder1]);
   const handleClickOpen = (product) => () => {
     setSelectedProduct(product);
-    setBorrowDate(product.order_borrowDate instanceof dayjs ? product.order_borrowDate : dayjs());
-    setReturnDate(product.order_returnDate instanceof dayjs ? product.order_returnDate : dayjs());
+    setBorrowDate(dayjs(product.order_borrowDate));
+    setReturnDate(dayjs(product.order_returnDate));
     setOpenOrder(true);
     setScroll('body');
   };
   const handleClickOpen1 = (product) => () => {
     setSelectedProducts(product);
-    setOrderExchange_borrowDate(product.orderExchange_borrowDate instanceof dayjs ? product.orderExchange_borrowDate : dayjs());
+    setOrderExchange_borrowDate(dayjs(product.orderExchange_borrowDate));
     setOpenOrder1(true);
     setScroll('body');
   };
@@ -317,6 +317,16 @@ console.log("notifications",notifications)
     }
   };
 
+  useEffect(() => {
+    // Check if the query is empty
+    if (searchQuery.trim() === "") {
+      // If empty, reset filteredProducts to the original data
+      setFilteredProducts(originalData);
+    } else {
+      // If not empty, filter the products based on the query
+      filterProducts(searchQuery);
+    }
+  }, [searchQuery, originalData]);
 
   const filterProducts = (query) => {
     const filtered = filteredProducts.filter((product) =>
@@ -411,7 +421,7 @@ console.log("notifications",notifications)
       .catch((error) => {
         console.error("เกิดข้อผิดพลาดในการดึงข้อมูลจำนวนสมาชิก:", error);
       });
-  }, [codename.bank_name]);
+  }, [codename.bank_name, notifications]);
 
   useEffect(() => {
     Axios.get("http://localhost:5000/showcountuser")
@@ -540,6 +550,8 @@ console.log("notifications",notifications)
           product_type3: item.product_type3,
           product_type4: item.product_type4,
           product_unit: item.product_unit,
+          order_rental: item.order_rental,
+          order_date: dayjs(item.order_date)
         }));
 
         setFilteredProduct(fetchedProducts);
@@ -576,6 +588,8 @@ console.log("notifications",notifications)
           userbank_productquantity: item.userbank_productquantity,
           userbank_unit: item.userbank_unit,
           userbank_productdetails: item.userbank_productdetails,
+          order_exchange: item.order_exchange,
+          exchange_date: dayjs(item.exchange_date)
         }));
 
         setFilteredProductInbox(fetchedProduct);
@@ -894,6 +908,12 @@ console.log("notifications",notifications)
                         <Typography variant="subtitle1" color="text.secondary" component="div">
                           สถานะปัจจุบัน : {item.order_status}
                         </Typography>
+                        <Typography variant="subtitle1" color="text.secondary" component="div">
+                          สถานะการทำรายการ : {item.order_rental}
+                        </Typography>
+                        <Typography variant="subtitle1" color="text.secondary" component="div">
+                          เวลาที่ทำรายการ : {dayjs(item.order_date).format("DD-MM-YYYY HH:mm:ss")}
+                        </Typography>
                       </CardContent>
                       <CardActions>
                         <Button onClick={handleClickOpen(item)} size="medium">เปิดอ่าน</Button>
@@ -927,6 +947,12 @@ console.log("notifications",notifications)
                         </Typography>
                         <Typography variant="subtitle1" color="text.secondary" component="div">
                           สถานะปัจจุบัน : {inboxItem.userbank_status}
+                        </Typography>
+                        <Typography variant="subtitle1" color="text.secondary" component="div">
+                          สถานะการทำรายการ : {inboxItem.order_exchange}
+                        </Typography>
+                        <Typography variant="subtitle1" color="text.secondary" component="div">
+                          เวลาที่ทำรายการ : {dayjs(inboxItem.exchange_date).format("DD-MM-YYYY HH:mm:ss")}
                         </Typography>
                       </CardContent>
                       <CardActions>
@@ -978,6 +1004,12 @@ console.log("notifications",notifications)
                                 <Typography variant="subtitle1" color="text.secondary" component="div">
                                   สถานะปัจจุบัน : {item.order_status}
                                 </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  สถานะการทำรายการ : {item.order_rental}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  เวลาที่ทำรายการ : {dayjs(item.order_date).format("DD-MM-YYYY HH:mm:ss")}
+                                </Typography>
                               </CardContent>
                               <CardActions>
                                 <Button onClick={handleClickOpen(item)} size="medium">เปิดอ่าน</Button>
@@ -1015,6 +1047,12 @@ console.log("notifications",notifications)
                                 </Typography>
                                 <Typography variant="subtitle1" color="text.secondary" component="div">
                                   สถานะปัจจุบัน : {inboxItem.userbank_status}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  สถานะการทำรายการ : {inboxItem.order_exchange}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  เวลาที่ทำรายการ : {dayjs(inboxItem.exchange_date).format("DD-MM-YYYY HH:mm:ss")}
                                 </Typography>
                               </CardContent>
                               <CardActions>
@@ -1059,6 +1097,12 @@ console.log("notifications",notifications)
                                 <Typography variant="subtitle1" color="text.secondary" component="div">
                                   สถานะปัจจุบัน : {item.order_status}
                                 </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  สถานะการทำรายการ : {item.order_rental}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  เวลาที่ทำรายการ : {dayjs(item.order_date).format("DD-MM-YYYY HH:mm:ss")}
+                                </Typography>
                               </CardContent>
                               <CardActions>
                                 <Button onClick={handleClickOpen(item)} size="medium">เปิดอ่าน</Button>
@@ -1096,6 +1140,12 @@ console.log("notifications",notifications)
                                 </Typography>
                                 <Typography variant="subtitle1" color="text.secondary" component="div">
                                   สถานะปัจจุบัน : {inboxItem.userbank_status}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  สถานะการทำรายการ : {inboxItem.order_exchange}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  เวลาที่ทำรายการ : {dayjs(inboxItem.exchange_date).format("DD-MM-YYYY HH:mm:ss")}
                                 </Typography>
                               </CardContent>
                               <CardActions>
@@ -1140,6 +1190,12 @@ console.log("notifications",notifications)
                                 <Typography variant="subtitle1" color="text.secondary" component="div">
                                   สถานะปัจจุบัน : {item.order_status}
                                 </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  สถานะการทำรายการ : {item.order_rental}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  เวลาที่ทำรายการ : {dayjs(item.order_date).format("DD-MM-YYYY HH:mm:ss")}
+                                </Typography>
                               </CardContent>
                               <CardActions>
                                 <Button onClick={handleClickOpen(item)} size="medium">เปิดอ่าน</Button>
@@ -1177,6 +1233,12 @@ console.log("notifications",notifications)
                                 </Typography>
                                 <Typography variant="subtitle1" color="text.secondary" component="div">
                                   สถานะปัจจุบัน : {inboxItem.userbank_status}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  สถานะการทำรายการ : {inboxItem.order_exchange}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  เวลาที่ทำรายการ : {dayjs(inboxItem.exchange_date).format("DD-MM-YYYY HH:mm:ss")}
                                 </Typography>
                               </CardContent>
                               <CardActions>
@@ -1228,31 +1290,7 @@ console.log("notifications",notifications)
                     <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
                     <TextField disabled id="outlined-disabled" label={selectedProduct.product_name} variant="outlined" sx={{ width: '50ch' }} />
                   </div>
-                  <FormControl sx={{ marginTop: 5, width: '50ch' }} component="fieldset" variant="standard">
-                    <FormLabel component="legend" style={{ color: "black" }}>
-                      ประเภทบริการ :
-                    </FormLabel>
-                    <FormGroup sx={{ display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ marginTop: 20 }}>
-                        <FormControlLabel
-                          control={<Checkbox disabled checked={Boolean(selectedProduct.product_type)} />}
-                          label="ทรัพยากรเพื่อเช่าหรือยืม"
-                        />
-                      </div>
-                      <div style={{ marginTop: 20 }}>
-                        <FormControlLabel
-                          control={<Checkbox disabled checked={Boolean(selectedProduct.product_type2)} />}
-                          label="ทรัพยากรเพื่อการซื้อขาย"
-                        />
-                      </div>
-                      <div style={{ marginTop: 20 }}>
-                        <FormControlLabel
-                          control={<Checkbox disabled checked={Boolean(selectedProduct.product_type3)} />}
-                          label="ทรัพยากรเพื่อแลกเปลี่ยน"
-                        />
-                      </div>
-                    </FormGroup>
-                  </FormControl>
+
                   <div style={{ marginTop: 20 }}>
                     <Box
                       component="form"
@@ -1266,7 +1304,10 @@ console.log("notifications",notifications)
                     <TextField disabled id="outlined-disabled" label={selectedProduct.product_type4} variant="outlined" sx={{ width: '50ch' }} />
 
                   </div>
-
+                  <div style={{ marginTop: 30 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>สถานะการทำรายการ : </FormLabel>
+                    <TextField disabled id="outlined-disabled" label={`${selectedProduct.order_rental}`} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
                   <div style={{ marginTop: 30 }}>
                     <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการทำรายการ : </FormLabel>
                     <TextField disabled id="outlined-disabled" label={`${selectedProduct.order_quantity} ${selectedProduct.product_unit}`} variant="outlined" sx={{ width: '50ch' }} />
@@ -1362,36 +1403,15 @@ console.log("notifications",notifications)
                     <TextField disabled id="outlined-disabled" label={selectedProducts.product_type4} variant="outlined" sx={{ width: '50ch' }} />
 
                   </div>
-
+                  <div style={{ marginTop: 30 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>สถานะการทำรายการ : </FormLabel>
+                    <TextField disabled id="outlined-disabled" label={`${selectedProducts.order_exchange}`} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
                   <div style={{ marginTop: 30 }}>
                     <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการทำรายการ : </FormLabel>
                     <TextField disabled id="outlined-disabled" label={`${selectedProducts.orderExchange_quantity} ${selectedProducts.product_unit}`} variant="outlined" sx={{ width: '50ch' }} />
                   </div>
-                  <FormControl sx={{ marginTop: 5, width: '50ch' }} component="fieldset" variant="standard">
-                    <FormLabel component="legend" style={{ color: "black" }}>
-                      ประเภทบริการ :
-                    </FormLabel>
-                    <FormGroup sx={{ display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ marginTop: 20 }}>
-                        <FormControlLabel
-                          control={<Checkbox disabled checked={Boolean(selectedProducts.product_type)} />}
-                          label="ทรัพยากรเพื่อเช่าหรือยืม"
-                        />
-                      </div>
-                      <div style={{ marginTop: 20 }}>
-                        <FormControlLabel
-                          control={<Checkbox disabled checked={Boolean(selectedProducts.product_type2)} />}
-                          label="ทรัพยากรเพื่อการซื้อขาย"
-                        />
-                      </div>
-                      <div style={{ marginTop: 20 }}>
-                        <FormControlLabel
-                          control={<Checkbox disabled checked={Boolean(selectedProducts.product_type3)} />}
-                          label="ทรัพยากรเพื่อแลกเปลี่ยน"
-                        />
-                      </div>
-                    </FormGroup>
-                  </FormControl>
+
                   <div >
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DemoContainer
@@ -1473,7 +1493,7 @@ console.log("notifications",notifications)
                     <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการทำรายการ : </FormLabel>
                     <TextField disabled id="outlined-disabled" label={`${selectedProducts.userbank_productquantity} ${selectedProducts.userbank_unit}`} variant="outlined" sx={{ width: '50ch' }} />
                   </div>
-                  
+
                 </div>
               </>
             ) : (
