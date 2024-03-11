@@ -532,7 +532,7 @@ export default function Bank() {
         {value === 5 && (
           <>
             <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
-              {filteredProducts.length > 0 ? (
+              {(filteredProducts.length > 0 || filteredProductInbox.length > 0) ? (
                 <>
                   {filteredProducts.map((item) => (
                     item.order_status !== 'รอการตรวจสอบ' && (
@@ -570,14 +570,6 @@ export default function Bank() {
                       </Grid>
                     )
                   ))}
-                </>
-              ) : (
-                <p>ไม่มีรายการที่ทำรายการแล้ว</p>
-              )}
-            </Grid>
-            <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
-              {filteredProductInbox.length > 0 ? (
-                <>
                   {filteredProductInbox.map((item) => (
                     item.userbank_status !== 'รอการตรวจสอบ' && (
                       <Grid item key={item.orderExchange_id} xs={12}>
@@ -616,7 +608,7 @@ export default function Bank() {
                   ))}
                 </>
               ) : (
-                <p>filteredProductInbox is not an array.</p>
+                <p>ไม่มีรายการ</p>
               )}
             </Grid>
           </>
@@ -624,7 +616,7 @@ export default function Bank() {
         {value === 6 && (
           <>
             <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
-              {filteredProducts.length > 0 ? (
+              {(filteredProducts.length > 0 || filteredProductInbox.length > 0)? (
                 <>
                   {filteredProducts.map((item) => (
                     item.order_status === 'รอการตรวจสอบ' && (
@@ -662,15 +654,7 @@ export default function Bank() {
                       </Grid>
                     )
                   ))}
-                </>
-              ) : (
-                <p>ไม่มีรายการที่รอการตรวจสอบ</p>
-              )}
-            </Grid>
-            <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
-              {filteredProductInbox.length > 0 ? (
-                <>
-                  {filteredProductInbox.map((item) => (
+                   {filteredProductInbox.map((item) => (
                     item.userbank_status === 'รอการตรวจสอบ' && (
                       <Grid item key={item.orderExchange_id} xs={12}>
                         <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
@@ -708,7 +692,7 @@ export default function Bank() {
                   ))}
                 </>
               ) : (
-                <p>filteredProductInbox is not an array.</p>
+                <p>ไม่มีรายการที่รอการตรวจสอบ</p>
               )}
             </Grid>
           </>

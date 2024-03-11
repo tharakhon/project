@@ -193,6 +193,7 @@ function Main12() {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [filteredProduct, setFilteredProduct] = useState([]);
   const [filteredProductInbox, setFilteredProductInbox] = useState([]);
+  const [filteredProductInbox1, setFilteredProductInbox1] = useState([]);
   const [displayBookmarks, setDisplayBookmarks] = useState(false);
   const [codename, setCodeName] = useState([]);
   const [anchorElPopover, setAnchorElPopover] = useState(null);
@@ -204,10 +205,13 @@ function Main12() {
   const [returnDate, setReturnDate] = useState(dayjs());
   const [openOrder, setOpenOrder] = React.useState(false);
   const [openOrder1, setOpenOrder1] = React.useState(false);
+  const [openOrder2, setOpenOrder2] = React.useState(false);
   const [scroll, setScroll] = React.useState('paper');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedProducts, setSelectedProducts] = useState(null);
+  const [selectedProductss, setSelectedProductss] = useState(null);
   const [orderExchange_borrowDate, setOrderExchange_borrowDate] = useState(dayjs());
+  const [orderSale_borrowDate, setOrderSale_borrowDate] = useState(dayjs());
   const [openNextDialog, setOpenNextDialog] = React.useState(false);
   console.log("notifications", notifications)
   const descriptionElementRef = React.useRef(null);
@@ -220,14 +224,24 @@ function Main12() {
     }
   }, [openOrder]);
   const descriptionElementRefs = React.useRef(null);
+
   React.useEffect(() => {
     if (openOrder1) {
-      const { current: descriptionElement } = descriptionElementRef;
+      const { current: descriptionElement } = descriptionElementRefs;
       if (descriptionElement !== null) {
         descriptionElement.focus();
       }
     }
   }, [openOrder1]);
+  const descriptionElementRefss = React.useRef(null);
+  React.useEffect(() => {
+    if (openOrder2) {
+      const { current: descriptionElement } = descriptionElementRefss;
+      if (descriptionElement !== null) {
+        descriptionElement.focus();
+      }
+    }
+  }, [openOrder2]);
   const handleClickOpen = (product) => () => {
     setSelectedProduct(product);
     setBorrowDate(dayjs(product.order_borrowDate));
@@ -239,6 +253,13 @@ function Main12() {
     setSelectedProducts(product);
     setOrderExchange_borrowDate(dayjs(product.orderExchange_borrowDate));
     setOpenOrder1(true);
+    setScroll('body');
+  };
+
+  const handleClickOpen2 = (product) => () => {
+    setSelectedProductss(product);
+    setOrderSale_borrowDate(dayjs(product.order_product_date));
+    setOpenOrder2(true);
     setScroll('body');
   };
 
@@ -262,6 +283,9 @@ function Main12() {
     setOpenOrder1(false);
     setOpenNextDialog(false);
   };
+  const handleClose2 = () => {
+    setOpenOrder2(false);
+  };
 
   const handleOpenPopover = () => {
     ReactSession.set('username', username)
@@ -276,7 +300,8 @@ function Main12() {
     const pendingNotifications = notifications.filter(notification => {
       return (
         notification.order_status === 'รอการตรวจสอบ' ||
-        notification.userbank_status === 'รอการตรวจสอบ'
+        notification.userbank_status === 'รอการตรวจสอบ' ||
+        notification.order_product_status === 'รอการตรวจสอบ'
       );
     });
     const totalPendingNotifications = pendingNotifications.reduce((sum, notification) => {
@@ -292,15 +317,37 @@ function Main12() {
     setAnchorElPopover(null);
   };
 
-  const handleBookmarkClick = (title) => {
-    const isBookmarked = bookmarks.some((item) => item.title === title);
+  const handleBookmarkClick = async (title) => {
+    try {
+      const isBookmarked = bookmarks.some((item) => item.title === title);
 
-    if (isBookmarked) {
-      const updatedBookmarks = bookmarks.filter((item) => item.title !== title);
-      setBookmarks(updatedBookmarks);
-    } else {
-      const bookmarkedItem = filteredProducts.find((item) => item.title === title);
-      setBookmarks([...bookmarks, bookmarkedItem]);
+      if (isBookmarked) {
+        const updatedBookmarks = bookmarks.filter((item) => item.title !== title);
+        setBookmarks(updatedBookmarks);
+        await Axios.delete(`http://localhost:5000/deletebookmark`, {
+          data: {
+            bookmark_email: username,
+            bookmark_bankname: title,
+          },
+        });
+      } else {
+        const bookmarkedItem = filteredProducts.find((item) => item.title === title);
+        await Axios.post(`http://localhost:5000/bookmark`, {
+          bookmark_email: username,
+          bookmark_bankname: title,
+          bookmark_members: bookmarkedItem.bankMembers,
+          bookmark_codename: bookmarkedItem.codename,
+          bookmark_image: bookmarkedItem.image,
+          bookmark_lat: bookmarkedItem.lat,
+          bookmark_lon: bookmarkedItem.lon,
+          bookmark_rank: bookmarkedItem.rank,
+          bookmark_rating: bookmarkedItem.rating,
+        });
+        console.log('bookmarkedItem', bookmarkedItem)
+        setBookmarks([...bookmarks, bookmarkedItem]);
+      }
+    } catch (error) {
+      console.error('Error bookmarking:', error);
     }
   };
   const handleSearchChange = (event) => {
@@ -326,6 +373,7 @@ function Main12() {
       // If not empty, filter the products based on the query
       filterProducts(searchQuery);
     }
+
   }, [searchQuery, originalData]);
 
   const filterProducts = (query) => {
@@ -445,7 +493,7 @@ function Main12() {
       .catch((error) => {
         console.error("เกิดข้อผิดพลาดในการดึงข้อมูลจำนวนสมาชิก:", error);
       });
-  }, [filteredProducts]);
+  }, []);
   const handleSubmit = () => {
     navigate(`/registerbank`)
   }
@@ -506,8 +554,9 @@ function Main12() {
     });
     console.log(updatedProducts)
     setFilteredProducts(updatedProducts);
-  }, [currentPosition]);
-  // useEffect(() => {
+
+  }, []);
+  // Effect(() => {
   //   const storedBookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
   //   setBookmarks(storedBookmarks);
   // }, []);
@@ -543,12 +592,9 @@ function Main12() {
           order_quantity: item.order_quantity,
           order_status: item.order_status,
           product_image: item.product_image,
+          product_type4 : item.product_type4,
           product_name: item.product_name,
           product_quantity: item.product_quantity,
-          product_type: item.product_type,
-          product_type2: item.product_type2,
-          product_type3: item.product_type3,
-          product_type4: item.product_type4,
           product_unit: item.product_unit,
           order_rental: item.order_rental,
           order_date: dayjs(item.order_date)
@@ -573,10 +619,6 @@ function Main12() {
           image: item.image,
           product_name: item.product_name,
           product_image: item.product_image,
-          product_type: item.product_type,
-          product_type2: item.product_type2,
-          product_type3: item.product_type3,
-          product_type4: item.product_type4,
           product_unit: item.product_unit,
           product_details: item.product_details,
           orderExchange_borrowDate: dayjs(item.orderExchange_borrowDate),
@@ -584,6 +626,7 @@ function Main12() {
           userbank_status: item.userbank_status,
           userbank_productname: item.userbank_productname,
           userbank_productimage: item.userbank_productimage,
+          product_type4 : item.product_type4,
           userbank_producttype1: item.userbank_producttype1,
           userbank_productquantity: item.userbank_productquantity,
           userbank_unit: item.userbank_unit,
@@ -601,6 +644,36 @@ function Main12() {
 
   }, [username]);
 
+  useEffect(() => {
+    Axios.get(`http://localhost:5000/Inbox2/${username}`)
+      .then((response) => {
+        console.log("ข้อมูลที่ได้รับ:", response.data);
+        const fetchedProduct = response.data.map((item) => ({
+          order_porduct_id: item.order_porduct_id,
+          order_sale_bankname: item.order_sale_bankname,
+          fullname: item.fullname,
+          image: item.image,
+          product_name: item.product_name,
+          product_image: item.product_image,
+          product_type4 : item.product_type4,
+          order_product_date: dayjs(item.order_product_date),
+          order_product_status: item.order_product_status,
+          order_product_quantity: item.order_product_quantity,
+          order_product_unit: item.order_product_unit,
+          order_product_price: item.order_product_price,
+          order_sale: item.order_sale,
+          order_product_datetime: dayjs(item.order_product_datetime)
+        }));
+
+        setFilteredProductInbox1(fetchedProduct);
+
+      })
+      .catch((error) => {
+        console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+      })
+
+  }, [username]);
+
   const handleToBank = () => {
     ReactSession.set("username", username)
     ReactSession.set("codename", codename.bank_codename);
@@ -608,6 +681,30 @@ function Main12() {
     console.log(filteredProducts.title)
     navigate("/bank")
   }
+
+  const itemsToDisplay = displayBookmarks ? bookmarks : filteredProducts;
+  useEffect(() => {
+    Axios.get(`http://localhost:5000/bookmark/${username}`)
+      .then((response) => {
+        console.log("ข้อมูล Bookmark ทั้งหมด:", response.data);
+        const fetchedBookmarks = response.data.map((item) => ({
+          title: item.bookmark_bankname,
+          bankMembers: item.bookmark_members,
+          codename: item.bookmark_codename,
+          image: item.bookmark_image,
+          lat: item.bookmark_lat,
+          lon: item.bookmark_lon,
+          rank: item.bookmark_rank,
+          rating: item.bookmark_rating,
+        }));
+
+        console.log('fetchedBookmarks', fetchedBookmarks);
+        setBookmarks(fetchedBookmarks);
+      })
+      .catch((error) => {
+        console.error("เกิดข้อผิดพลาดในการดึงข้อมูล Bookmark:", error);
+      });
+  }, [username]);
   return (
     <div >
       <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
@@ -812,10 +909,79 @@ function Main12() {
       )}
       {currentView === 'main' && (
         <Grid container spacing={2}>
-          {filteredProducts.map((bank) => (
+          {itemsToDisplay.map((bookmark) => (
+            <Grid item key={bookmark.title} xs={12} sm={6} md={4} lg={3}>
+              <Card sx={{ maxWidth: 345, m: 1 }}>
+                <CardHeader
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row-reverse',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    background: 'linear-gradient(to right, #43e97b 0%, #38f9d7 100%)',
+                    color: 'white',
+                  }}
+                  avatar={
+                    <Avatar
+                      src={`http://localhost:5000/image/${bookmark.rank}`}
+                      alt=''
+                      sx={{
+                        backgroundColor: 'transparent',
+                      }}
+                    />
+                  }
+                />
+                <CardMedia
+                  component="img"
+                  height="300"
+                  image={`http://localhost:5000/image/${bookmark.image}`}
+                  title="รูปภาพธนาคาร"
+                />
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                    {bookmark.title}
+                  </Typography>
+                  <Typography gutterBottom variant="body1" component="div">
+                    จำนวนสมาชิกทั้งหมด {bookmark.bankMembers} คน
+                  </Typography>
+                  <Box
+                    sx={{
+                      width: 200,
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Rating
+                      name="text-feedback"
+                      value={bookmark.rating}
+                      readOnly
+                      precision={0.5}
+
+                      emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+                    />
+                    <Box sx={{ ml: 2 }} onClick={handleClickReviw}>{bookmark.rating}</Box>
+                  </Box>
+                  {currentPosition && (
+                    <Typography>
+                      Distance: {bookmark.distance ? bookmark.distance.toFixed(2) : 'N/A'} km
+                    </Typography>
+                  )}
+                </CardContent>
+                <CardActions>
+                  <Button size="medium" onClick={() => handleOpenbankuser(bookmark.title)}>
+                    เปิดดูทรัพยากรในธนาคาร
+                  </Button>
+                  <Button size="medium" onClick={() => handleBookmarkClick(bookmark.title)}>
+                    {bookmarks.some((item) => item.title === bookmark.title) ? 'ยกเลิกบุ๊คมาร์ค' : 'บุ๊คมาร์ค'}
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+          {/* {filteredProducts.map((bank) => (
             <Grid item key={bank.title} xs={12} sm={6} md={4} lg={3}>
               <Card sx={{ maxWidth: 345, m: 1 }}>
-                {/* Card content here */}
+                
                 <CardHeader
                   sx={{
                     display: 'flex',
@@ -881,12 +1047,12 @@ function Main12() {
                 </CardActions>
               </Card>
             </Grid>
-          ))}
+          ))} */}
         </Grid>
       )}
       {currentView === 'active' && (
         <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
-          {filteredProduct.length > 0 ? (
+          {(filteredProduct.length > 0 || filteredProductInbox.length > 0 || filteredProductInbox1.length > 0) ? (
             <>
               {filteredProduct.map((item) => (
                 <Grid item key={item.order_id} xs={12}>
@@ -922,12 +1088,6 @@ function Main12() {
                   </Card>
                 </Grid>
               ))}
-            </>
-          ) : (
-            <p>ไม่มีกิจกรรม</p>
-          )}
-          {filteredProductInbox.length > 0 ? (
-            <>
               {filteredProductInbox.map((inboxItem) => (
                 <Grid item key={inboxItem.orderExchange_id} xs={12}>
                   <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
@@ -962,6 +1122,40 @@ function Main12() {
                   </Card>
                 </Grid>
               ))}
+              {filteredProductInbox1.map((item) => (
+                <Grid item key={item.order_porduct_id} xs={12}>
+                  <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
+                    <CardMedia
+                      component="img"
+                      sx={{ width: 151 }}
+                      image={item.image}
+                      alt="รูป user"
+                    />
+                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                      <CardContent sx={{ flex: '1 0 auto' }}>
+                        <Typography component="div" variant="h5">
+                          {item.fullname}
+                        </Typography>
+                        <Typography variant="subtitle1" color="text.secondary" component="div">
+                          ได้ทำรายการของ ธนาคาร : {item.order_sale_bankname}
+                        </Typography>
+                        <Typography variant="subtitle1" color="text.secondary" component="div">
+                          สถานะปัจจุบัน : {item.order_product_status}
+                        </Typography>
+                        <Typography variant="subtitle1" color="text.secondary" component="div">
+                          สถานะการทำรายการ : {item.order_sale}
+                        </Typography>
+                        <Typography variant="subtitle1" color="text.secondary" component="div">
+                          เวลาที่ทำรายการ : {dayjs(item.order_product_datetime).format("DD-MM-YYYY HH:mm:ss")}
+                        </Typography>
+                      </CardContent>
+                      <CardActions>
+                        <Button onClick={handleClickOpen2(item)} size="medium">เปิดอ่าน</Button>
+                      </CardActions>
+                    </Box>
+                  </Card>
+                </Grid>
+              ))}
             </>
           ) : (
             <p>ไม่มีกิจกรรม</p>
@@ -981,7 +1175,7 @@ function Main12() {
           {activeTab === 'pending' && (
             <div>
               <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
-                {filteredProduct.length > 0 ? (
+                {(filteredProduct.length > 0 || filteredProductInbox.length > 0 || filteredProductInbox1.length > 0) ? (
                   <>
                     {filteredProduct.map((item) => (
                       item.order_status === 'รอการตรวจสอบ' && (
@@ -1019,14 +1213,6 @@ function Main12() {
                         </Grid>
                       )
                     ))}
-                  </>
-                ) : (
-                  <p>ไม่มีรายการที่รอการตรวจสอบ</p>
-                )}
-              </Grid>
-              <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
-                {filteredProductInbox.length > 0 ? (
-                  <>
                     {filteredProductInbox.map((inboxItem) => (
                       inboxItem.userbank_status === 'รอการตรวจสอบ' && (
                         <Grid item key={inboxItem.orderExchange_id} xs={12}>
@@ -1063,9 +1249,45 @@ function Main12() {
                         </Grid>
                       )
                     ))}
+                    {filteredProductInbox1.map((item) => (
+                      item.order_product_status === 'รอการตรวจสอบ' && (
+                      <Grid item key={item.order_porduct_id} xs={12}>
+                        <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
+                          <CardMedia
+                            component="img"
+                            sx={{ width: 151 }}
+                            image={item.image}
+                            alt="รูป user"
+                          />
+                          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                            <CardContent sx={{ flex: '1 0 auto' }}>
+                              <Typography component="div" variant="h5">
+                                {item.fullname}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                ได้ทำรายการของ ธนาคาร : {item.order_sale_bankname}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                สถานะปัจจุบัน : {item.order_product_status}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                สถานะการทำรายการ : {item.order_sale}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                เวลาที่ทำรายการ : {dayjs(item.order_product_datetime).format("DD-MM-YYYY HH:mm:ss")}
+                              </Typography>
+                            </CardContent>
+                            <CardActions>
+                              <Button onClick={handleClickOpen2(item)} size="medium">เปิดอ่าน</Button>
+                            </CardActions>
+                          </Box>
+                        </Card>
+                      </Grid>
+                      )
+                    ))}
                   </>
                 ) : (
-                  <p>ไม่มีกิจกรรม</p>
+                  <p>ไม่มีรายการที่รอการตรวจสอบ</p>
                 )}
               </Grid>
             </div>
@@ -1074,7 +1296,7 @@ function Main12() {
           {activeTab === 'approved' && (
             <div>
               <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
-                {filteredProduct.length > 0 ? (
+                {(filteredProduct.length > 0 || filteredProductInbox.length > 0 || filteredProductInbox1.length > 0) ? (
                   <>
                     {filteredProduct.map((item) => (
                       item.order_status === 'อนุมัติให้ทำรายการ' && (
@@ -1112,14 +1334,6 @@ function Main12() {
                         </Grid>
                       )
                     ))}
-                  </>
-                ) : (
-                  <p>ไม่มีรายการที่รอการตรวจสอบ</p>
-                )}
-              </Grid>
-              <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
-                {filteredProductInbox.length > 0 ? (
-                  <>
                     {filteredProductInbox.map((inboxItem) => (
                       inboxItem.userbank_status === 'อนุมัติให้ทำรายการ' && (
                         <Grid item key={inboxItem.orderExchange_id} xs={12}>
@@ -1156,9 +1370,45 @@ function Main12() {
                         </Grid>
                       )
                     ))}
+                    {filteredProductInbox1.map((item) => (
+                      item.order_product_status === 'อนุมัติให้ทำรายการ' && (
+                      <Grid item key={item.order_porduct_id} xs={12}>
+                        <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
+                          <CardMedia
+                            component="img"
+                            sx={{ width: 151 }}
+                            image={item.image}
+                            alt="รูป user"
+                          />
+                          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                            <CardContent sx={{ flex: '1 0 auto' }}>
+                              <Typography component="div" variant="h5">
+                                {item.fullname}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                ได้ทำรายการของ ธนาคาร : {item.order_sale_bankname}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                สถานะปัจจุบัน : {item.order_product_status}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                สถานะการทำรายการ : {item.order_sale}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                เวลาที่ทำรายการ : {dayjs(item.order_product_datetime).format("DD-MM-YYYY HH:mm:ss")}
+                              </Typography>
+                            </CardContent>
+                            <CardActions>
+                              <Button onClick={handleClickOpen2(item)} size="medium">เปิดอ่าน</Button>
+                            </CardActions>
+                          </Box>
+                        </Card>
+                      </Grid>
+                      )
+                    ))}
                   </>
                 ) : (
-                  <p>ไม่มีกิจกรรม</p>
+                  <p>ไม่มีรายการที่รอการตรวจสอบ</p>
                 )}
               </Grid>
             </div>
@@ -1167,7 +1417,7 @@ function Main12() {
           {activeTab === 'rejected' && (
             <div>
               <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
-                {filteredProduct.length > 0 ? (
+                {(filteredProduct.length > 0 || filteredProductInbox.length > 0 || filteredProductInbox1.length > 0) ? (
                   <>
                     {filteredProduct.map((item) => (
                       item.order_status === 'ไม่อนุมัติให้ทำรายการ' && (
@@ -1205,14 +1455,6 @@ function Main12() {
                         </Grid>
                       )
                     ))}
-                  </>
-                ) : (
-                  <p>ไม่มีรายการที่รอการตรวจสอบ</p>
-                )}
-              </Grid>
-              <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
-                {filteredProductInbox.length > 0 ? (
-                  <>
                     {filteredProductInbox.map((inboxItem) => (
                       inboxItem.userbank_status === 'ไม่อนุมัติให้ทำรายการ' && (
                         <Grid item key={inboxItem.orderExchange_id} xs={12}>
@@ -1249,9 +1491,45 @@ function Main12() {
                         </Grid>
                       )
                     ))}
+                    {filteredProductInbox1.map((item) => (
+                      item.order_product_status === 'ไม่อนุมัติให้ทำรายการ' && (
+                      <Grid item key={item.order_porduct_id} xs={12}>
+                        <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
+                          <CardMedia
+                            component="img"
+                            sx={{ width: 151 }}
+                            image={item.image}
+                            alt="รูป user"
+                          />
+                          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                            <CardContent sx={{ flex: '1 0 auto' }}>
+                              <Typography component="div" variant="h5">
+                                {item.fullname}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                ได้ทำรายการของ ธนาคาร : {item.order_sale_bankname}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                สถานะปัจจุบัน : {item.order_product_status}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                สถานะการทำรายการ : {item.order_sale}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                เวลาที่ทำรายการ : {dayjs(item.order_product_datetime).format("DD-MM-YYYY HH:mm:ss")}
+                              </Typography>
+                            </CardContent>
+                            <CardActions>
+                              <Button onClick={handleClickOpen2(item)} size="medium">เปิดอ่าน</Button>
+                            </CardActions>
+                          </Box>
+                        </Card>
+                      </Grid>
+                      )
+                    ))}
                   </>
                 ) : (
-                  <p>ไม่มีกิจกรรม</p>
+                  <p>ไม่มีรายการที่ไม่อนุมัติ</p>
                 )}
               </Grid>
             </div>
@@ -1494,6 +1772,87 @@ function Main12() {
                     <TextField disabled id="outlined-disabled" label={`${selectedProducts.userbank_productquantity} ${selectedProducts.userbank_unit}`} variant="outlined" sx={{ width: '50ch' }} />
                   </div>
 
+                </div>
+              </>
+            ) : (
+              <p>Details not found.</p>
+            )}
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={openOrder2}
+        onClose={handleClose2}
+        scroll={scroll}
+        aria-labelledby="scroll-dialog-title"
+        aria-describedby="scroll-dialog-description"
+      >
+        <DialogTitle id="scroll-dialog-title" sx={{ textAlign: "center" }}>คุณได้ทำรายการของธนาคาร {selectedProductss ? selectedProductss.order_sale_bankname : 'N/A'} </DialogTitle>
+        <DialogContent dividers={scroll === 'paper'}>
+          <DialogContentText
+            id="scroll-dialog-description"
+            ref={descriptionElementRefss}
+            tabIndex={-1}
+          >
+            {selectedProductss ? (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <Card sx={{ maxWidth: 345, m: 1 }} >
+                    <CardMedia
+                      component="img"
+                      height="300"
+                      image={`http://localhost:5000/image/${selectedProductss.product_image}`}
+                      title="รูปภาพทรัพยากร"
+                    />
+                  </Card>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+
+                  <div style={{ marginTop: 50 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
+                    <TextField disabled id="outlined-disabled" label={selectedProductss.product_name} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
+
+                  <div style={{ marginTop: 20 }}>
+                    <Box
+                      component="form"
+                      sx={{
+                        '& .MuiTextField-root': { m: 1, width: '25ch' },
+                      }}
+                      noValidate
+                      autoComplete="off"
+                    ></Box>
+                    <FormLabel component="legend" style={{ color: 'black' }}>ประเภททรัพยากรทางการเกษตร:</FormLabel>
+                    <TextField disabled id="outlined-disabled" label={selectedProductss.product_type4} variant="outlined" sx={{ width: '50ch' }} />
+
+                  </div>
+                  <div style={{ marginTop: 30 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>สถานะการทำรายการ : </FormLabel>
+                    <TextField disabled id="outlined-disabled" label={`${selectedProductss.order_sale}`} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
+                  <div style={{ marginTop: 30 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการทำรายการ : </FormLabel>
+                    <TextField disabled id="outlined-disabled" label={`${selectedProductss.order_product_quantity} ${selectedProductss.order_product_unit}`} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
+                  <div >
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer
+                        components={[
+                          'DatePicker',
+                        ]}
+                        sx={{ width: '50ch', marginTop: 3 }}
+                      >
+                        <DemoItem label={<Label componentName="วันที่จะมารับทรัพยากร" valueType="date" />} >
+                          <DatePicker
+                            disabled
+                            value={orderSale_borrowDate}
+                            renderInput={(params) => <TextField {...params} variant="outlined" />}
+                          />
+                        </DemoItem>
+                      </DemoContainer>
+                    </LocalizationProvider>
+                  </div>
                 </div>
               </>
             ) : (

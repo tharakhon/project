@@ -1,22 +1,24 @@
-import React from "react";
-import { useParams } from "react-router-dom";
-import Drawer from '@mui/material/Drawer';
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
+import NavBarBank from "./navBarBank";
 import CardMedia from '@mui/material/CardMedia';
 import Card from '@mui/material/Card';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import Typography from '@mui/material/Typography';
-import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import FormLabel from '@mui/material/FormLabel';
+import { Autocomplete, FormControl, FormHelperText, InputAdornment, MenuItem, OutlinedInput } from "@mui/material";
+import Box from '@mui/material/Box';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import Tooltip from '@mui/material/Tooltip';
+import Stack from '@mui/material/Stack';
+import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { useEffect } from 'react';
 import Axios from "axios";
 import { ReactSession } from 'react-client-session';
-import TextField from '@mui/material/TextField';
-import FormLabel from '@mui/material/FormLabel';
-import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
 import FormGroup from "@mui/material/FormGroup";
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -39,6 +41,12 @@ import HomeIcon from '@mui/icons-material/Home';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ReviewsIcon from '@mui/icons-material/Reviews';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import Typography from '@mui/material/Typography';
+import Drawer from '@mui/material/Drawer';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
 const drawerWidth = 240;
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -50,196 +58,97 @@ const DrawerHeader = styled('div')(({ theme }) => ({
     ...theme.mixins.toolbar,
 }));
 
-function OpenBankUsers() {
+
+const ProSpan = styled('span')({
+    display: 'inline-block',
+    height: '1em',
+    width: '1em',
+    verticalAlign: 'middle',
+    marginLeft: '0.3em',
+    marginBottom: '0.08em',
+    backgroundSize: 'contain',
+    backgroundRepeat: 'no-repeat',
+    backgroundImage: 'url(https://mui.com/static/x/pro.svg)',
+});
+
+function Label({ componentName, isProOnly }) {
+    const content = (
+        <span>
+            <strong>{componentName}</strong>
+        </span>
+    );
+
+    if (isProOnly) {
+        return (
+            <Stack direction="row" spacing={0.5} component="span">
+                <Tooltip title="Included on Pro package">
+                    <a href="https://mui.com/x/introduction/licensing/#pro-plan">
+                        <ProSpan />
+                    </a>
+                </Tooltip>
+                {content}
+            </Stack>
+        );
+    }
+
+    return content;
+}
+const UnitDropdown = ({ selectedUnit, handleUnitChange }) => {
+    const units = ['กรัม', 'กิโลกรัม', 'ชิ้น', 'คัน', 'ถุง', 'กระสอบ']; // เพิ่มหน่วยตามที่ต้องการ
+
+    return (
+        <FormControl fullWidth>
+            <Select
+                labelId="unit-dropdown-label"
+                id="unit-dropdown"
+                value={selectedUnit}
+                onChange={handleUnitChange}
+            >
+                {units.map((unit) => (
+                    <MenuItem key={unit} value={unit}>
+                        {unit}
+                    </MenuItem>
+                ))}
+            </Select>
+        </FormControl>
+    );
+};
+
+function OrderBankSale() {
     const id = ReactSession.get("id");
     const bank_name = ReactSession.get("bank_name");
     const [open, setOpen] = useState(false);
     const username = ReactSession.get("username");
-    const [filteredProducts, setFilteredProducts] = useState([]);
-    const [productDetails, setProductDetails] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [isBankMember, setIsBankMember] = useState(false);
+    const [borrowDate, setBorrowDate] = useState(null);
+    const [returnDate, setReturnDate] = useState(null);
+    const [filteredProduct, setFilteredProduct] = useState(null);
     const navigate = useNavigate();
     const theme = useTheme();
+    const [selectedUnit, setSelectedUnit] = useState('กรัม');
+    const [inputQuantity, setInputQuantity] = useState('');
+    console.log(selectedUnit)
+    console.log(inputQuantity)
+    console.log(borrowDate)
+    console.log(returnDate)
+    const handleBorrowDateChange = (date) => {
+        setBorrowDate(date);
+    };
 
+    const handleReturnDateChange = (date) => {
+        setReturnDate(date);
+    };
+    const handleChange = (event) => {
+        const newValue = event.target.value;
 
-    useEffect(() => {
-        Axios.get(`http://localhost:5000/showProductUser1/${id}`)
-            .then((response) => {
-                console.log("ข้อมูลที่ได้รับ:", response.data[0]);
-                // Assuming response.data is an array of products
-                // Choose the first product for now
-                if (response.data.length > 0) {
-                    setFilteredProducts(response.data[0]);
-                }
-            })
-            .catch((error) => {
-                console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
-            })
-
-    }, []);
-    useEffect(() => {
-        Axios.get(`http://localhost:5000/CheckUserInBank/${username}`)
-            .then((response) => {
-                console.log("ข้อมูลที่ได้รับ:", response.data);
-
-                // Assuming response.data is an array
-                const userEntries = response.data;
-
-                // Check if the user is a member
-                const isMember = userEntries.some((userEntry) => {
-                    const userBankEmail = userEntry?.userBank_email;
-                    const userBankName = userEntry?.userBank_bankName;
-                    return userBankEmail === username && userBankName === bank_name;
-                });
-
-                setIsBankMember(isMember);
-            })
-            .catch((error) => {
-                console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
-            });
-    }, [username, bank_name]);
-    const handleBackbankuser = () => {
-        navigate("/bankuser");
-    }
-    const handleMemberbankuser = () => {
-        Axios.post('http://localhost:5000/RegisterUserForBank', {
-            userBank_email: username,
-            userBank_bankName: bank_name,
-            // ... other data
-        })
-            .then((response) => {
-                console.log(response.data);
-                alert("สมัครเป็นสมาชิกเสร็จสิ้น")
-                // Redirect to the bank page on successful registration
-
-            })
-            .catch((error) => {
-                if (error.response) {
-                    // The request was made and the server responded with a status code
-                    // that falls out of the range of 2xx
-                    console.error("Server Error:", error.response.data);
-                } else if (error.request) {
-                    // The request was made but no response was received
-                    console.error("No Response from Server");
-                } else {
-                    // Something happened in setting up the request that triggered an Error
-                    console.error("Error:", error.message);
-                }
-            });
-    }
-    const handleOrderbankuser = async (id) => {
-        try {
-            const response = await Axios.get(`http://localhost:5000/CheckUserInBank/${username}`);
-            console.log("ข้อมูลที่ได้รับ:", response.data);
-
-            // Assuming response.data is an array
-            const userEntries = response.data;
-
-            // Flag to check if a match is found
-            let isBankMember = false;
-
-            // Iterate through the array
-            for (const userEntry of userEntries) {
-                const userBankEmail = userEntry?.userBank_email;
-                const userBankName = userEntry?.userBank_bankName;
-
-                // Check if the current entry matches the expected values
-                if (userBankEmail === username && userBankName === bank_name) {
-                    isBankMember = true;
-                    ReactSession.set('bank_name', bank_name);
-                    ReactSession.set('username', username);
-                    ReactSession.set("id", id);
-                    navigate(`/orderbankusers`);
-                    // Exit the loop once a match is found
-                    break;
-                }
-            }
-
-            // If no match is found after the loop, show an alert
-            if (!isBankMember) {
-                alert("คุณไม่ได้เป็นสมาชิกของธนาคาร");
-
-            }
-        } catch (error) {
-            console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
-        }
-    }
-    const handleExchangePage = async (id) => {
-        try {
-            const response = await Axios.get(`http://localhost:5000/CheckUserInBank/${username}`);
-            console.log("ข้อมูลที่ได้รับ:", response.data);
-
-            // Assuming response.data is an array
-            const userEntries = response.data;
-
-            // Flag to check if a match is found
-            let isBankMember = false;
-
-            // Iterate through the array
-            for (const userEntry of userEntries) {
-                const userBankEmail = userEntry?.userBank_email;
-                const userBankName = userEntry?.userBank_bankName;
-
-                // Check if the current entry matches the expected values
-                if (userBankEmail === username && userBankName === bank_name) {
-                    isBankMember = true;
-                    ReactSession.set('bank_name', bank_name);
-                    ReactSession.set('username', username);
-                    ReactSession.set("id", id);
-                    navigate(`/changepage`);
-                    // Exit the loop once a match is found
-                    break;
-                }
-            }
-
-            // If no match is found after the loop, show an alert
-            if (!isBankMember) {
-                alert("คุณไม่ได้เป็นสมาชิกของธนาคาร");
-            }
-        } catch (error) {
-            console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+        // Ensure the input value is a valid number and does not exceed the available quantity
+        if (!isNaN(newValue) && newValue <= filteredProduct.product_quantity) {
+            setInputQuantity(newValue);
         }
     };
 
-    const handleOrderbankuserSale = async (id) => {
-        try {
-            const response = await Axios.get(`http://localhost:5000/CheckUserInBank/${username}`);
-            console.log("ข้อมูลที่ได้รับ:", response.data);
-
-            // Assuming response.data is an array
-            const userEntries = response.data;
-
-            // Flag to check if a match is found
-            let isBankMember = false;
-
-            // Iterate through the array
-            for (const userEntry of userEntries) {
-                const userBankEmail = userEntry?.userBank_email;
-                const userBankName = userEntry?.userBank_bankName;
-
-                // Check if the current entry matches the expected values
-                if (userBankEmail === username && userBankName === bank_name) {
-                    isBankMember = true;
-                    ReactSession.set('bank_name', bank_name);
-                    ReactSession.set('username', username);
-                    ReactSession.set("id", id);
-                    navigate(`/orderbankusersale`);
-                    // Exit the loop once a match is found
-                    break;
-                }
-            }
-
-            // If no match is found after the loop, show an alert
-            if (!isBankMember) {
-                alert("คุณไม่ได้เป็นสมาชิกของธนาคาร");
-
-            }
-        } catch (error) {
-            console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
-        }
-    }
-
+    const handleUnitChange = (event) => {
+        setSelectedUnit(event.target.value);
+    };
     const handleDrawerOpen = () => {
         setOpen(true);
     };
@@ -250,6 +159,58 @@ function OpenBankUsers() {
     const handleDrawerClose = () => {
         setOpen(false);
     };
+
+    const handleBackbankuser = () => {
+        navigate(-1);
+    }
+
+    const handleNext = () => {
+        Axios.post('http://localhost:5000/order_sale', {
+            order_porduct_id: id,
+            order_sale_bankname: bank_name,
+            userbank_order_sale: username,
+            order_product_quantity: inputQuantity,
+            order_product_date: borrowDate,
+            order_product_price:filteredProduct.product_price,
+            order_product_unit:filteredProduct.product_unit,
+
+            // ... other data
+        })
+            .then((response) => {
+                console.log(response.data);
+                ReactSession.set('username', username)
+                alert("ส่งข้อมูลไปให้ทางธนาคารเรียบร้อยแล้วรอทางธนาคารตรวจสอบข้อมูล")
+                navigate("/bankuser");
+            })
+            .catch((error) => {
+                if (error.response) {
+                    console.error("Server Error:", error.response.data);
+                } else if (error.request) {
+                    console.error("No Response from Server");
+                } else {
+                    console.error("Error:", error.message);
+                }
+            });
+
+    }
+    useEffect(() => {
+        // Fetch data from the server
+        Axios.get(`http://localhost:5000/showProductUser1/${id}`)
+            .then((response) => {
+                console.log("ข้อมูลที่ได้รับ:", response.data[0]);
+                // Assuming response.data is an array of products
+                // Choose the first product for now
+                if (response.data.length > 0) {
+                    setFilteredProduct(response.data[0]);
+                }
+            })
+            .catch((error) => {
+                console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+            })
+    }, []);
+    const handleAddData = () => {
+
+    }
     return (
         <div>
             <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
@@ -366,50 +327,49 @@ function OpenBankUsers() {
                     ))}
                 </List>
             </Drawer>
-            {filteredProducts ? (
+            {filteredProduct ? (
                 <>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
                         <Card sx={{ maxWidth: 345, m: 1 }} >
                             <CardMedia
                                 component="img"
                                 height="300"
-                                image={`http://localhost:5000/image/${filteredProducts.product_image}`}
+                                image={`http://localhost:5000/image/${filteredProduct.product_image}`}
                                 title="รูปภาพทรัพยากร"
                             />
                         </Card>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
-
                         <div style={{ marginTop: 50 }}>
                             <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
-                            <TextField disabled id="outlined-disabled" label={filteredProducts.product_name} variant="outlined" sx={{ width: '50ch' }} />
+                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProduct.product_name} sx={{ width: '50ch' }} />
                         </div>
-                        <FormControl sx={{ marginTop: 5,width: '50ch'  }} component="fieldset" variant="standard">
+                        <FormControl sx={{ marginTop: 5, width: '50ch' }} component="fieldset" variant="standard">
                             <FormLabel component="legend" style={{ color: "black" }}>
                                 ประเภทบริการ :
                             </FormLabel>
                             <FormGroup sx={{ display: 'flex', flexDirection: 'column' }}>
                                 <div style={{ marginTop: 20 }}>
                                     <FormControlLabel
-                                        control={<Checkbox disabled checked={Boolean(filteredProducts.product_type)} />}
+                                        control={<Checkbox disabled checked={Boolean(filteredProduct.product_type)} />}
                                         label="ทรัพยากรเพื่อเช่าหรือยืม"
                                     />
                                 </div>
                                 <div style={{ marginTop: 20 }}>
                                     <FormControlLabel
-                                        control={<Checkbox disabled checked={Boolean(filteredProducts.product_type2)} />}
+                                        control={<Checkbox disabled checked={Boolean(filteredProduct.product_type2)} />}
                                         label="ทรัพยากรเพื่อการซื้อขาย"
                                     />
                                 </div>
                                 <div style={{ marginTop: 20 }}>
                                     <FormControlLabel
-                                        control={<Checkbox disabled checked={Boolean(filteredProducts.product_type3)} />}
+                                        control={<Checkbox disabled checked={Boolean(filteredProduct.product_type3)} />}
                                         label="ทรัพยากรเพื่อแลกเปลี่ยน"
                                     />
                                 </div>
                             </FormGroup>
                         </FormControl>
-                        <div style={{ marginTop: 20 }}>
+                        <div style={{ marginTop: 30 }}>
                             <Box
                                 component="form"
                                 sx={{
@@ -419,30 +379,73 @@ function OpenBankUsers() {
                                 autoComplete="off"
                             ></Box>
                             <FormLabel component="legend" style={{ color: 'black' }}>ประเภททรัพยากรทางการเกษตร:</FormLabel>
-                            <TextField disabled id="outlined-disabled" label={filteredProducts.product_type4} variant="outlined" sx={{ width: '50ch' }} />
+                            <TextField disabled id="outlined-disabled" label="" variant="outlined" defaultValue={filteredProduct.product_type4} sx={{ width: '50ch' }} />
 
                         </div>
 
                         <div style={{ marginTop: 30 }}>
-                            <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากร : </FormLabel>
-                            <TextField disabled id="outlined-disabled" label={`${filteredProducts.product_quantity} ${filteredProducts.product_unit}`} variant="outlined" sx={{ width: '50ch' }} />
+                            <FormLabel component="legend" style={{ color: 'black' }}>รายละเอียดเพิ่มเติม:</FormLabel>
+                            <TextField
+                                disabled
+                                defaultValue={filteredProduct.product_details}
+                                id="outlined-multiline-static"
+                                sx={{ width: '50ch' }} />
                         </div>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-around', margin: 30 }}>
-                        <Button variant="contained" color="error" onClick={handleBackbankuser}>ย้อนกลับ</Button>
+                        <div style={{ marginTop: 30 }}>
+                            {filteredProduct.product_price === '' ? null : (
+                                <>
+                                    <FormLabel component="legend" style={{ color: 'black' }}>ราคาของทรัพยากร:</FormLabel>
+                                    <OutlinedInput
+                                        disabled
+                                        defaultValue={filteredProduct.product_price}
+                                        id="outlined-adornment-weight"
+                                        sx={{ width: '48ch' }}
+                                        endAdornment={<InputAdornment position="end">บาท</InputAdornment>}
+                                    />
+                                </>
+                            )}
+                        </div>
+                        <div style={{ marginTop: 20 }}>
+                            <FormLabel component="legend" style={{ color: 'red' }}>
+                                จำนวนทรัพยากร : {filteredProduct.product_quantity} {filteredProduct.product_unit}
+                            </FormLabel>
+                            <TextField
+                                id="unit-input"
+                                label="ใส่จำนวนที่คุณต้องการ"
+                                variant="outlined"
+                                value={inputQuantity}
+                                onChange={handleChange}
+                                sx={{ width: '50ch', }}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            {filteredProduct.product_unit}
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
 
-                        {filteredProducts.product_type3 === 'ทรัพยากรเพื่อแลกเปลี่ยน' && (
-                            <Button variant="contained" color="warning" onClick={() => handleExchangePage(id)}>ไปหน้าแลกเปลี่ยน</Button>
-                        )}
-                        {filteredProducts.product_type === 'ทรัพยากรเพื่อเช่าหรือยืม' && (
-                            <Button variant="contained" color="warning" onClick={() => handleOrderbankuser(id)} >ไปหน้าเช่าหรือยืม</Button>
-                        )}
-                        {filteredProducts.product_type2 === 'ทรัพยากรเพื่อการซื้อขาย' && (
-                            <Button variant="contained" color="warning" onClick={() => handleOrderbankuserSale(id)} >ไปหน้าซื้อขาย</Button>
-                        )}
-                        {!isBankMember && (
-                            <Button variant="contained" color="primary" onClick={handleMemberbankuser}>สมัครสมาชิก</Button>
-                        )}
+                        </div>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DemoContainer
+                                components={[
+                                    'DatePicker',
+                                ]}
+                                sx={{ width: '50ch', marginTop: 3 }}
+                            >
+                                <DemoItem label={<Label componentName="วันที่ต้องการมารับทรัพยากร" valueType="date" />}>
+                                    <DatePicker
+                                        value={borrowDate}
+                                        onChange={handleBorrowDateChange}
+                                        renderInput={(params) => <TextField {...params} />}
+                                    />
+                                </DemoItem>
+                            </DemoContainer>
+                        </LocalizationProvider>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-around', margin: 40 }}>
+                        <Button variant="contained" color="error" onClick={handleBackbankuser}>ย้อนกลับ</Button>
+                        <Button variant="contained" color="warning" onClick={handleNext}>เสร็จสิ้น</Button>
                     </div>
                 </>
             ) : (
@@ -451,4 +454,5 @@ function OpenBankUsers() {
         </div>
     );
 }
-export default OpenBankUsers;
+
+export default OrderBankSale;
