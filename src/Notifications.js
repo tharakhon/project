@@ -490,7 +490,7 @@ function Notifications() {
                 </List>
             </Drawer>
             <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
-                {filteredProducts.length > 0 || filteredProduct.length > 0 || filteredProductInbox1.length > 0 ? (
+                {(filteredProducts.length > 0 || filteredProduct.length > 0 || filteredProductInbox1.length > 0) ? (
                     <>
                         {filteredProducts.map((item) => (
                             item.order_status === 'รอการตรวจสอบ' && (

@@ -206,13 +206,20 @@ function Main12() {
   const [openOrder, setOpenOrder] = React.useState(false);
   const [openOrder1, setOpenOrder1] = React.useState(false);
   const [openOrder2, setOpenOrder2] = React.useState(false);
+  const [openOrderApproved, setOpenOrderApproved] = React.useState(false);
+  const [openOrderApproved1, setOpenOrderApproved1] = React.useState(false);
+  const [openOrderApproved2, setOpenOrderApproved2] = React.useState(false);
   const [scroll, setScroll] = React.useState('paper');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedProducts, setSelectedProducts] = useState(null);
   const [selectedProductss, setSelectedProductss] = useState(null);
+  const [selectedProductApproved, setSelectedProductApproved] = useState(null);
+  const [selectedProductApproved1, setSelectedProductApproved1] = useState(null);
+  const [selectedProductApproved2, setSelectedProductApproved2] = useState(null);
   const [orderExchange_borrowDate, setOrderExchange_borrowDate] = useState(dayjs());
   const [orderSale_borrowDate, setOrderSale_borrowDate] = useState(dayjs());
   const [openNextDialog, setOpenNextDialog] = React.useState(false);
+  const [openNextDialogApproved, setOpenNextDialogApproved] = React.useState(false);
   console.log("notifications", notifications)
   const descriptionElementRef = React.useRef(null);
   React.useEffect(() => {
@@ -242,6 +249,37 @@ function Main12() {
       }
     }
   }, [openOrder2]);
+
+
+  const descriptionElementRefApproved = React.useRef(null);
+  React.useEffect(() => {
+    if (openOrderApproved) {
+      const { current: descriptionElement } = descriptionElementRefApproved;
+      if (descriptionElement !== null) {
+        descriptionElement.focus();
+      }
+    }
+  }, [openOrderApproved]);
+  const descriptionElementRefApproved1 = React.useRef(null);
+
+  React.useEffect(() => {
+    if (openOrderApproved1) {
+      const { current: descriptionElement } = descriptionElementRefApproved1;
+      if (descriptionElement !== null) {
+        descriptionElement.focus();
+      }
+    }
+  }, [openOrderApproved1]);
+  const descriptionElementRefApproved2 = React.useRef(null);
+  React.useEffect(() => {
+    if (openOrderApproved2) {
+      const { current: descriptionElement } = descriptionElementRefApproved2;
+      if (descriptionElement !== null) {
+        descriptionElement.focus();
+      }
+    }
+  }, [openOrderApproved2]);
+
   const handleClickOpen = (product) => () => {
     setSelectedProduct(product);
     setBorrowDate(dayjs(product.order_borrowDate));
@@ -249,6 +287,7 @@ function Main12() {
     setOpenOrder(true);
     setScroll('body');
   };
+
   const handleClickOpen1 = (product) => () => {
     setSelectedProducts(product);
     setOrderExchange_borrowDate(dayjs(product.orderExchange_borrowDate));
@@ -260,6 +299,28 @@ function Main12() {
     setSelectedProductss(product);
     setOrderSale_borrowDate(dayjs(product.order_product_date));
     setOpenOrder2(true);
+    setScroll('body');
+  };
+
+  const handleClickOpenApproved = (product) => () => {
+    setSelectedProductApproved(product);
+    setBorrowDate(dayjs(product.order_borrowDate));
+    setReturnDate(dayjs(product.order_returnDate));
+    setOpenOrderApproved(true);
+    setScroll('body');
+  };
+
+  const handleClickOpenApproved1 = (product) => () => {
+    setSelectedProductApproved1(product);
+    setOrderExchange_borrowDate(dayjs(product.orderExchange_borrowDate));
+    setOpenOrderApproved1(true);
+    setScroll('body');
+  };
+
+  const handleClickOpenApproved2 = (product) => () => {
+    setSelectedProductApproved2(product);
+    setOrderSale_borrowDate(dayjs(product.order_product_date));
+    setOpenOrderApproved2(true);
     setScroll('body');
   };
 
@@ -285,6 +346,16 @@ function Main12() {
   };
   const handleClose2 = () => {
     setOpenOrder2(false);
+  };
+  const handleCloseApproved = () => {
+    setOpenOrderApproved(false);
+  };
+  const handleCloseApproved1 = () => {
+    setOpenOrderApproved1(false);
+    setOpenNextDialogApproved(false);
+  };
+  const handleCloseApproved2 = () => {
+    setOpenOrderApproved2(false);
   };
 
   const handleOpenPopover = () => {
@@ -592,7 +663,7 @@ function Main12() {
           order_quantity: item.order_quantity,
           order_status: item.order_status,
           product_image: item.product_image,
-          product_type4 : item.product_type4,
+          product_type4: item.product_type4,
           product_name: item.product_name,
           product_quantity: item.product_quantity,
           product_unit: item.product_unit,
@@ -626,7 +697,7 @@ function Main12() {
           userbank_status: item.userbank_status,
           userbank_productname: item.userbank_productname,
           userbank_productimage: item.userbank_productimage,
-          product_type4 : item.product_type4,
+          product_type4: item.product_type4,
           userbank_producttype1: item.userbank_producttype1,
           userbank_productquantity: item.userbank_productquantity,
           userbank_unit: item.userbank_unit,
@@ -655,7 +726,7 @@ function Main12() {
           image: item.image,
           product_name: item.product_name,
           product_image: item.product_image,
-          product_type4 : item.product_type4,
+          product_type4: item.product_type4,
           order_product_date: dayjs(item.order_product_date),
           order_product_status: item.order_product_status,
           order_product_quantity: item.order_product_quantity,
@@ -1251,38 +1322,38 @@ function Main12() {
                     ))}
                     {filteredProductInbox1.map((item) => (
                       item.order_product_status === 'รอการตรวจสอบ' && (
-                      <Grid item key={item.order_porduct_id} xs={12}>
-                        <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
-                          <CardMedia
-                            component="img"
-                            sx={{ width: 151 }}
-                            image={item.image}
-                            alt="รูป user"
-                          />
-                          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                            <CardContent sx={{ flex: '1 0 auto' }}>
-                              <Typography component="div" variant="h5">
-                                {item.fullname}
-                              </Typography>
-                              <Typography variant="subtitle1" color="text.secondary" component="div">
-                                ได้ทำรายการของ ธนาคาร : {item.order_sale_bankname}
-                              </Typography>
-                              <Typography variant="subtitle1" color="text.secondary" component="div">
-                                สถานะปัจจุบัน : {item.order_product_status}
-                              </Typography>
-                              <Typography variant="subtitle1" color="text.secondary" component="div">
-                                สถานะการทำรายการ : {item.order_sale}
-                              </Typography>
-                              <Typography variant="subtitle1" color="text.secondary" component="div">
-                                เวลาที่ทำรายการ : {dayjs(item.order_product_datetime).format("DD-MM-YYYY HH:mm:ss")}
-                              </Typography>
-                            </CardContent>
-                            <CardActions>
-                              <Button onClick={handleClickOpen2(item)} size="medium">เปิดอ่าน</Button>
-                            </CardActions>
-                          </Box>
-                        </Card>
-                      </Grid>
+                        <Grid item key={item.order_porduct_id} xs={12}>
+                          <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
+                            <CardMedia
+                              component="img"
+                              sx={{ width: 151 }}
+                              image={item.image}
+                              alt="รูป user"
+                            />
+                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                              <CardContent sx={{ flex: '1 0 auto' }}>
+                                <Typography component="div" variant="h5">
+                                  {item.fullname}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  ได้ทำรายการของ ธนาคาร : {item.order_sale_bankname}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  สถานะปัจจุบัน : {item.order_product_status}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  สถานะการทำรายการ : {item.order_sale}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  เวลาที่ทำรายการ : {dayjs(item.order_product_datetime).format("DD-MM-YYYY HH:mm:ss")}
+                                </Typography>
+                              </CardContent>
+                              <CardActions>
+                                <Button onClick={handleClickOpen2(item)} size="medium">เปิดอ่าน</Button>
+                              </CardActions>
+                            </Box>
+                          </Card>
+                        </Grid>
                       )
                     ))}
                   </>
@@ -1327,7 +1398,7 @@ function Main12() {
                                 </Typography>
                               </CardContent>
                               <CardActions>
-                                <Button onClick={handleClickOpen(item)} size="medium">เปิดอ่าน</Button>
+                                <Button onClick={handleClickOpenApproved(item)} size="medium">เปิดอ่าน</Button>
                               </CardActions>
                             </Box>
                           </Card>
@@ -1363,7 +1434,7 @@ function Main12() {
                                 </Typography>
                               </CardContent>
                               <CardActions>
-                                <Button onClick={handleClickOpen1(inboxItem)} size="medium">เปิดอ่าน</Button>
+                                <Button onClick={handleClickOpenApproved1(inboxItem)} size="medium">เปิดอ่าน</Button>
                               </CardActions>
                             </Box>
                           </Card>
@@ -1372,38 +1443,38 @@ function Main12() {
                     ))}
                     {filteredProductInbox1.map((item) => (
                       item.order_product_status === 'อนุมัติให้ทำรายการ' && (
-                      <Grid item key={item.order_porduct_id} xs={12}>
-                        <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
-                          <CardMedia
-                            component="img"
-                            sx={{ width: 151 }}
-                            image={item.image}
-                            alt="รูป user"
-                          />
-                          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                            <CardContent sx={{ flex: '1 0 auto' }}>
-                              <Typography component="div" variant="h5">
-                                {item.fullname}
-                              </Typography>
-                              <Typography variant="subtitle1" color="text.secondary" component="div">
-                                ได้ทำรายการของ ธนาคาร : {item.order_sale_bankname}
-                              </Typography>
-                              <Typography variant="subtitle1" color="text.secondary" component="div">
-                                สถานะปัจจุบัน : {item.order_product_status}
-                              </Typography>
-                              <Typography variant="subtitle1" color="text.secondary" component="div">
-                                สถานะการทำรายการ : {item.order_sale}
-                              </Typography>
-                              <Typography variant="subtitle1" color="text.secondary" component="div">
-                                เวลาที่ทำรายการ : {dayjs(item.order_product_datetime).format("DD-MM-YYYY HH:mm:ss")}
-                              </Typography>
-                            </CardContent>
-                            <CardActions>
-                              <Button onClick={handleClickOpen2(item)} size="medium">เปิดอ่าน</Button>
-                            </CardActions>
-                          </Box>
-                        </Card>
-                      </Grid>
+                        <Grid item key={item.order_porduct_id} xs={12}>
+                          <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
+                            <CardMedia
+                              component="img"
+                              sx={{ width: 151 }}
+                              image={item.image}
+                              alt="รูป user"
+                            />
+                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                              <CardContent sx={{ flex: '1 0 auto' }}>
+                                <Typography component="div" variant="h5">
+                                  {item.fullname}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  ได้ทำรายการของ ธนาคาร : {item.order_sale_bankname}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  สถานะปัจจุบัน : {item.order_product_status}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  สถานะการทำรายการ : {item.order_sale}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  เวลาที่ทำรายการ : {dayjs(item.order_product_datetime).format("DD-MM-YYYY HH:mm:ss")}
+                                </Typography>
+                              </CardContent>
+                              <CardActions>
+                                <Button onClick={handleClickOpenApproved2(item)} size="medium">เปิดอ่าน</Button>
+                              </CardActions>
+                            </Box>
+                          </Card>
+                        </Grid>
                       )
                     ))}
                   </>
@@ -1493,38 +1564,38 @@ function Main12() {
                     ))}
                     {filteredProductInbox1.map((item) => (
                       item.order_product_status === 'ไม่อนุมัติให้ทำรายการ' && (
-                      <Grid item key={item.order_porduct_id} xs={12}>
-                        <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
-                          <CardMedia
-                            component="img"
-                            sx={{ width: 151 }}
-                            image={item.image}
-                            alt="รูป user"
-                          />
-                          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                            <CardContent sx={{ flex: '1 0 auto' }}>
-                              <Typography component="div" variant="h5">
-                                {item.fullname}
-                              </Typography>
-                              <Typography variant="subtitle1" color="text.secondary" component="div">
-                                ได้ทำรายการของ ธนาคาร : {item.order_sale_bankname}
-                              </Typography>
-                              <Typography variant="subtitle1" color="text.secondary" component="div">
-                                สถานะปัจจุบัน : {item.order_product_status}
-                              </Typography>
-                              <Typography variant="subtitle1" color="text.secondary" component="div">
-                                สถานะการทำรายการ : {item.order_sale}
-                              </Typography>
-                              <Typography variant="subtitle1" color="text.secondary" component="div">
-                                เวลาที่ทำรายการ : {dayjs(item.order_product_datetime).format("DD-MM-YYYY HH:mm:ss")}
-                              </Typography>
-                            </CardContent>
-                            <CardActions>
-                              <Button onClick={handleClickOpen2(item)} size="medium">เปิดอ่าน</Button>
-                            </CardActions>
-                          </Box>
-                        </Card>
-                      </Grid>
+                        <Grid item key={item.order_porduct_id} xs={12}>
+                          <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
+                            <CardMedia
+                              component="img"
+                              sx={{ width: 151 }}
+                              image={item.image}
+                              alt="รูป user"
+                            />
+                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                              <CardContent sx={{ flex: '1 0 auto' }}>
+                                <Typography component="div" variant="h5">
+                                  {item.fullname}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  ได้ทำรายการของ ธนาคาร : {item.order_sale_bankname}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  สถานะปัจจุบัน : {item.order_product_status}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  สถานะการทำรายการ : {item.order_sale}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  เวลาที่ทำรายการ : {dayjs(item.order_product_datetime).format("DD-MM-YYYY HH:mm:ss")}
+                                </Typography>
+                              </CardContent>
+                              <CardActions>
+                                <Button onClick={handleClickOpen2(item)} size="medium">เปิดอ่าน</Button>
+                              </CardActions>
+                            </Box>
+                          </Card>
+                        </Grid>
                       )
                     ))}
                   </>
@@ -1860,6 +1931,341 @@ function Main12() {
             )}
           </DialogContentText>
         </DialogContent>
+      </Dialog>
+
+      {/* approved */}
+      <Dialog
+        open={openOrderApproved}
+        onClose={handleCloseApproved}
+        scroll={scroll}
+        aria-labelledby="scroll-dialog-title"
+        aria-describedby="scroll-dialog-description"
+      >
+        <DialogTitle id="scroll-dialog-title" sx={{ textAlign: "center" }}>คุณได้ทำรายการของธนาคาร {selectedProductApproved ? selectedProductApproved.bank_name : 'N/A'} </DialogTitle>
+        <DialogContent dividers={scroll === 'paper'}>
+          <DialogContentText
+            id="scroll-dialog-description"
+            ref={descriptionElementRefApproved}
+            tabIndex={-1}
+          >
+            {selectedProductApproved ? (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <Card sx={{ maxWidth: 345, m: 1 }} >
+                    <CardMedia
+                      component="img"
+                      height="300"
+                      image={`http://localhost:5000/image/${selectedProductApproved.product_image}`}
+                      title="รูปภาพทรัพยากร"
+                    />
+                  </Card>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+
+                  <div style={{ marginTop: 50 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
+                    <TextField disabled id="outlined-disabled" label={selectedProductApproved.product_name} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
+
+                  <div style={{ marginTop: 20 }}>
+                    <Box
+                      component="form"
+                      sx={{
+                        '& .MuiTextField-root': { m: 1, width: '25ch' },
+                      }}
+                      noValidate
+                      autoComplete="off"
+                    ></Box>
+                    <FormLabel component="legend" style={{ color: 'black' }}>ประเภททรัพยากรทางการเกษตร:</FormLabel>
+                    <TextField disabled id="outlined-disabled" label={selectedProductApproved.product_type4} variant="outlined" sx={{ width: '50ch' }} />
+
+                  </div>
+                  <div style={{ marginTop: 30 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>สถานะการทำรายการ : </FormLabel>
+                    <TextField disabled id="outlined-disabled" label={`${selectedProductApproved.order_rental}`} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
+                  <div style={{ marginTop: 30 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการทำรายการ : </FormLabel>
+                    <TextField disabled id="outlined-disabled" label={`${selectedProductApproved.order_quantity} ${selectedProductApproved.product_unit}`} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
+                  <div >
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer
+                        components={[
+                          'DatePicker',
+                        ]}
+                        sx={{ width: '50ch', marginTop: 3 }}
+                      >
+                        <DemoItem label={<Label componentName="วันที่จะมารับทรัพยากร" valueType="date" />} >
+                          <DatePicker
+                            disabled
+                            value={borrowDate}
+                            renderInput={(params) => <TextField {...params} variant="outlined" />}
+                          />
+                        </DemoItem>
+                      </DemoContainer>
+                    </LocalizationProvider>
+                  </div>
+                  <div >
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer
+                        components={[
+                          'DatePicker',
+                        ]}
+                        sx={{ width: '50ch', marginTop: 3 }}
+                      >
+                        <DemoItem label={<Label componentName="วันที่จะนำทรัพยากรมาคืน" valueType="date" />} >
+                          <DatePicker
+                            disabled
+                            value={returnDate}
+                            renderInput={(params) => <TextField {...params} variant="outlined" />}
+                          />
+                        </DemoItem>
+                      </DemoContainer>
+                    </LocalizationProvider>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p>Details not found.</p>
+            )}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: 'flex-end' }}>
+          <Button >แจ้งคืนทรัพยากร</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={openOrderApproved1}
+        onClose={() => setOpenNextDialogApproved(false)}
+        scroll={scroll}
+        aria-labelledby="scroll-dialog-title"
+        aria-describedby="scroll-dialog-description"
+      >
+        <DialogTitle id="scroll-dialog-title" sx={{ textAlign: "center" }}>รายการที่ {selectedProductApproved1 ? selectedProductApproved1.fullname : 'N/A'} ได้ทำรายการ</DialogTitle>
+        <DialogContent dividers={scroll === 'paper'}>
+          <DialogContentText
+            id="scroll-dialog-description"
+            ref={descriptionElementRefApproved1}
+            tabIndex={-1}
+          >
+            {selectedProductApproved1 ? (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <Card sx={{ maxWidth: 345, m: 1 }} >
+                    <CardMedia
+                      component="img"
+                      height="300"
+                      image={`http://localhost:5000/image/${selectedProductApproved1.product_image}`}
+                      title="รูปภาพทรัพยากร"
+                    />
+                  </Card>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+
+                  <div style={{ marginTop: 50 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
+                    <TextField disabled id="outlined-disabled" label={selectedProductApproved1.product_name} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
+                  <div style={{ marginTop: 20 }}>
+                    <Box
+                      component="form"
+                      sx={{
+                        '& .MuiTextField-root': { m: 1, width: '25ch' },
+                      }}
+                      noValidate
+                      autoComplete="off"
+                    ></Box>
+                    <FormLabel component="legend" style={{ color: 'black' }}>ประเภททรัพยากรทางการเกษตร:</FormLabel>
+                    <TextField disabled id="outlined-disabled" label={selectedProductApproved1.product_type4} variant="outlined" sx={{ width: '50ch' }} />
+
+                  </div>
+                  <div style={{ marginTop: 30 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>สถานะการทำรายการ : </FormLabel>
+                    <TextField disabled id="outlined-disabled" label={`${selectedProductApproved1.order_exchange}`} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
+                  <div style={{ marginTop: 30 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการทำรายการ : </FormLabel>
+                    <TextField disabled id="outlined-disabled" label={`${selectedProductApproved1.orderExchange_quantity} ${selectedProductApproved1.product_unit}`} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
+
+                  <div >
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer
+                        components={[
+                          'DatePicker',
+                        ]}
+                        sx={{ width: '50ch', marginTop: 3 }}
+                      >
+                        <DemoItem label={<Label componentName="วันที่จะมารับทรัพยากร" valueType="date" />} >
+                          <DatePicker
+                            disabled
+                            value={orderExchange_borrowDate}
+                            renderInput={(params) => <TextField {...params} variant="outlined" />}
+                          />
+                        </DemoItem>
+                      </DemoContainer>
+                    </LocalizationProvider>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p>Details not found.</p>
+            )}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: 'space-around' }}>
+          <Button onClick={() => handleCloseApproved1()} color='error'>ปิด</Button>
+          <Button onClick={() => setOpenNextDialogApproved(true)} >ถัดไป</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={openNextDialogApproved}
+        onClose={handleCloseApproved1}
+        scroll={scroll}
+        aria-labelledby="scroll-dialog-title"
+        aria-describedby="scroll-dialog-description"
+      >
+        <DialogTitle id="scroll-dialog-title" sx={{ textAlign: "center" }}>รายการที่ {selectedProductApproved1 ? selectedProductApproved1.fullname : 'N/A'} จะนำมาแลกเปลี่ยน</DialogTitle>
+        <DialogContent dividers={scroll === 'paper'}>
+          <DialogContentText
+            id="scroll-dialog-description"
+            ref={descriptionElementRefApproved1}
+            tabIndex={-1}
+          >
+            {selectedProductApproved1 ? (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <Card sx={{ maxWidth: 345, m: 1 }} >
+                    <CardMedia
+                      component="img"
+                      height="300"
+                      image={`http://localhost:5000/image/${selectedProductApproved1.userbank_productimage}`}
+                      title="รูปภาพทรัพยากร"
+                    />
+                  </Card>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+
+                  <div style={{ marginTop: 50 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
+                    <TextField disabled id="outlined-disabled" label={selectedProductApproved1.userbank_productname} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
+                  <div style={{ marginTop: 20 }}>
+                    <Box
+                      component="form"
+                      sx={{
+                        '& .MuiTextField-root': { m: 1, width: '25ch' },
+                      }}
+                      noValidate
+                      autoComplete="off"
+                    ></Box>
+                    <FormLabel component="legend" style={{ color: 'black' }}>ประเภททรัพยากรทางการเกษตร:</FormLabel>
+                    <TextField disabled id="outlined-disabled" label={selectedProductApproved1.userbank_producttype1} variant="outlined" sx={{ width: '50ch' }} />
+
+                  </div>
+
+                  <div style={{ marginTop: 30 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการทำรายการ : </FormLabel>
+                    <TextField disabled id="outlined-disabled" label={`${selectedProductApproved1.userbank_productquantity} ${selectedProductApproved1.userbank_unit}`} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
+
+                </div>
+              </>
+            ) : (
+              <p>Details not found.</p>
+            )}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: 'flex-end' }}>
+          <Button >รีวิวทรัพยากรที่แลกเปลี่ยนในธนาคาร</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={openOrderApproved2}
+        onClose={handleCloseApproved2}
+        scroll={scroll}
+        aria-labelledby="scroll-dialog-title"
+        aria-describedby="scroll-dialog-description"
+      >
+        <DialogTitle id="scroll-dialog-title" sx={{ textAlign: "center" }}>คุณได้ทำรายการของธนาคาร {selectedProductApproved2 ? selectedProductApproved2.order_sale_bankname : 'N/A'} </DialogTitle>
+        <DialogContent dividers={scroll === 'paper'}>
+          <DialogContentText
+            id="scroll-dialog-description"
+            ref={descriptionElementRefApproved2}
+            tabIndex={-1}
+          >
+            {selectedProductApproved2 ? (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <Card sx={{ maxWidth: 345, m: 1 }} >
+                    <CardMedia
+                      component="img"
+                      height="300"
+                      image={`http://localhost:5000/image/${selectedProductApproved2.product_image}`}
+                      title="รูปภาพทรัพยากร"
+                    />
+                  </Card>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+
+                  <div style={{ marginTop: 50 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
+                    <TextField disabled id="outlined-disabled" label={selectedProductApproved2.product_name} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
+
+                  <div style={{ marginTop: 20 }}>
+                    <Box
+                      component="form"
+                      sx={{
+                        '& .MuiTextField-root': { m: 1, width: '25ch' },
+                      }}
+                      noValidate
+                      autoComplete="off"
+                    ></Box>
+                    <FormLabel component="legend" style={{ color: 'black' }}>ประเภททรัพยากรทางการเกษตร:</FormLabel>
+                    <TextField disabled id="outlined-disabled" label={selectedProductApproved2.product_type4} variant="outlined" sx={{ width: '50ch' }} />
+
+                  </div>
+                  <div style={{ marginTop: 30 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>สถานะการทำรายการ : </FormLabel>
+                    <TextField disabled id="outlined-disabled" label={`${selectedProductApproved2.order_sale}`} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
+                  <div style={{ marginTop: 30 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการทำรายการ : </FormLabel>
+                    <TextField disabled id="outlined-disabled" label={`${selectedProductApproved2.order_product_quantity} ${selectedProductApproved2.order_product_unit}`} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
+                  <div >
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer
+                        components={[
+                          'DatePicker',
+                        ]}
+                        sx={{ width: '50ch', marginTop: 3 }}
+                      >
+                        <DemoItem label={<Label componentName="วันที่จะมารับทรัพยากร" valueType="date" />} >
+                          <DatePicker
+                            disabled
+                            value={orderSale_borrowDate}
+                            renderInput={(params) => <TextField {...params} variant="outlined" />}
+                          />
+                        </DemoItem>
+                      </DemoContainer>
+                    </LocalizationProvider>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p>Details not found.</p>
+            )}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: 'flex-end' }}>
+          <Button >รีวิวทรัพยากรที่ซื้อในธนาคาร</Button>
+        </DialogActions>
       </Dialog>
     </div >
 
