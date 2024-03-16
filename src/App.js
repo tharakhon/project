@@ -20,6 +20,11 @@ import Review from './review';
 import OpenBank from './openBank';
 import Notifications from './Notifications';
 import OrderBankSale from './OrderBankSales';
+import AllReviewcstom from './Allreviewcustom';
+import Reviewcustom from './writecomment';
+import Reviewbank from './writereview';
+import ReviewbankChage from './writereviewChage';
+import ReviewbankSale from './writereviewSale';
 
 function App() {
   return (
@@ -46,6 +51,11 @@ function App() {
         <Route path="openbank" element={<OpenBank/>}/>
         <Route path="notifications" element={<Notifications/>}/>
         <Route path="orderbankusersale" element={<OrderBankSale/>}/>
+        <Route path="allreviewcstom" element={<AllReviewcstom/>}/>
+        <Route path="reviewcustom" element={<Reviewcustom/>}/>
+        <Route path="reviewbank" element={<Reviewbank/>}/>
+        <Route path="reviewbankchage" element={<ReviewbankChage/>}/>
+        <Route path="reviewbanksale" element={<ReviewbankSale/>}/>
         </Routes>
       </BrowserRouter>
    

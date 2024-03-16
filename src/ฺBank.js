@@ -46,8 +46,10 @@ import FormGroup from "@mui/material/FormGroup";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import StarRateSharpIcon from '@mui/icons-material/StarRateSharp';
 import Tooltip from '@mui/material/Tooltip';
 import Stack from '@mui/material/Stack';
+import Rating from '@mui/material/Rating'
 
 const drawerWidth = 240;
 
@@ -167,6 +169,10 @@ const ProSpan = styled('span')({
   backgroundRepeat: 'no-repeat',
   backgroundImage: 'url(https://mui.com/static/x/pro.svg)',
 });
+
+function getLabelText(value) {
+  return `${value}`;
+}
 export default function Bank() {
   const username = ReactSession.get("username");
   const codename = ReactSession.get("codename");
@@ -190,6 +196,8 @@ export default function Bank() {
   const [openOrder2, setOpenOrder2] = React.useState(false);
   const [selectedProducts, setSelectedProducts] = useState(null);
   const [selectedProductss, setSelectedProductss] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  console.log(reviews)
   const productTypes = [
     'ทรัพยากรทั้งหมด',
     'ทรัพยากรเพื่อเช่าหรือยืม',
@@ -199,6 +207,31 @@ export default function Bank() {
     'ทรัพยากรที่ทำรายการแล้ว',
     'ทรัพยากรที่รอการตรวจสอบ',
   ];
+
+  const handleOpenReviewsDialog = (product) => {
+    if (product) {
+      Axios.get(`http://localhost:5000/showReview/${product.product_id}`)
+        .then((response) => {
+          console.log("ข้อมูลรีวิวที่ได้รับ:", response.data);
+
+          if (Array.isArray(response.data)) {
+            setReviews(response.data); // เซ็ตข้อมูลรีวิวที่ได้รับเข้าสู่ state reviews
+          } else {
+            console.error("Invalid response format. Expected an array.");
+            // แสดงข้อความ "ยังไม่มีรีวิวสำหรับสินค้านี้"
+            alert("ยังไม่มีรีวิวสำหรับทรัพยากรนี้");
+          }
+        })
+        .catch((error) => {
+          console.error("เกิดข้อผิดพลาดในการดึงข้อมูลรีวิว:", error);
+          // แสดงข้อความ "ยังไม่มีรีวิวสำหรับสินค้านี้"
+          alert("ยังไม่มีรีวิวสำหรับทรัพยากรนี้");
+        });
+    }
+  };
+  const handleCloseReviewsDialog = () => {
+    setReviews([]); // เคลียร์ข้อมูลรีวิวเมื่อปิด dialog
+  };
   const handleClickOpen = (product) => () => {
     setSelectedProduct(product);
     setBorrowDate(dayjs(product.order_borrowDate));
@@ -321,11 +354,80 @@ export default function Bank() {
       })
 
   }, []);
+
+  const handleUpdate = (status) => {
+    if (!selectedProduct) {
+      console.error("Selected product not found");
+      return;
+    }
+    Axios.put(`http://localhost:5000/updateStatus/${selectedProduct.order_request_id}`, {
+      order_status: status,
+    })
+      .then((response) => {
+        console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
+        setFilteredProducts((prevProducts) => {
+          return prevProducts.map((item) =>
+            item.order_request_id === selectedProduct.order_request_id ? response.data : item
+          );
+        });
+        handleClose();
+      })
+      .catch((error) => {
+        console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
+      });
+
+  };
+
+  const handleUpdate1 = (status) => {
+    if (!selectedProducts) {
+      console.error("Selected product not found");
+      return;
+    }
+    Axios.put(`http://localhost:5000/updateStatus1/${selectedProducts.exchange_id}`, {
+      userbank_status: status,
+    })
+      .then((response) => {
+        console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
+        setFilteredProductInbox((prevProducts) => {
+          return prevProducts.map((item) =>
+            item.exchange_id === selectedProducts.exchange_id ? response.data : item
+          );
+        });
+        handleClose1();
+      })
+      .catch((error) => {
+        console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
+      });
+  };
+
+  const handleUpdate2 = (status) => {
+    if (!selectedProductss) {
+      console.error("Selected product not found");
+      return;
+    }
+    Axios.put(`http://localhost:5000/updateStatus2/${selectedProductss.order_sale_id}`, {
+      order_product_status: status,
+    })
+      .then((response) => {
+        console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
+        setFilteredProductInbox1((prevProducts) => {
+          return prevProducts.map((item) =>
+            item.order_sale_id === selectedProductss.order_sale_id ? response.data : item
+          );
+        });
+        handleClose2();
+      })
+      .catch((error) => {
+        console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
+      });
+  };
+
   useEffect(() => {
     Axios.get(`http://localhost:5000/notifications_bank/${bank_name}`)
       .then((response) => {
         console.log("ข้อมูลที่ได้รับ:", response.data);
         const fetchedProducts = response.data.map((item) => ({
+          order_request_id: item.order_request_id,
           order_id: item.order_id,
           bank_name: item.bank_name,
           fullname: item.fullname,
@@ -346,8 +448,9 @@ export default function Bank() {
           order_rental: item.order_rental,
           order_date: dayjs(item.order_date)
         }));
+        const sortedProducts = fetchedProducts.sort((a, b) => b.order_date - a.order_date);
+        setFilteredProducts(sortedProducts);
 
-        setFilteredProducts(fetchedProducts);
 
       })
       .catch((error) => {
@@ -355,79 +458,13 @@ export default function Bank() {
       })
 
   }, [bank_name, filteredProducts]);
-  const handleUpdate = (status) => {
-    if (!selectedProduct) {
-      console.error("Selected product not found");
-      return;
-    }
-    Axios.put(`http://localhost:5000/updateStatus/${selectedProduct.order_id}`, {
-      order_status: status,
-    })
-      .then((response) => {
-        console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
-        setFilteredProducts((prevProducts) => {
-          return prevProducts.map((item) =>
-            item.order_id === selectedProduct.order_id ? response.data : item
-          );
-        });
-        handleClose();
-      })
-      .catch((error) => {
-        console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
-      });
-
-  };
-
-  const handleUpdate1 = (status) => {
-    if (!selectedProducts) {
-      console.error("Selected product not found");
-      return;
-    }
-    Axios.put(`http://localhost:5000/updateStatus1/${selectedProducts.orderExchange_id}`, {
-      userbank_status: status,
-    })
-      .then((response) => {
-        console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
-        setFilteredProductInbox((prevProducts) => {
-          return prevProducts.map((item) =>
-            item.orderExchange_id === selectedProducts.orderExchange_id ? response.data : item
-          );
-        });
-        handleClose1();
-      })
-      .catch((error) => {
-        console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
-      });
-  };
-
-  const handleUpdate2 = (status) => {
-    if (!selectedProductss) {
-      console.error("Selected product not found");
-      return;
-    }
-    Axios.put(`http://localhost:5000/updateStatus2/${selectedProductss.order_porduct_id}`, {
-      order_product_status: status,
-    })
-      .then((response) => {
-        console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
-        setFilteredProductInbox1((prevProducts) => {
-          return prevProducts.map((item) =>
-            item.order_porduct_id === selectedProductss.order_porduct_id ? response.data : item
-          );
-        });
-        handleClose2();
-      })
-      .catch((error) => {
-        console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
-      });
-  };
-
 
   useEffect(() => {
     Axios.get(`http://localhost:5000/notifications_bank1/${bank_name}`)
       .then((response) => {
         console.log("ข้อมูลที่ได้รับ:", response.data);
         const fetchedProduct = response.data.map((item) => ({
+          exchange_id: item.exchange_id,
           orderExchange_id: item.orderExchange_id,
           bank_name: item.bank_name,
           fullname: item.fullname,
@@ -452,8 +489,8 @@ export default function Bank() {
           order_exchange: item.order_exchange,
           exchange_date: dayjs(item.exchange_date)
         }));
-
-        setFilteredProductInbox(fetchedProduct);
+        const sortedProduct = fetchedProduct.sort((a, b) => b.exchange_date - a.exchange_date);
+        setFilteredProductInbox(sortedProduct);
 
       })
       .catch((error) => {
@@ -467,7 +504,8 @@ export default function Bank() {
       .then((response) => {
         console.log("ข้อมูลที่ได้รับ:", response.data);
         const fetchedProducts = response.data.map((item) => ({
-          order_porduct_id: item.order_porduct_id,
+          order_sale_id: item.order_sale_id,
+          order_product_id: item.order_product_id,
           order_sale_bankname: item.order_sale_bankname,
           fullname: item.fullname,
           image: item.image,
@@ -483,7 +521,8 @@ export default function Bank() {
           order_product_datetime: dayjs(item.order_product_datetime)
         }));
 
-        setFilteredProductInbox1(fetchedProducts);
+        const sortedProductInbox1 = fetchedProducts.sort((a, b) => b.order_product_datetime - a.order_product_datetime);
+        setFilteredProductInbox1(sortedProductInbox1);
 
       })
       .catch((error) => {
@@ -492,6 +531,19 @@ export default function Bank() {
 
   }, [bank_name, filteredProductInbox1]);
 
+  function calculateAverageRating(reviews) {
+    if (reviews.length === 0) {
+      return 0; // ถ้าไม่มีรีวิว ให้คะแนนเฉลี่ยเป็น 0
+    }
+
+    // คำนวณผลรวมของคะแนนทั้งหมด
+    const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+
+    // หารด้วยจำนวนรีวิวเพื่อคำนวณคะแนนเฉลี่ย
+    const averageRating = totalRating / reviews.length;
+
+    return averageRating;
+  }
   return (
     <Box sx={{ display: 'flex' }}>
       <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -686,7 +738,7 @@ export default function Bank() {
                   ))}
                   {filteredProductInbox1.map((item) => (
                     item.order_product_status !== 'รอการตรวจสอบ' && (
-                      <Grid item key={item.order_porduct_id} xs={12}>
+                      <Grid item key={item.order_product_id} xs={12}>
                         <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
                           <CardMedia
                             component="img"
@@ -806,7 +858,7 @@ export default function Bank() {
                   ))}
                   {filteredProductInbox1.map((item) => (
                     item.order_product_status === 'รอการตรวจสอบ' && (
-                      <Grid item key={item.order_porduct_id} xs={12}>
+                      <Grid item key={item.order_product_id} xs={12}>
                         <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
                           <CardMedia
                             component="img"
@@ -1183,6 +1235,96 @@ export default function Bank() {
           </DialogActions>
         </Dialog>
 
+        <Dialog
+          open={calculateAverageRating(reviews) > 0} // เปิด dialog เมื่อมีรีวิว
+          onClose={handleCloseReviewsDialog}
+          scroll="paper"
+          aria-labelledby="reviews-dialog-title"
+          aria-describedby="reviews-dialog-description"
+          PaperProps={{ style: { maxWidth: '900px', margin: 'auto' } }}
+        >
+          {reviews.length > 0 ? (
+            <>
+              <DialogTitle id="reviews-dialog-title" sx={{ textAlign: "center" }}>
+                รีวิวสินค้า
+                <Box sx={{ ml: 2, fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {`คะแนนเฉลี่ย : `}
+                  <Rating
+                    name="average-rating"
+                    value={calculateAverageRating(reviews)}
+                    precision={0.5}
+                    readOnly
+                    emptyIcon={<StarRateSharpIcon fontSize="inherit" />}
+                  />
+                  <Box sx={{ ml: 1 }}>
+                    {calculateAverageRating(reviews).toFixed(2)}
+                  </Box>
+                </Box>
+              </DialogTitle>
+              <DialogContent dividers>
+                {/* แสดงรีวิวของสินค้า */}
+                <Grid container spacing={2}>
+                  {reviews.map((review, index) => (
+                    <Grid item xs={12} key={index}>
+                      <Card style={{ width: '100%', display: 'flex', marginBottom: '10px' }}>
+                        <CardMedia
+                          component="img"
+                          height="280"
+                          image={review.image}
+                          title="รูปภาพคนรีวิว"
+                          style={{ width: '300px' }}
+                        />
+                        <CardContent>
+                          <Typography gutterBottom variant="h5" component="div">
+                            {review.fullname}
+                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Rating
+                              name="text-feedback"
+                              value={review.rating}
+                              readOnly
+                              precision={0.5}
+                              emptyIcon={<StarRateSharpIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+                            />
+                            <Typography variant="body1" sx={{ ml: 1 }}>
+                              {review.rating.toFixed(1)} ดาว
+                            </Typography>
+                          </Box>
+                          <Typography gutterBottom variant="body1" component="div">
+                            ความคิดเห็น : {review.detail}
+                          </Typography>
+                          <Typography gutterBottom variant="body2" component="div">
+                            วันเวลาที่ได้รีวิว : {dayjs(review.date).format('DD/MM/YYYY HH:mm:ss')}
+                          </Typography>
+                          <CardMedia
+                            component="img"
+                            height="280"
+                            image={`http://localhost:5000/image/${review.bank_review_image}`}
+                            title="รูปภาพทรัพยากรที่รีวิว"
+                            style={{ maxWidth: '100%', maxHeight: '100px', objectFit: 'contain' }}
+                          />
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              </DialogContent>
+            </>
+          ) : (
+            <DialogContent>
+              <Typography variant="body1" component="div" align="center">
+                ยังไม่มีรีวิวสำหรับสินค้านี้
+              </Typography>
+            </DialogContent>
+          )}
+          <DialogActions>
+            <Button onClick={handleCloseReviewsDialog} color="primary">
+              ปิด
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+
 
         {productTypes.map((productType, index) => (
           <TabPanel value={value} index={index} key={index}>
@@ -1206,9 +1348,12 @@ export default function Bank() {
                           {`จำนวนทรัพยากรที่เหลืออยู่ : ${resource.product_quantity} ${resource.product_unit}`}
                         </Typography>
                       </CardContent>
-                      <CardActions>
+                      <CardActions sx={{ justifyContent: 'space-around' }}>
                         <Button size="small" onClick={() => handleOpenBank(resource.product_id)}>
                           ดูทรัพยากร
+                        </Button>
+                        <Button size="small" onClick={() => handleOpenReviewsDialog(resource)}>
+                          ดูรีวิว
                         </Button>
                       </CardActions>
                     </Card>
@@ -1252,8 +1397,11 @@ export default function Bank() {
                             {`จำนวนทรัพยากรที่เหลืออยู่ : ${resource.product_quantity} ${resource.product_unit}`}
                           </Typography>
                         </CardContent>
-                        <CardActions>
+                        <CardActions sx={{ justifyContent: 'space-around' }}>
                           <Button size="small" onClick={() => handleOpenBank(resource.product_id)}>ดูทรัพยากร</Button>
+                          <Button size="small" onClick={() => handleOpenReviewsDialog(resource)}>
+                            ดูรีวิว
+                          </Button>
                         </CardActions>
                       </Card>
                     </Grid>

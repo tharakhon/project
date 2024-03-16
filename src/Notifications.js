@@ -177,6 +177,7 @@ function Notifications() {
             .then((response) => {
                 console.log("ข้อมูลที่ได้รับ:", response.data);
                 const fetchedProducts = response.data.map((item) => ({
+                    order_request_id : item.order_request_id,
                     order_id: item.order_id,
                     bank_name: item.bank_name,
                     fullname: item.fullname,
@@ -197,7 +198,8 @@ function Notifications() {
                     order_date: dayjs(item.order_date)
                 }));
 
-                setFilteredProducts(fetchedProducts);
+                const sortedProducts = fetchedProducts.sort((a, b) => b.order_date - a.order_date);
+                setFilteredProducts(sortedProducts);
 
             })
             .catch((error) => {
@@ -210,6 +212,7 @@ function Notifications() {
             .then((response) => {
                 console.log("ข้อมูลที่ได้รับ:", response.data);
                 const fetchedProduct = response.data.map((item) => ({
+                    exchange_id : item.exchange_id,
                     orderExchange_id: item.orderExchange_id,
                     bank_name: item.bank_name,
                     fullname: item.fullname,
@@ -235,7 +238,8 @@ function Notifications() {
                     exchange_date: dayjs(item.exchange_date)
                 }));
 
-                setFilteredProduct(fetchedProduct);
+                const sortedProduct = fetchedProduct.sort((a, b) => b.exchange_date - a.exchange_date);
+                setFilteredProduct(sortedProduct);
 
             })
             .catch((error) => {
@@ -249,7 +253,8 @@ function Notifications() {
             .then((response) => {
                 console.log("ข้อมูลที่ได้รับ:", response.data);
                 const fetchedProduct = response.data.map((item) => ({
-                    order_porduct_id: item.order_porduct_id,
+                    order_sale_id : item.order_sale_id,
+                    order_product_id: item.order_product_id,
                     order_sale_bankname: item.order_sale_bankname,
                     fullname: item.fullname,
                     image: item.image,
@@ -265,7 +270,8 @@ function Notifications() {
                     order_product_datetime: dayjs(item.order_product_datetime)
                 }));
 
-                setFilteredProductInbox1(fetchedProduct);
+                const sortedProductInbox1 = fetchedProduct.sort((a, b) => b.order_product_datetime - a.order_product_datetime);
+                setFilteredProductInbox1(sortedProductInbox1);
 
             })
             .catch((error) => {
@@ -306,14 +312,14 @@ function Notifications() {
             console.error("Selected product not found");
             return;
         }
-        Axios.put(`http://localhost:5000/updateStatus/${selectedProduct.order_id}`, {
+        Axios.put(`http://localhost:5000/updateStatus/${selectedProduct.order_request_id}`, {
             order_status: status,
         })
             .then((response) => {
                 console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
                 setFilteredProducts((prevProducts) => {
                     return prevProducts.map((item) =>
-                        item.order_id === selectedProduct.order_id ? response.data : item
+                        item.order_request_id === selectedProduct.order_request_id ? response.data : item
                     );
                 });
                 handleClose();
@@ -327,14 +333,14 @@ function Notifications() {
             console.error("Selected product not found");
             return;
         }
-        Axios.put(`http://localhost:5000/updateStatus1/${selectedProducts.orderExchange_id}`, {
+        Axios.put(`http://localhost:5000/updateStatus1/${selectedProducts.exchange_id}`, {
             userbank_status: status,
         })
             .then((response) => {
                 console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
                 setFilteredProduct((prevProducts) => {
                     return prevProducts.map((item) =>
-                        item.product_id === selectedProducts.product_id ? response.data : item
+                        item.exchange_id === selectedProducts.exchange_id ? response.data : item
                     );
                 });
                 handleClose1();
@@ -349,14 +355,14 @@ function Notifications() {
             console.error("Selected product not found");
             return;
         }
-        Axios.put(`http://localhost:5000/updateStatus2/${selectedProductss.order_porduct_id}`, {
+        Axios.put(`http://localhost:5000/updateStatus2/${selectedProductss.order_sale_id}`, {
             order_product_status: status,
         })
             .then((response) => {
                 console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
                 setFilteredProductInbox1((prevProducts) => {
                     return prevProducts.map((item) =>
-                        item.order_porduct_id === selectedProductss.order_porduct_id ? response.data : item
+                        item.order_sale_id === selectedProductss.order_sale_id ? response.data : item
                     );
                 });
                 handleClose2();
@@ -566,7 +572,7 @@ function Notifications() {
                         ))}
                         {filteredProductInbox1.map((item) => (
                             item.order_product_status === 'รอการตรวจสอบ' && (
-                                <Grid item key={item.order_porduct_id} xs={12}>
+                                <Grid item key={item.order_product_id} xs={12}>
                                     <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
                                         <CardMedia
                                             component="img"

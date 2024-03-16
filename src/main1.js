@@ -220,7 +220,7 @@ function Main12() {
   const [orderSale_borrowDate, setOrderSale_borrowDate] = useState(dayjs());
   const [openNextDialog, setOpenNextDialog] = React.useState(false);
   const [openNextDialogApproved, setOpenNextDialogApproved] = React.useState(false);
-  console.log("notifications", notifications)
+  console.log("selectedProductApproved", selectedProductApproved)
   const descriptionElementRef = React.useRef(null);
   React.useEffect(() => {
     if (openOrder) {
@@ -336,6 +336,9 @@ function Main12() {
   const switchToActiveView = () => {
     setCurrentView('active');
   };
+  const switchToReView = () => {
+    setCurrentView('review');
+  };
 
   const handleClose = () => {
     setOpenOrder(false);
@@ -407,12 +410,12 @@ function Main12() {
           bookmark_email: username,
           bookmark_bankname: title,
           bookmark_members: bookmarkedItem.bankMembers,
-          bookmark_codename: bookmarkedItem.codename,
+          bookmark_codename: bookmarkedItem.codename ?? "",
           bookmark_image: bookmarkedItem.image,
           bookmark_lat: bookmarkedItem.lat,
           bookmark_lon: bookmarkedItem.lon,
           bookmark_rank: bookmarkedItem.rank,
-          bookmark_rating: bookmarkedItem.rating,
+          bookmark_rating: bookmarkedItem.rating ?? 0,
         });
         console.log('bookmarkedItem', bookmarkedItem)
         setBookmarks([...bookmarks, bookmarkedItem]);
@@ -548,7 +551,7 @@ function Main12() {
         console.log("จำนวนสมาชิกของแต่ละธนาคาร:", response.data);
         const fetchedProducts = response.data.map((item) => ({
           title: item.bank_name,
-          rating: item.bank_rating,
+          rating: item.rating,
           image: item.bank_image,
           rank: item.rank_image,
           lat: item.bank_latitude,
@@ -584,9 +587,6 @@ function Main12() {
   const handleDisplayBookmarks = () => {
     setDisplayBookmarks(!displayBookmarks);
   };
-  const handleClickReviw = () => {
-    navigate('/review')
-  }
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -663,15 +663,19 @@ function Main12() {
           order_quantity: item.order_quantity,
           order_status: item.order_status,
           product_image: item.product_image,
+          product_id: item.product_id,
+          order_request_id: item.order_request_id,
           product_type4: item.product_type4,
           product_name: item.product_name,
           product_quantity: item.product_quantity,
           product_unit: item.product_unit,
           order_rental: item.order_rental,
-          order_date: dayjs(item.order_date)
+          order_date: dayjs(item.order_date),
+          order_rental_pickup: item.order_rental_pickup ?? "",
         }));
 
-        setFilteredProduct(fetchedProducts);
+        const sortedProducts = fetchedProducts.sort((a, b) => b.order_date - a.order_date);
+        setFilteredProduct(sortedProducts);
 
       })
       .catch((error) => {
@@ -685,6 +689,7 @@ function Main12() {
         console.log("ข้อมูลที่ได้รับ:", response.data);
         const fetchedProduct = response.data.map((item) => ({
           orderExchange_id: item.orderExchange_id,
+          exchange_id: item.exchange_id,
           bank_name: item.bank_name,
           fullname: item.fullname,
           image: item.image,
@@ -703,10 +708,13 @@ function Main12() {
           userbank_unit: item.userbank_unit,
           userbank_productdetails: item.userbank_productdetails,
           order_exchange: item.order_exchange,
-          exchange_date: dayjs(item.exchange_date)
-        }));
+          exchange_date: dayjs(item.exchange_date),
+          order_exchange_pickup: item.order_exchange_pickup ?? "",
 
-        setFilteredProductInbox(fetchedProduct);
+        }));
+        const sortedProduct = fetchedProduct.sort((a, b) => b.exchange_date - a.exchange_date);
+        setFilteredProductInbox(sortedProduct);
+
 
       })
       .catch((error) => {
@@ -720,7 +728,8 @@ function Main12() {
       .then((response) => {
         console.log("ข้อมูลที่ได้รับ:", response.data);
         const fetchedProduct = response.data.map((item) => ({
-          order_porduct_id: item.order_porduct_id,
+          order_product_id: item.order_product_id,
+          order_sale_id: item.order_sale_id,
           order_sale_bankname: item.order_sale_bankname,
           fullname: item.fullname,
           image: item.image,
@@ -733,10 +742,11 @@ function Main12() {
           order_product_unit: item.order_product_unit,
           order_product_price: item.order_product_price,
           order_sale: item.order_sale,
-          order_product_datetime: dayjs(item.order_product_datetime)
+          order_product_datetime: dayjs(item.order_product_datetime),
+          order_sale_pickup: item.order_sale_pickup ?? "",
         }));
-
-        setFilteredProductInbox1(fetchedProduct);
+        const sortedProductInbox1 = fetchedProduct.sort((a, b) => b.order_product_datetime - a.order_product_datetime);
+        setFilteredProductInbox1(sortedProductInbox1);
 
       })
       .catch((error) => {
@@ -776,6 +786,52 @@ function Main12() {
         console.error("เกิดข้อผิดพลาดในการดึงข้อมูล Bookmark:", error);
       });
   }, [username]);
+
+  const handleClicktoReview = (product_id) => {
+    ReactSession.set("product_id", product_id);
+    ReactSession.set("username", username);
+    navigate("/reviewbank")
+  }
+
+  const handleClicktoReview1 = (product_id) => {
+    ReactSession.set("product_id", product_id);
+    ReactSession.set("username", username);
+    navigate("/reviewbankchage")
+  }
+
+  const handleClicktoReview2 = (product_id) => {
+    ReactSession.set("product_id", product_id);
+    ReactSession.set("username", username);
+    navigate("/reviewbanksale")
+  }
+
+  const calculateAverageRating = (products) => {
+    let averageRatingsObj = {}; // เก็บผลรวมของคะแนนในแต่ละธนาคาร
+    let ratingsCount = {}; // เก็บจำนวนของรีวิวในแต่ละธนาคาร
+
+    products.forEach((product) => {
+        const title = product.title;
+        if (!averageRatingsObj[title]) { 
+            averageRatingsObj[title] = 0;
+            ratingsCount[title] = 0;
+        }
+        averageRatingsObj[title] += parseFloat(product.rating); // แปลงคะแนนให้เป็นตัวเลขแบบ float ก่อนนำมารวม
+        ratingsCount[title] += 1; 
+    });
+
+    let averageRatingsResult = {}; 
+    for (let title of Object.keys(averageRatingsObj)) {
+        averageRatingsResult[title] = (averageRatingsObj[title] / ratingsCount[title]).toFixed(1); 
+    }
+    return averageRatingsResult;
+};
+
+const averageRatings = calculateAverageRating(filteredProducts); 
+console.log(averageRatings);
+
+
+
+  
   return (
     <div >
       <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
@@ -916,7 +972,7 @@ function Main12() {
         <List>
           {['รีวีว'].map((text, index) => (
             <ListItem key={text} disablePadding>
-              <ListItemButton>
+              <ListItemButton onClick={switchToReView}>
                 <ListItemIcon>
                   <ReviewsIcon />
                 </ListItemIcon>
@@ -1024,13 +1080,13 @@ function Main12() {
                   >
                     <Rating
                       name="text-feedback"
-                      value={bookmark.rating}
+                      value={averageRatings[bookmark.title] || null}
                       readOnly
                       precision={0.5}
 
                       emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
                     />
-                    <Box sx={{ ml: 2 }} onClick={handleClickReviw}>{bookmark.rating}</Box>
+                    <Box sx={{ ml: 2 }} >{`${averageRatings[bookmark.title] || 'N/A'}`}</Box>
                   </Box>
                   {currentPosition && (
                     <Typography>
@@ -1153,7 +1209,11 @@ function Main12() {
                         </Typography>
                       </CardContent>
                       <CardActions>
-                        <Button onClick={handleClickOpen(item)} size="medium">เปิดอ่าน</Button>
+                        {item.order_status === 'รอการตรวจสอบ' ? (
+                          <Button onClick={handleClickOpen(item)} size="medium">เปิดอ่าน</Button>
+                        ) : (
+                          <Button onClick={handleClickOpenApproved(item)} size="medium">เปิดอ่าน</Button>
+                        )}
                       </CardActions>
                     </Box>
                   </Card>
@@ -1187,14 +1247,18 @@ function Main12() {
                         </Typography>
                       </CardContent>
                       <CardActions>
-                        <Button onClick={handleClickOpen1(inboxItem)} size="medium">เปิดอ่าน</Button>
+                        {inboxItem.userbank_status === 'รอการตรวจสอบ' ? (
+                          <Button onClick={handleClickOpen1(inboxItem)} size="medium">เปิดอ่าน</Button>
+                        ) : (
+                          <Button onClick={handleClickOpenApproved1(inboxItem)} size="medium">เปิดอ่าน</Button>
+                        )}
                       </CardActions>
                     </Box>
                   </Card>
                 </Grid>
               ))}
               {filteredProductInbox1.map((item) => (
-                <Grid item key={item.order_porduct_id} xs={12}>
+                <Grid item key={item.order_product_id} xs={12}>
                   <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
                     <CardMedia
                       component="img"
@@ -1221,7 +1285,11 @@ function Main12() {
                         </Typography>
                       </CardContent>
                       <CardActions>
-                        <Button onClick={handleClickOpen2(item)} size="medium">เปิดอ่าน</Button>
+                      {item.order_product_status === 'รอการตรวจสอบ' ? (
+                          <Button onClick={handleClickOpen2(item)} size="medium">เปิดอ่าน</Button>
+                        ) : (
+                          <Button onClick={handleClickOpenApproved2(item)} size="medium">เปิดอ่าน</Button>
+                        )}
                       </CardActions>
                     </Box>
                   </Card>
@@ -1322,7 +1390,7 @@ function Main12() {
                     ))}
                     {filteredProductInbox1.map((item) => (
                       item.order_product_status === 'รอการตรวจสอบ' && (
-                        <Grid item key={item.order_porduct_id} xs={12}>
+                        <Grid item key={item.order_product_id} xs={12}>
                           <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
                             <CardMedia
                               component="img"
@@ -1443,7 +1511,7 @@ function Main12() {
                     ))}
                     {filteredProductInbox1.map((item) => (
                       item.order_product_status === 'อนุมัติให้ทำรายการ' && (
-                        <Grid item key={item.order_porduct_id} xs={12}>
+                        <Grid item key={item.order_product_id} xs={12}>
                           <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
                             <CardMedia
                               component="img"
@@ -1564,7 +1632,7 @@ function Main12() {
                     ))}
                     {filteredProductInbox1.map((item) => (
                       item.order_product_status === 'ไม่อนุมัติให้ทำรายการ' && (
-                        <Grid item key={item.order_porduct_id} xs={12}>
+                        <Grid item key={item.order_product_id} xs={12}>
                           <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
                             <CardMedia
                               component="img"
@@ -2031,9 +2099,11 @@ function Main12() {
             )}
           </DialogContentText>
         </DialogContent>
-        <DialogActions sx={{ justifyContent: 'flex-end' }}>
-          <Button >แจ้งคืนทรัพยากร</Button>
-        </DialogActions>
+        {(selectedProductApproved && selectedProductApproved.order_rental_pickup === 'รอการรีวิวทรัพยากร') && (
+          <DialogActions sx={{ justifyContent: 'flex-end' }}>
+            <Button onClick={() => handleClicktoReview(selectedProductApproved.order_request_id)}>แจ้งคืนทรัพยากร</Button>
+          </DialogActions>
+        )}
       </Dialog>
 
       <Dialog
@@ -2179,9 +2249,11 @@ function Main12() {
             )}
           </DialogContentText>
         </DialogContent>
-        <DialogActions sx={{ justifyContent: 'flex-end' }}>
-          <Button >รีวิวทรัพยากรที่แลกเปลี่ยนในธนาคาร</Button>
-        </DialogActions>
+        {(selectedProductApproved1 && selectedProductApproved1.order_exchange_pickup === 'รอการรีวิวทรัพยากร') && (
+          <DialogActions sx={{ justifyContent: 'flex-end' }}>
+            <Button onClick={() => handleClicktoReview1(selectedProductApproved1.exchange_id)}>รีวิวทรัพยากรที่แลกเปลี่ยนในธนาคาร</Button>
+          </DialogActions>
+        )}
       </Dialog>
 
       <Dialog
@@ -2263,9 +2335,11 @@ function Main12() {
             )}
           </DialogContentText>
         </DialogContent>
-        <DialogActions sx={{ justifyContent: 'flex-end' }}>
-          <Button >รีวิวทรัพยากรที่ซื้อในธนาคาร</Button>
-        </DialogActions>
+        {(selectedProductApproved2 && selectedProductApproved2.order_sale_pickup === 'รอการรีวิวทรัพยากร') && (
+          <DialogActions sx={{ justifyContent: 'flex-end' }}>
+            <Button onClick={() => handleClicktoReview2(selectedProductApproved2.order_sale_id)}>รีวิวทรัพยากรที่ซื้อในธนาคาร</Button>
+          </DialogActions>
+        )}
       </Dialog>
     </div >
 

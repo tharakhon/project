@@ -44,6 +44,15 @@ import { ReactSession } from 'react-client-session';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import PropTypes from 'prop-types';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Rating from '@mui/material/Rating'
+import StarRateSharpIcon from '@mui/icons-material/StarRateSharp';
+import dayjs from 'dayjs';
+
 const drawerWidth = 240;
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -136,6 +145,7 @@ export default function BankUser() {
     const theme = useTheme();
     const [showUserInBank, setShowUserInBank] = useState([]);
     const [value, setValue] = React.useState(0);
+    const [reviews, setReviews] = useState([]);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -147,6 +157,31 @@ export default function BankUser() {
         'ทรัพยากรเพื่อแลกเปลี่ยน',
 
     ];
+
+    const handleOpenReviewsDialog = (product) => {
+        if (product) {
+            Axios.get(`http://localhost:5000/showReview/${product.id}`)
+                .then((response) => {
+                    console.log("ข้อมูลรีวิวที่ได้รับ:", response.data);
+
+                    if (Array.isArray(response.data)) {
+                        setReviews(response.data); // เซ็ตข้อมูลรีวิวที่ได้รับเข้าสู่ state reviews
+                    }  else {
+                        console.error("Invalid response format. Expected an array.");
+                        // แสดงข้อความ "ยังไม่มีรีวิวสำหรับสินค้านี้"
+                        alert("ยังไม่มีรีวิวสำหรับทรัพยากรนี้");
+                      }
+                })
+                .catch((error) => {
+                    console.error("เกิดข้อผิดพลาดในการดึงข้อมูลรีวิว:", error);
+                    // แสดงข้อความ "ยังไม่มีรีวิวสำหรับสินค้านี้"
+                    alert("ยังไม่มีรีวิวสำหรับทรัพยากรนี้");
+                  });
+        }
+    };
+    const handleCloseReviewsDialog = () => {
+        setReviews([]); // เคลียร์ข้อมูลรีวิวเมื่อปิด dialog
+    };
     const handleDrawerOpen = () => {
         setOpen(true);
     };
@@ -196,6 +231,20 @@ export default function BankUser() {
         (resource.title && resource.title.toLowerCase().includes(searchInput.toLowerCase())) &&
         (value === 0 || (value === 1 && resource.type === 'ทรัพยากรเพื่อเช่าหรือยืม') || (value === 2 && resource.type2 === 'ทรัพยากรเพื่อการซื้อขาย') || (value === 3 && resource.type3 === 'ทรัพยากรเพื่อแลกเปลี่ยน'))
     );
+
+    function calculateAverageRating(reviews) {
+        if (reviews.length === 0) {
+          return 0; // ถ้าไม่มีรีวิว ให้คะแนนเฉลี่ยเป็น 0
+        }
+    
+        // คำนวณผลรวมของคะแนนทั้งหมด
+        const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+    
+        // หารด้วยจำนวนรีวิวเพื่อคำนวณคะแนนเฉลี่ย
+        const averageRating = totalRating / reviews.length;
+    
+        return averageRating;
+      }
     return (
         <Box sx={{ display: 'flex' }}>
             <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -369,6 +418,95 @@ export default function BankUser() {
                     />
                 </Search>
 
+                <Dialog
+                    open={calculateAverageRating(reviews) > 0} // เปิด dialog เมื่อมีรีวิว
+                    onClose={handleCloseReviewsDialog}
+                    scroll="paper"
+                    aria-labelledby="reviews-dialog-title"
+                    aria-describedby="reviews-dialog-description"
+                    PaperProps={{ style: { maxWidth: '900px', margin: 'auto' } }}
+                >
+                    {reviews.length > 0 ? (
+                        <>
+                            <DialogTitle id="reviews-dialog-title" sx={{ textAlign: "center" }}>
+                                รีวิวสินค้า
+                                <Box sx={{ ml: 2, fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    {`คะแนนเฉลี่ย : `}
+                                    <Rating
+                                        name="average-rating"
+                                        value={calculateAverageRating(reviews)}
+                                        precision={0.5}
+                                        readOnly
+                                        emptyIcon={<StarRateSharpIcon fontSize="inherit" />}
+                                    />
+                                    <Box sx={{ ml: 1 }}>
+                                        {calculateAverageRating(reviews).toFixed(2)}
+                                    </Box>
+                                </Box>
+                            </DialogTitle>
+                            <DialogContent dividers>
+                                {/* แสดงรีวิวของสินค้า */}
+                                <Grid container spacing={2}>
+                                    {reviews.map((review, index) => (
+                                        <Grid item xs={12} key={index}>
+                                            <Card style={{ width: '100%', display: 'flex', marginBottom: '10px' }}>
+                                                <CardMedia
+                                                    component="img"
+                                                    height="280"
+                                                    image={review.image}
+                                                    title="รูปภาพคนรีวิว"
+                                                    style={{ width: '300px' }}
+                                                />
+                                                <CardContent>
+                                                    <Typography gutterBottom variant="h5" component="div">
+                                                        {review.fullname}
+                                                    </Typography>
+                                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                        <Rating
+                                                            name="text-feedback"
+                                                            value={review.rating}
+                                                            readOnly
+                                                            precision={0.5}
+                                                            emptyIcon={<StarRateSharpIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+                                                        />
+                                                        <Typography variant="body1" sx={{ ml: 1 }}>
+                                                            {review.rating.toFixed(1)} ดาว
+                                                        </Typography>
+                                                    </Box>
+                                                    <Typography gutterBottom variant="body1" component="div">
+                                                        ความคิดเห็น : {review.detail}
+                                                    </Typography>
+                                                    <Typography gutterBottom variant="body2" component="div">
+                                                        วันเวลาที่ได้รีวิว : {dayjs(review.date).format('DD/MM/YYYY HH:mm:ss')}
+                                                    </Typography>
+                                                    <CardMedia
+                                                        component="img"
+                                                        height="280"
+                                                        image={`http://localhost:5000/image/${review.bank_review_image}`}
+                                                        title="รูปภาพทรัพยากรที่รีวิว"
+                                                        style={{ maxWidth: '100%', maxHeight: '100px', objectFit: 'contain' }}
+                                                    />
+                                                </CardContent>
+                                            </Card>
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </DialogContent>
+                        </>
+                    ) : (
+                        <DialogContent>
+                            <Typography variant="body1" component="div" align="center">
+                                ยังไม่มีรีวิวสำหรับสินค้านี้
+                            </Typography>
+                        </DialogContent>
+                    )}
+                    <DialogActions>
+                        <Button onClick={handleCloseReviewsDialog} color="primary">
+                            ปิด
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
                 {productTypes.map((productType, index) => (
                     <TabPanel value={value} index={index} key={index}>
                         <Grid container spacing={2}>
@@ -391,9 +529,12 @@ export default function BankUser() {
                                                     {`จำนวนทรัพยากรที่เหลืออยู่ : ${resource.quantity} ${resource.unit}`}
                                                 </Typography>
                                             </CardContent>
-                                            <CardActions>
+                                            <CardActions sx={{ justifyContent: 'space-around' }}>
                                                 <Button size="small" onClick={() => handleNext(resource.id)}>
                                                     ดูทรัพยากร
+                                                </Button>
+                                                <Button size="small" onClick={() => handleOpenReviewsDialog(resource)}>
+                                                    ดูรีวิว
                                                 </Button>
                                             </CardActions>
                                         </Card>
@@ -429,9 +570,12 @@ export default function BankUser() {
                                                         {`จำนวนทรัพยากรที่เหลืออยู่ : ${resource.quantity} ${resource.unit}`}
                                                     </Typography>
                                                 </CardContent>
-                                                <CardActions>
+                                                <CardActions sx={{ justifyContent: 'space-around' }}>
                                                     <Button size="small" onClick={() => handleNext(resource.id)}>
                                                         ดูทรัพยากร
+                                                    </Button>
+                                                    <Button size="small" onClick={() => handleOpenReviewsDialog(resource)}>
+                                                        ดูรีวิว
                                                     </Button>
                                                 </CardActions>
                                             </Card>

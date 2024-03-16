@@ -166,7 +166,7 @@ function OrderBankSale() {
 
     const handleNext = () => {
         Axios.post('http://localhost:5000/order_sale', {
-            order_porduct_id: id,
+            order_product_id: id,
             order_sale_bankname: bank_name,
             userbank_order_sale: username,
             order_product_quantity: inputQuantity,
