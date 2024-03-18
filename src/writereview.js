@@ -31,6 +31,7 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ReviewsIcon from '@mui/icons-material/Reviews';
 import HomeIcon from '@mui/icons-material/Home';
+import Swal from 'sweetalert2';
 
 const drawerWidth = 240;
 
@@ -126,6 +127,16 @@ export default function Reviewbank() {
    };
   };*/
   const handleSubmit = (status) => {
+
+    if (!value || !comment || !image) {
+      Swal.fire({
+        icon: 'error',
+        title: 'โปรดกรอกข้อมูลให้ครบถ้วน',
+        text: 'กรุณาตรวจสอบและกรอกข้อมูลให้ครบทุกช่อง',
+      });
+      return;
+    }
+
     const formData = new FormData()
     formData.append("user_email", username);
     formData.append("bank_codename", filteredProducts.bank_codename);
@@ -134,35 +145,56 @@ export default function Reviewbank() {
     formData.append("product_id", filteredProducts.order_id);
     formData.append("bank_review_image", image);
 
-    Axios.post('http://localhost:5000/Review', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
-      .then((response) => {
-        console.log(response.data);
-        setIsDataSaved(true);
-        if (response.data.Status === 'Success') {
-          Axios.put(`http://localhost:5000/updateStatusRentalPickup/${filteredProducts.order_request_id}`, {
-            order_rental_pickup: status,
-          })
-            .then((response) => {
-              console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
-              setFilteredProducts((prevProducts) => {
-                return prevProducts.map((item) =>
-                  item.order_request_id === filteredProducts.order_request_id ? response.data : item
-                );
+    Swal.fire({
+      icon: 'warning',
+      title: 'คุณแน่ใจหรือไม่ว่าต้องการบันทึกข้อมูล?',
+      showCancelButton: true,
+      cancelButtonText: 'ยกเลิก',
+      confirmButtonText: 'บันทึก',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Axios.post('http://localhost:5000/Review', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+          .then((response) => {
+            console.log(response.data);
+            setIsDataSaved(true);
+            if (response.data.Status === 'Success') {
+              Swal.fire({
+                icon: 'success',
+                title: 'บันทึกข้อมูลสำเร็จ',
+                text: 'File Successfully Uploaded',
+              }).then(() => {
+                Axios.put(`http://localhost:5000/updateStatusRentalPickup/${filteredProducts.order_request_id}`, {
+                  order_rental_pickup: status,
+                })
+                  .then((response) => {
+                    console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
+                    setFilteredProducts((prevProducts) => {
+                      return prevProducts.map((item) =>
+                        item.order_request_id === filteredProducts.order_request_id ? response.data : item
+                      );
+                    });
+                    navigate("/main")
+                  })
+                  .catch((error) => {
+                    console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
+                  });
               });
-              console.log("File Successfully Uploaded");
-              alert('บันทึกข้อมูลสำเร็จ')
-              navigate("/main")
-            })
-            .catch((error) => {
-              console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
+            } else {
+              console.error("Error");
+            }
+          })
+          .catch(error => {
+            console.log(error);
+            Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              text: 'มีบางอย่างผิดพลาด กรุณาลองอีกครั้ง',
             });
-        } else {
-          console.error("Error");
-        }
-      })
-      .catch(er => console.log(er))
+          });
+      }
+    });
   }
   useEffect(() => {
     Axios.get(`http://localhost:5000/showProductUser5/${product_id}`)

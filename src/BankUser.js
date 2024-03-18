@@ -52,6 +52,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Rating from '@mui/material/Rating'
 import StarRateSharpIcon from '@mui/icons-material/StarRateSharp';
 import dayjs from 'dayjs';
+import Swal from 'sweetalert2';
 
 const drawerWidth = 240;
 const Search = styled('div')(({ theme }) => ({
@@ -167,15 +168,19 @@ export default function BankUser() {
                     if (Array.isArray(response.data)) {
                         setReviews(response.data); // เซ็ตข้อมูลรีวิวที่ได้รับเข้าสู่ state reviews
                     }  else {
-                        console.error("Invalid response format. Expected an array.");
-                        // แสดงข้อความ "ยังไม่มีรีวิวสำหรับสินค้านี้"
-                        alert("ยังไม่มีรีวิวสำหรับทรัพยากรนี้");
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'ไม่พบรีวิว',
+                            text: 'ยังไม่มีรีวิวสำหรับทรัพยากรนี้',
+                          });
                       }
                 })
                 .catch((error) => {
-                    console.error("เกิดข้อผิดพลาดในการดึงข้อมูลรีวิว:", error);
-                    // แสดงข้อความ "ยังไม่มีรีวิวสำหรับสินค้านี้"
-                    alert("ยังไม่มีรีวิวสำหรับทรัพยากรนี้");
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'เกิดข้อผิดพลาด',
+                        text: 'ไม่สามารถดึงข้อมูลรีวิวได้ในขณะนี้',
+                      });
                   });
         }
     };

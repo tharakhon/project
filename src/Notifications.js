@@ -53,6 +53,8 @@ import Stack from '@mui/material/Stack';
 import dayjs from 'dayjs';
 import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { ReactSession } from 'react-client-session';
+import Swal from 'sweetalert2';
+
 const drawerWidth = 240;
 
 const AppBar = styled(MuiAppBar, {
@@ -177,7 +179,7 @@ function Notifications() {
             .then((response) => {
                 console.log("ข้อมูลที่ได้รับ:", response.data);
                 const fetchedProducts = response.data.map((item) => ({
-                    order_request_id : item.order_request_id,
+                    order_request_id: item.order_request_id,
                     order_id: item.order_id,
                     bank_name: item.bank_name,
                     fullname: item.fullname,
@@ -212,7 +214,7 @@ function Notifications() {
             .then((response) => {
                 console.log("ข้อมูลที่ได้รับ:", response.data);
                 const fetchedProduct = response.data.map((item) => ({
-                    exchange_id : item.exchange_id,
+                    exchange_id: item.exchange_id,
                     orderExchange_id: item.orderExchange_id,
                     bank_name: item.bank_name,
                     fullname: item.fullname,
@@ -253,7 +255,7 @@ function Notifications() {
             .then((response) => {
                 console.log("ข้อมูลที่ได้รับ:", response.data);
                 const fetchedProduct = response.data.map((item) => ({
-                    order_sale_id : item.order_sale_id,
+                    order_sale_id: item.order_sale_id,
                     order_product_id: item.order_product_id,
                     order_sale_bankname: item.order_sale_bankname,
                     fullname: item.fullname,
@@ -312,42 +314,87 @@ function Notifications() {
             console.error("Selected product not found");
             return;
         }
-        Axios.put(`http://localhost:5000/updateStatus/${selectedProduct.order_request_id}`, {
-            order_status: status,
-        })
-            .then((response) => {
-                console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
-                setFilteredProducts((prevProducts) => {
-                    return prevProducts.map((item) =>
-                        item.order_request_id === selectedProduct.order_request_id ? response.data : item
-                    );
-                });
-                handleClose();
-            })
-            .catch((error) => {
-                console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
-            });
+        handleClose();
+
+        Swal.fire({
+            icon: 'warning',
+            title: 'คุณแน่ใจหรือไม่?',
+            text: `คุณต้องการอัปเดตสถานะเป็น "${status}" หรือไม่?`,
+            showCancelButton: true,
+            confirmButtonText: 'ใช่, อัปเดตสถานะ',
+            cancelButtonText: 'ยกเลิก',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Axios.put(`http://localhost:5000/updateStatus/${selectedProduct.order_request_id}`, {
+                    order_status: status,
+                })
+                    .then((response) => {
+                        console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
+                        setFilteredProducts((prevProducts) => {
+                            return prevProducts.map((item) =>
+                                item.order_request_id === selectedProduct.order_request_id ? response.data : item
+                            );
+                        });
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'อัปเดตสถานะสำเร็จ',
+                            text: `สถานะได้ถูกอัปเดตเป็น "${status}" เรียบร้อยแล้ว`
+                        });
+                    })
+                    .catch((error) => {
+                        console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'เกิดข้อผิดพลาด',
+                            text: 'ไม่สามารถอัปเดตสถานะได้ โปรดลองอีกครั้งในภายหลัง'
+                        });
+                    });
+            }
+        });
+
     };
     const handleUpdate1 = (status) => {
         if (!selectedProducts) {
             console.error("Selected product not found");
             return;
         }
-        Axios.put(`http://localhost:5000/updateStatus1/${selectedProducts.exchange_id}`, {
-            userbank_status: status,
-        })
-            .then((response) => {
-                console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
-                setFilteredProduct((prevProducts) => {
-                    return prevProducts.map((item) =>
-                        item.exchange_id === selectedProducts.exchange_id ? response.data : item
-                    );
-                });
-                handleClose1();
-            })
-            .catch((error) => {
-                console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
-            });
+        handleClose1();
+
+        Swal.fire({
+            icon: 'warning',
+            title: 'คุณแน่ใจหรือไม่?',
+            text: `คุณต้องการอัปเดตสถานะเป็น "${status}" หรือไม่?`,
+            showCancelButton: true,
+            confirmButtonText: 'ใช่, อัปเดตสถานะ',
+            cancelButtonText: 'ยกเลิก',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Axios.put(`http://localhost:5000/updateStatus1/${selectedProducts.exchange_id}`, {
+                    userbank_status: status,
+                })
+                    .then((response) => {
+                        console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
+                        setFilteredProducts((prevProducts) => {
+                            return prevProducts.map((item) =>
+                                item.exchange_id === selectedProducts.exchange_id ? response.data : item
+                            );
+                        });
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'อัปเดตสถานะสำเร็จ',
+                            text: `สถานะได้ถูกอัปเดตเป็น "${status}" เรียบร้อยแล้ว`
+                        });
+                    })
+                    .catch((error) => {
+                        console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'เกิดข้อผิดพลาด',
+                            text: 'ไม่สามารถอัปเดตสถานะได้ โปรดลองอีกครั้งในภายหลัง'
+                        });
+                    });
+            }
+        });
     };
 
     const handleUpdate2 = (status) => {
@@ -355,21 +402,43 @@ function Notifications() {
             console.error("Selected product not found");
             return;
         }
-        Axios.put(`http://localhost:5000/updateStatus2/${selectedProductss.order_sale_id}`, {
-            order_product_status: status,
-        })
-            .then((response) => {
-                console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
-                setFilteredProductInbox1((prevProducts) => {
-                    return prevProducts.map((item) =>
-                        item.order_sale_id === selectedProductss.order_sale_id ? response.data : item
-                    );
-                });
-                handleClose2();
-            })
-            .catch((error) => {
-                console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
-            });
+        handleClose2();
+
+        Swal.fire({
+            icon: 'warning',
+            title: 'คุณแน่ใจหรือไม่?',
+            text: `คุณต้องการอัปเดตสถานะเป็น "${status}" หรือไม่?`,
+            showCancelButton: true,
+            confirmButtonText: 'ใช่, อัปเดตสถานะ',
+            cancelButtonText: 'ยกเลิก',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Axios.put(`http://localhost:5000/updateStatus2/${selectedProductss.order_sale_id}`, {
+                    order_product_status: status,
+                })
+                    .then((response) => {
+                        console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
+                        setFilteredProducts((prevProducts) => {
+                            return prevProducts.map((item) =>
+                                item.order_sale_id === selectedProductss.order_sale_id ? response.data : item
+                            );
+                        });
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'อัปเดตสถานะสำเร็จ',
+                            text: `สถานะได้ถูกอัปเดตเป็น "${status}" เรียบร้อยแล้ว`
+                        });
+                    })
+                    .catch((error) => {
+                        console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'เกิดข้อผิดพลาด',
+                            text: 'ไม่สามารถอัปเดตสถานะได้ โปรดลองอีกครั้งในภายหลัง'
+                        });
+                    });
+            }
+        });
     };
 
     const handleDrawerOpen = () => {
@@ -795,7 +864,7 @@ function Notifications() {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions sx={{ justifyContent: 'space-around' }}>
-                    <Button onClick={() => handleClose1()}>ปิด</Button>
+                    <Button onClick={() => handleClose1()} color='error'>ปิด</Button>
                     <Button onClick={() => setOpenNextDialog(true)} >ถัดไป</Button>
                 </DialogActions>
             </Dialog>

@@ -27,7 +27,7 @@ function getLabelText(value) {
   return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
 }
 
-export default function Reviewcustom() {
+export default function ReviewcustomSale() {
   const [value, setValue] = React.useState(0);
   const [hover, setHover] = React.useState(-1);
   const [commentuser, setCommentuser] = useState("");
@@ -71,7 +71,7 @@ export default function Reviewcustom() {
   }, [emailuserbank, user]);
 
   useEffect(() => {
-    Axios.get(`http://localhost:5000/showProductUser5/${product_id}`)
+    Axios.get(`http://localhost:5000/showProductUser7/${product_id}`)
       .then((response) => {
         console.log("ข้อมูลที่ได้รับ:", response.data);
         if (response.data.length > 0) {
@@ -99,7 +99,7 @@ export default function Reviewcustom() {
     formData.append("bank_codename", filteredProducts.bank_codename);
     formData.append("rating", value);
     formData.append('detail', commentuser);
-    formData.append("product_id", filteredProducts.order_id);
+    formData.append("product_id", filteredProducts.order_product_id);
     formData.append("customer_review_image", image);
 
     Swal.fire({
@@ -122,14 +122,14 @@ export default function Reviewcustom() {
                 title: 'บันทึกข้อมูลสำเร็จ',
                 text: 'File Successfully Uploaded',
               }).then(() => {
-                Axios.put(`http://localhost:5000/updateStatusRentalCustomer/${filteredProducts.order_request_id}`, {
-                  customer_status: status,
+                Axios.put(`http://localhost:5000/updateStatusSaleCustomer/${filteredProducts.order_sale_id}`, {
+                    customer_status_sale: status,
                 })
                   .then((response) => {
                     console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
                     setFilteredProducts((prevProducts) => {
                       return prevProducts.map((item) =>
-                        item.order_request_id === filteredProducts.order_request_id ? response.data : item
+                        item.order_sale_id === filteredProducts.order_sale_id ? response.data : item
                       );
                     });
                     navigate("/bank")
@@ -201,7 +201,7 @@ export default function Reviewcustom() {
                 {filteredProducts.product_name}
               </Typography>
               <Typography gutterBottom variant="p" component="div">
-                สถานะการทำรายการ : {filteredProducts.order_rental}
+                สถานะการทำรายการ : {filteredProducts.order_sale}
               </Typography>
             </CardContent>
 
@@ -293,7 +293,7 @@ export default function Reviewcustom() {
         )}
       </Stack>
       <div style={{ display: "flex", justifyContent: "center" }}>
-        <Button variant="contained" color="success" sx={{ marginTop: 5 }} onClick={() => handleSubmit("รีวิวผู้ใช้เรียบร้อย")} >ยืนยันความคิดเห็น</Button>
+        <Button variant="contained" color="success" sx={{ marginTop: 5 }} onClick={() => handleSubmit("รีวิวผู้ใช้เรียบร้อย")}>ยืนยันความคิดเห็น</Button>
       </div>
 
     </div>

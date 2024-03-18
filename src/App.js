@@ -25,6 +25,8 @@ import Reviewcustom from './writecomment';
 import Reviewbank from './writereview';
 import ReviewbankChage from './writereviewChage';
 import ReviewbankSale from './writereviewSale';
+import ReviewcustomExchange from './writecommentExchange';
+import ReviewcustomSale from './writecommentSale';
 
 function App() {
   return (
@@ -56,6 +58,9 @@ function App() {
         <Route path="reviewbank" element={<Reviewbank/>}/>
         <Route path="reviewbankchage" element={<ReviewbankChage/>}/>
         <Route path="reviewbanksale" element={<ReviewbankSale/>}/>
+        <Route path="reviewcustomexchange" element={<ReviewcustomExchange/>}/>
+        <Route path="reviewcustomsale" element={<ReviewcustomSale/>}/>
+        
         </Routes>
       </BrowserRouter>
    

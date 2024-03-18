@@ -70,6 +70,7 @@ import FormGroup from "@mui/material/FormGroup";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import Stack from '@mui/material/Stack';
+import Swal from 'sweetalert2';
 
 const setting2 = ['Profile', 'Logout'];
 const settings = ['เรียงด้วยแรงค์', 'เรียงด้วยระยะทาง', 'เรียงด้วยเรตติ้ง'];
@@ -220,7 +221,26 @@ function Main12() {
   const [orderSale_borrowDate, setOrderSale_borrowDate] = useState(dayjs());
   const [openNextDialog, setOpenNextDialog] = React.useState(false);
   const [openNextDialogApproved, setOpenNextDialogApproved] = React.useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [selectedProductReview, setSelectedProductReview] = useState(null);
+  const [openOrderReview, setOpenOrderReview] = React.useState(false);
+  const [bankExists, setBankExists] = useState(false);
   console.log("selectedProductApproved", selectedProductApproved)
+
+  const descriptionElementRefReview = React.useRef(null);
+  React.useEffect(() => {
+    if (openOrderReview) {
+      const { current: descriptionElement } = descriptionElementRefReview;
+      if (descriptionElement !== null) {
+        descriptionElement.focus();
+      }
+    }
+  }, [openOrderReview]);
+
+  const handleCloseReview = () => {
+    setOpenOrderReview(false);
+  };
+
   const descriptionElementRef = React.useRef(null);
   React.useEffect(() => {
     if (openOrder) {
@@ -521,7 +541,7 @@ function Main12() {
 
     Axios.get(`http://localhost:5000/readimage/${username}`)
       .then((response) => {
-        console.log("ข้อมูลที่ได้รับ:", response.data[0].image);
+        console.log("image:", response.data[0].image);
         // Assuming the image data is present in the response data
         setUserImage(response.data[0].image);
       })
@@ -584,6 +604,7 @@ function Main12() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
   const handleDisplayBookmarks = () => {
     setDisplayBookmarks(!displayBookmarks);
   };
@@ -640,14 +661,20 @@ function Main12() {
     Axios.get(`http://localhost:5000/showcodename/${username}`)
       .then((response) => {
         console.log("ข้อมูลที่ได้รับ:showcodename", response.data[0]);
-        setCodeName(response.data[0]);
-
+       
+        if (response.data[0]) {
+          setCodeName(response.data[0]);
+          setBankExists(true); // ถ้ามีธนาคารอยู่แล้วให้เซ็ตค่าเป็น true
+        } else {
+          setBankExists(false); // ถ้ายังไม่มีธนาคารให้เซ็ตค่าเป็น false
+        }
       })
       .catch((error) => {
         console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
       })
 
   }, [username]);
+  const disableCreateBankButton = bankExists;
 
   useEffect(() => {
     Axios.get(`http://localhost:5000/Inbox/${username}`)
@@ -672,6 +699,8 @@ function Main12() {
           order_rental: item.order_rental,
           order_date: dayjs(item.order_date),
           order_rental_pickup: item.order_rental_pickup ?? "",
+          customer_status: item.customer_status,
+
         }));
 
         const sortedProducts = fetchedProducts.sort((a, b) => b.order_date - a.order_date);
@@ -710,6 +739,7 @@ function Main12() {
           order_exchange: item.order_exchange,
           exchange_date: dayjs(item.exchange_date),
           order_exchange_pickup: item.order_exchange_pickup ?? "",
+          customer_status_exchange: item.customer_status_exchange,
 
         }));
         const sortedProduct = fetchedProduct.sort((a, b) => b.exchange_date - a.exchange_date);
@@ -728,6 +758,7 @@ function Main12() {
       .then((response) => {
         console.log("ข้อมูลที่ได้รับ:", response.data);
         const fetchedProduct = response.data.map((item) => ({
+          bank_name: item.bank_name,
           order_product_id: item.order_product_id,
           order_sale_id: item.order_sale_id,
           order_sale_bankname: item.order_sale_bankname,
@@ -744,6 +775,8 @@ function Main12() {
           order_sale: item.order_sale,
           order_product_datetime: dayjs(item.order_product_datetime),
           order_sale_pickup: item.order_sale_pickup ?? "",
+          customer_status_sale: item.customer_status_sale,
+
         }));
         const sortedProductInbox1 = fetchedProduct.sort((a, b) => b.order_product_datetime - a.order_product_datetime);
         setFilteredProductInbox1(sortedProductInbox1);
@@ -810,28 +843,46 @@ function Main12() {
     let ratingsCount = {}; // เก็บจำนวนของรีวิวในแต่ละธนาคาร
 
     products.forEach((product) => {
-        const title = product.title;
-        if (!averageRatingsObj[title]) { 
-            averageRatingsObj[title] = 0;
-            ratingsCount[title] = 0;
-        }
-        averageRatingsObj[title] += parseFloat(product.rating); // แปลงคะแนนให้เป็นตัวเลขแบบ float ก่อนนำมารวม
-        ratingsCount[title] += 1; 
+      const title = product.title;
+      if (!averageRatingsObj[title]) {
+        averageRatingsObj[title] = 0;
+        ratingsCount[title] = 0;
+      }
+      averageRatingsObj[title] += parseFloat(product.rating); // แปลงคะแนนให้เป็นตัวเลขแบบ float ก่อนนำมารวม
+      ratingsCount[title] += 1;
     });
 
-    let averageRatingsResult = {}; 
+    let averageRatingsResult = {};
     for (let title of Object.keys(averageRatingsObj)) {
-        averageRatingsResult[title] = (averageRatingsObj[title] / ratingsCount[title]).toFixed(1); 
+      averageRatingsResult[title] = (averageRatingsObj[title] / ratingsCount[title]).toFixed(1);
     }
     return averageRatingsResult;
-};
+  };
 
-const averageRatings = calculateAverageRating(filteredProducts); 
-console.log(averageRatings);
+  const averageRatings = calculateAverageRating(filteredProducts);
+  console.log(averageRatings);
 
+  useEffect(() => {
+    Axios.get(`http://localhost:5000/Showreviewcustom/${username}`)
+      .then((response) => {
+        console.log("ข้อมูลรีวิวที่ได้รับ:", response.data);
 
+        if (Array.isArray(response.data)) {
+          setReviews(response.data); // เซ็ตข้อมูลรีวิวที่ได้รับเข้าสู่ state reviews
+        } else {
+         
+        }
+      })
+      .catch((error) => {
+       
+      });
+  }, []);
 
-  
+  const handleClickOpenReview = (product) => () => {
+    setSelectedProductReview(product);
+    setOpenOrderReview(true);
+    setScroll('body');
+  }
   return (
     <div >
       <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
@@ -1178,7 +1229,7 @@ console.log(averageRatings);
         </Grid>
       )}
       {currentView === 'active' && (
-        <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
+        <Grid container spacing={2} style={{ width: '98%', margin: 0 }}>
           {(filteredProduct.length > 0 || filteredProductInbox.length > 0 || filteredProductInbox1.length > 0) ? (
             <>
               {filteredProduct.map((item) => (
@@ -1203,6 +1254,9 @@ console.log(averageRatings);
                         </Typography>
                         <Typography variant="subtitle1" color="text.secondary" component="div">
                           สถานะการทำรายการ : {item.order_rental}
+                        </Typography>
+                        <Typography variant="subtitle1" color="text.secondary" component="div">
+                          สถานะการรีวิว : {item.order_rental_pickup}
                         </Typography>
                         <Typography variant="subtitle1" color="text.secondary" component="div">
                           เวลาที่ทำรายการ : {dayjs(item.order_date).format("DD-MM-YYYY HH:mm:ss")}
@@ -1243,6 +1297,9 @@ console.log(averageRatings);
                           สถานะการทำรายการ : {inboxItem.order_exchange}
                         </Typography>
                         <Typography variant="subtitle1" color="text.secondary" component="div">
+                          สถานะการรีวิว : {inboxItem.order_exchange_pickup}
+                        </Typography>
+                        <Typography variant="subtitle1" color="text.secondary" component="div">
                           เวลาที่ทำรายการ : {dayjs(inboxItem.exchange_date).format("DD-MM-YYYY HH:mm:ss")}
                         </Typography>
                       </CardContent>
@@ -1281,11 +1338,14 @@ console.log(averageRatings);
                           สถานะการทำรายการ : {item.order_sale}
                         </Typography>
                         <Typography variant="subtitle1" color="text.secondary" component="div">
+                          สถานะการรีวิว : {item.order_sale_pickup}
+                        </Typography>
+                        <Typography variant="subtitle1" color="text.secondary" component="div">
                           เวลาที่ทำรายการ : {dayjs(item.order_product_datetime).format("DD-MM-YYYY HH:mm:ss")}
                         </Typography>
                       </CardContent>
                       <CardActions>
-                      {item.order_product_status === 'รอการตรวจสอบ' ? (
+                        {item.order_product_status === 'รอการตรวจสอบ' ? (
                           <Button onClick={handleClickOpen2(item)} size="medium">เปิดอ่าน</Button>
                         ) : (
                           <Button onClick={handleClickOpenApproved2(item)} size="medium">เปิดอ่าน</Button>
@@ -1301,6 +1361,70 @@ console.log(averageRatings);
           )}
         </Grid>
       )}
+
+      {currentView === 'review' && (
+        <Grid container spacing={2} style={{ width: '98%', margin: 0 }}>
+          {reviews.length > 0 ? (
+            <>
+              {reviews.map((item) => (
+                <Grid item key={item.product_id} xs={12}>
+                  <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
+                    <CardMedia
+                      component="img"
+                      sx={{ width: 151 }}
+                      image={`http://localhost:5000/image/${item.bank_image}`}
+                      alt="รูปธนาคาร"
+                    />
+                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                      <CardContent sx={{ flex: '1 0 auto' }}>
+                        <Typography component="div" variant="h5">
+                          {item.bank_name}
+                        </Typography>
+                        <Box
+                          sx={{
+                            width: 200,
+                            display: 'flex',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <Rating
+                            name="text-feedback"
+                            value={item.rating}
+                            readOnly
+                            precision={0.5}
+
+                            emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+                          />
+                          <Box sx={{ ml: 2 }} >{`${item.rating || 'N/A'}`}</Box>
+                        </Box>
+                        <Typography variant="subtitle1" color="text.secondary" component="div">
+                          รายละเอียด : {item.detail}
+                        </Typography>
+                        <Typography variant="subtitle1" color="text.secondary" component="div">
+                          เวลาที่ทำรายการ : {dayjs(item.date).format("DD-MM-YYYY HH:mm:ss")}
+                        </Typography>
+                        <CardMedia
+                          component="img"
+                          sx={{ width: 151 }}
+                          image={`http://localhost:5000/image/${item.customer_review_image}`}
+                          alt="รูปธนาคาร"
+                        />
+                      </CardContent>
+                      <CardActions>
+                        <Button onClick={handleClickOpenReview(item)} size="medium">เปิดอ่าน</Button>
+                      </CardActions>
+                    </Box>
+                  </Card>
+                </Grid>
+
+              ))}
+            </>
+          ) : (
+            <p>ไม่มีกิจกรรม</p>
+          )}
+        </Grid>
+      )}
+
       {currentView === 'inbox' && (
         <div>
 
@@ -1313,7 +1437,7 @@ console.log(averageRatings);
 
           {activeTab === 'pending' && (
             <div>
-              <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
+              <Grid container spacing={2} style={{ width: '98%', margin: 0 }}>
                 {(filteredProduct.length > 0 || filteredProductInbox.length > 0 || filteredProductInbox1.length > 0) ? (
                   <>
                     {filteredProduct.map((item) => (
@@ -1434,7 +1558,7 @@ console.log(averageRatings);
 
           {activeTab === 'approved' && (
             <div>
-              <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
+              <Grid container spacing={2} style={{ width: '98%', margin: 0 }}>
                 {(filteredProduct.length > 0 || filteredProductInbox.length > 0 || filteredProductInbox1.length > 0) ? (
                   <>
                     {filteredProduct.map((item) => (
@@ -1460,6 +1584,9 @@ console.log(averageRatings);
                                 </Typography>
                                 <Typography variant="subtitle1" color="text.secondary" component="div">
                                   สถานะการทำรายการ : {item.order_rental}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  สถานะการรีวิว : {item.order_rental_pickup}
                                 </Typography>
                                 <Typography variant="subtitle1" color="text.secondary" component="div">
                                   เวลาที่ทำรายการ : {dayjs(item.order_date).format("DD-MM-YYYY HH:mm:ss")}
@@ -1498,6 +1625,9 @@ console.log(averageRatings);
                                   สถานะการทำรายการ : {inboxItem.order_exchange}
                                 </Typography>
                                 <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  สถานะการทำรายการ : {inboxItem.order_exchange_pickup}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
                                   เวลาที่ทำรายการ : {dayjs(inboxItem.exchange_date).format("DD-MM-YYYY HH:mm:ss")}
                                 </Typography>
                               </CardContent>
@@ -1534,6 +1664,9 @@ console.log(averageRatings);
                                   สถานะการทำรายการ : {item.order_sale}
                                 </Typography>
                                 <Typography variant="subtitle1" color="text.secondary" component="div">
+                                  สถานะการทำรายการ : {item.order_sale_pickup}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary" component="div">
                                   เวลาที่ทำรายการ : {dayjs(item.order_product_datetime).format("DD-MM-YYYY HH:mm:ss")}
                                 </Typography>
                               </CardContent>
@@ -1555,7 +1688,7 @@ console.log(averageRatings);
 
           {activeTab === 'rejected' && (
             <div>
-              <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
+              <Grid container spacing={2} style={{ width: '98%', margin: 0 }}>
                 {(filteredProduct.length > 0 || filteredProductInbox.length > 0 || filteredProductInbox1.length > 0) ? (
                   <>
                     {filteredProduct.map((item) => (
@@ -1675,6 +1808,47 @@ console.log(averageRatings);
           )}
         </div>
       )}
+
+      <Dialog
+        open={openOrderReview}
+        onClose={handleCloseReview}
+        scroll={scroll}
+        aria-labelledby="scroll-dialog-title"
+        aria-describedby="scroll-dialog-description"
+      >
+        <DialogTitle id="scroll-dialog-title" sx={{ textAlign: "center" }}>ธนาคาร {selectedProductReview ? selectedProductReview.bank_name : 'N/A'} ได้รีวิวทรัพยากรที่คุณทำรายการไป </DialogTitle>
+        <DialogContent dividers={scroll === 'paper'}>
+          <DialogContentText
+            id="scroll-dialog-description"
+            ref={descriptionElementRefReview}
+            tabIndex={-1}
+          >
+            {selectedProductReview ? (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <Card sx={{ maxWidth: 345, m: 1 }} >
+                    <CardMedia
+                      component="img"
+                      height="300"
+                      image={`http://localhost:5000/image/${selectedProductReview.product_image}`}
+                      title="รูปภาพทรัพยากร"
+                    />
+                  </Card>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{ marginTop: 50 }}>
+                    <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
+                    <TextField disabled id="outlined-disabled" label={selectedProductReview.product_name} variant="outlined" sx={{ width: '50ch' }} />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p>Details not found.</p>
+            )}
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
+
       <Dialog
         open={openOrder}
         onClose={handleClose}

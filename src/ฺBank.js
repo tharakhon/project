@@ -50,6 +50,7 @@ import StarRateSharpIcon from '@mui/icons-material/StarRateSharp';
 import Tooltip from '@mui/material/Tooltip';
 import Stack from '@mui/material/Stack';
 import Rating from '@mui/material/Rating'
+import Swal from 'sweetalert2';
 
 const drawerWidth = 240;
 
@@ -194,8 +195,15 @@ export default function Bank() {
   const [openNextDialog, setOpenNextDialog] = React.useState(false);
   const [openOrder1, setOpenOrder1] = React.useState(false);
   const [openOrder2, setOpenOrder2] = React.useState(false);
+  const [openOrderApproved, setOpenOrderApproved] = React.useState(false);
+  const [openOrderApproved1, setOpenOrderApproved1] = React.useState(false);
+  const [openOrderApproved2, setOpenOrderApproved2] = React.useState(false);
   const [selectedProducts, setSelectedProducts] = useState(null);
   const [selectedProductss, setSelectedProductss] = useState(null);
+  const [selectedProductApproved, setSelectedProductApproved] = useState(null);
+  const [selectedProductApproved1, setSelectedProductApproved1] = useState(null);
+  const [selectedProductApproved2, setSelectedProductApproved2] = useState(null);
+  const [openNextDialogApproved, setOpenNextDialogApproved] = React.useState(false);
   const [reviews, setReviews] = useState([]);
   console.log(reviews)
   const productTypes = [
@@ -217,15 +225,19 @@ export default function Bank() {
           if (Array.isArray(response.data)) {
             setReviews(response.data); // เซ็ตข้อมูลรีวิวที่ได้รับเข้าสู่ state reviews
           } else {
-            console.error("Invalid response format. Expected an array.");
-            // แสดงข้อความ "ยังไม่มีรีวิวสำหรับสินค้านี้"
-            alert("ยังไม่มีรีวิวสำหรับทรัพยากรนี้");
+            Swal.fire({
+              icon: 'info',
+              title: 'ไม่พบรีวิว',
+              text: 'ยังไม่มีรีวิวสำหรับทรัพยากรนี้',
+            });
           }
         })
         .catch((error) => {
-          console.error("เกิดข้อผิดพลาดในการดึงข้อมูลรีวิว:", error);
-          // แสดงข้อความ "ยังไม่มีรีวิวสำหรับสินค้านี้"
-          alert("ยังไม่มีรีวิวสำหรับทรัพยากรนี้");
+          Swal.fire({
+            icon: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            text: 'ไม่สามารถดึงข้อมูลรีวิวได้ในขณะนี้',
+          });
         });
     }
   };
@@ -254,6 +266,28 @@ export default function Bank() {
     setScroll('body');
   };
 
+  const handleClickOpenApproved = (product) => () => {
+    setSelectedProductApproved(product);
+    setBorrowDate(dayjs(product.order_borrowDate));
+    setReturnDate(dayjs(product.order_returnDate));
+    setOpenOrderApproved(true);
+    setScroll('body');
+  };
+
+  const handleClickOpenApproved1 = (product) => () => {
+    setSelectedProductApproved1(product);
+    setOrderExchange_borrowDate(dayjs(product.orderExchange_borrowDate));
+    setOpenOrderApproved1(true);
+    setScroll('body');
+  };
+
+  const handleClickOpenApproved2 = (product) => () => {
+    setSelectedProductApproved2(product);
+    setOrderSale_borrowDate(dayjs(product.order_product_date));
+    setOpenOrderApproved2(true);
+    setScroll('body');
+  };
+
   const handleClose = () => {
     setOpenOrder(false);
   };
@@ -265,6 +299,19 @@ export default function Bank() {
 
   const handleClose2 = () => {
     setOpenOrder2(false);
+  };
+
+  const handleCloseApproved = () => {
+    setOpenOrderApproved(false);
+  };
+
+  const handleCloseApproved1 = () => {
+    setOpenOrderApproved1(false);
+    setOpenNextDialogApproved(false);
+  };
+
+  const handleCloseApproved2 = () => {
+    setOpenOrderApproved2(false);
   };
 
   const descriptionElementRef = React.useRef(null);
@@ -296,6 +343,36 @@ export default function Bank() {
       }
     }
   }, [openOrder2]);
+
+  const descriptionElementRefApproved = React.useRef(null);
+  React.useEffect(() => {
+    if (openOrderApproved) {
+      const { current: descriptionElement } = descriptionElementRefApproved;
+      if (descriptionElement !== null) {
+        descriptionElement.focus();
+      }
+    }
+  }, [openOrderApproved]);
+
+  const descriptionElementRefApproved1 = React.useRef(null);
+  React.useEffect(() => {
+    if (openOrderApproved1) {
+      const { current: descriptionElement } = descriptionElementRefApproved1;
+      if (descriptionElement !== null) {
+        descriptionElement.focus();
+      }
+    }
+  }, [openOrderApproved1]);
+
+  const descriptionElementRefApproved2 = React.useRef(null);
+  React.useEffect(() => {
+    if (openOrderApproved2) {
+      const { current: descriptionElement } = descriptionElementRefApproved2;
+      if (descriptionElement !== null) {
+        descriptionElement.focus();
+      }
+    }
+  }, [openOrderApproved2]);
 
   const handleNext = () => {
     navigate("/addproduct");
@@ -360,21 +437,44 @@ export default function Bank() {
       console.error("Selected product not found");
       return;
     }
-    Axios.put(`http://localhost:5000/updateStatus/${selectedProduct.order_request_id}`, {
-      order_status: status,
-    })
-      .then((response) => {
-        console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
-        setFilteredProducts((prevProducts) => {
-          return prevProducts.map((item) =>
-            item.order_request_id === selectedProduct.order_request_id ? response.data : item
-          );
-        });
-        handleClose();
-      })
-      .catch((error) => {
-        console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
-      });
+
+    handleClose();
+
+    Swal.fire({
+      icon: 'warning',
+      title: 'คุณแน่ใจหรือไม่?',
+      text: `คุณต้องการอัปเดตสถานะเป็น "${status}" หรือไม่?`,
+      showCancelButton: true,
+      confirmButtonText: 'ใช่, อัปเดตสถานะ',
+      cancelButtonText: 'ยกเลิก',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Axios.put(`http://localhost:5000/updateStatus/${selectedProduct.order_request_id}`, {
+          order_status: status,
+        })
+          .then((response) => {
+            console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
+            setFilteredProducts((prevProducts) => {
+              return prevProducts.map((item) =>
+                item.order_request_id === selectedProduct.order_request_id ? response.data : item
+              );
+            });
+            Swal.fire({
+              icon: 'success',
+              title: 'อัปเดตสถานะสำเร็จ',
+              text: `สถานะได้ถูกอัปเดตเป็น "${status}" เรียบร้อยแล้ว`
+            });
+          })
+          .catch((error) => {
+            console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
+            Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              text: 'ไม่สามารถอัปเดตสถานะได้ โปรดลองอีกครั้งในภายหลัง'
+            });
+          });
+      }
+    });
 
   };
 
@@ -383,21 +483,43 @@ export default function Bank() {
       console.error("Selected product not found");
       return;
     }
-    Axios.put(`http://localhost:5000/updateStatus1/${selectedProducts.exchange_id}`, {
-      userbank_status: status,
-    })
-      .then((response) => {
-        console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
-        setFilteredProductInbox((prevProducts) => {
-          return prevProducts.map((item) =>
-            item.exchange_id === selectedProducts.exchange_id ? response.data : item
-          );
-        });
-        handleClose1();
-      })
-      .catch((error) => {
-        console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
-      });
+    handleClose1();
+
+    Swal.fire({
+      icon: 'warning',
+      title: 'คุณแน่ใจหรือไม่?',
+      text: `คุณต้องการอัปเดตสถานะเป็น "${status}" หรือไม่?`,
+      showCancelButton: true,
+      confirmButtonText: 'ใช่, อัปเดตสถานะ',
+      cancelButtonText: 'ยกเลิก',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Axios.put(`http://localhost:5000/updateStatus1/${selectedProducts.exchange_id}`, {
+          userbank_status: status,
+        })
+          .then((response) => {
+            console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
+            setFilteredProducts((prevProducts) => {
+              return prevProducts.map((item) =>
+                item.exchange_id === selectedProducts.exchange_id ? response.data : item
+              );
+            });
+            Swal.fire({
+              icon: 'success',
+              title: 'อัปเดตสถานะสำเร็จ',
+              text: `สถานะได้ถูกอัปเดตเป็น "${status}" เรียบร้อยแล้ว`
+            });
+          })
+          .catch((error) => {
+            console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
+            Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              text: 'ไม่สามารถอัปเดตสถานะได้ โปรดลองอีกครั้งในภายหลัง'
+            });
+          });
+      }
+    });
   };
 
   const handleUpdate2 = (status) => {
@@ -405,21 +527,44 @@ export default function Bank() {
       console.error("Selected product not found");
       return;
     }
-    Axios.put(`http://localhost:5000/updateStatus2/${selectedProductss.order_sale_id}`, {
-      order_product_status: status,
-    })
-      .then((response) => {
-        console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
-        setFilteredProductInbox1((prevProducts) => {
-          return prevProducts.map((item) =>
-            item.order_sale_id === selectedProductss.order_sale_id ? response.data : item
-          );
-        });
-        handleClose2();
-      })
-      .catch((error) => {
-        console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
-      });
+    handleClose2();
+
+    Swal.fire({
+      icon: 'warning',
+      title: 'คุณแน่ใจหรือไม่?',
+      text: `คุณต้องการอัปเดตสถานะเป็น "${status}" หรือไม่?`,
+      showCancelButton: true,
+      confirmButtonText: 'ใช่, อัปเดตสถานะ',
+      cancelButtonText: 'ยกเลิก',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Axios.put(`http://localhost:5000/updateStatus2/${selectedProductss.order_sale_id}`, {
+          order_product_status: status,
+        })
+          .then((response) => {
+            console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
+            setFilteredProducts((prevProducts) => {
+              return prevProducts.map((item) =>
+                item.order_sale_id === selectedProductss.order_sale_id ? response.data : item
+              );
+            });
+            Swal.fire({
+              icon: 'success',
+              title: 'อัปเดตสถานะสำเร็จ',
+              text: `สถานะได้ถูกอัปเดตเป็น "${status}" เรียบร้อยแล้ว`
+            });
+          })
+          .catch((error) => {
+            console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
+            Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              text: 'ไม่สามารถอัปเดตสถานะได้ โปรดลองอีกครั้งในภายหลัง'
+            });
+          });
+      }
+    });
+
   };
 
   useEffect(() => {
@@ -431,6 +576,7 @@ export default function Bank() {
           order_id: item.order_id,
           bank_name: item.bank_name,
           fullname: item.fullname,
+          email: item.email,
           image: item.image,
           bank_image: item.bank_image,
           order_borrowDate: dayjs(item.order_borrowDate),
@@ -446,7 +592,9 @@ export default function Bank() {
           product_type4: item.product_type4,
           product_unit: item.product_unit,
           order_rental: item.order_rental,
-          order_date: dayjs(item.order_date)
+          order_date: dayjs(item.order_date),
+          order_rental_pickup: item.order_rental_pickup,
+          customer_status: item.customer_status
         }));
         const sortedProducts = fetchedProducts.sort((a, b) => b.order_date - a.order_date);
         setFilteredProducts(sortedProducts);
@@ -469,6 +617,7 @@ export default function Bank() {
           bank_name: item.bank_name,
           fullname: item.fullname,
           image: item.image,
+          email: item.email,
           product_name: item.product_name,
           product_image: item.product_image,
           product_type: item.product_type,
@@ -487,7 +636,9 @@ export default function Bank() {
           userbank_unit: item.userbank_unit,
           userbank_productdetails: item.userbank_productdetails,
           order_exchange: item.order_exchange,
-          exchange_date: dayjs(item.exchange_date)
+          exchange_date: dayjs(item.exchange_date),
+          order_exchange_pickup: item.order_exchange_pickup,
+          customer_status_exchange: item.customer_status_exchange
         }));
         const sortedProduct = fetchedProduct.sort((a, b) => b.exchange_date - a.exchange_date);
         setFilteredProductInbox(sortedProduct);
@@ -508,6 +659,7 @@ export default function Bank() {
           order_product_id: item.order_product_id,
           order_sale_bankname: item.order_sale_bankname,
           fullname: item.fullname,
+          email: item.email,
           image: item.image,
           product_name: item.product_name,
           product_image: item.product_image,
@@ -518,7 +670,9 @@ export default function Bank() {
           order_product_unit: item.order_product_unit,
           order_product_price: item.order_product_price,
           order_sale: item.order_sale,
-          order_product_datetime: dayjs(item.order_product_datetime)
+          order_product_datetime: dayjs(item.order_product_datetime),
+          order_sale_pickup: item.order_sale_pickup,
+          customer_status_sale: item.customer_status_sale
         }));
 
         const sortedProductInbox1 = fetchedProducts.sort((a, b) => b.order_product_datetime - a.order_product_datetime);
@@ -543,6 +697,27 @@ export default function Bank() {
     const averageRating = totalRating / reviews.length;
 
     return averageRating;
+  }
+
+  const handleClicktoReview = (product_id) => {
+    ReactSession.set("product_id", product_id);
+    ReactSession.set("username", username);
+    ReactSession.set("emailuserbank", selectedProductApproved.email);
+    navigate("/reviewcustom")
+  }
+
+  const handleClicktoReview1 = (product_id) => {
+    ReactSession.set("product_id", product_id);
+    ReactSession.set("username", username);
+    ReactSession.set("emailuserbank", selectedProductApproved1.email);
+    navigate("/reviewcustomexchange")
+  }
+
+  const handleClicktoReview2 = (product_id) => {
+    ReactSession.set("product_id", product_id);
+    ReactSession.set("username", username);
+    ReactSession.set("emailuserbank", selectedProductApproved2.email);
+    navigate("/reviewcustomsale")
   }
   return (
     <Box sx={{ display: 'flex' }}>
@@ -689,11 +864,17 @@ export default function Bank() {
                                 สถานะการทำรายการ : {item.order_rental}
                               </Typography>
                               <Typography variant="subtitle1" color="text.secondary" component="div">
+                                สถานะการรีวิวของผู้ใช้ : {item.order_rental_pickup}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                สถานะการรีวิวของธนาคารคุณ : {item.customer_status}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
                                 เวลาที่ทำรายการ : {dayjs(item.order_date).format("DD-MM-YYYY HH:mm:ss")}
                               </Typography>
                             </CardContent>
                             <CardActions>
-                              <Button onClick={handleClickOpen(item)} size="medium">เปิดอ่าน</Button>
+                              <Button onClick={handleClickOpenApproved(item)} size="medium">เปิดอ่าน</Button>
                             </CardActions>
                           </Box>
                         </Card>
@@ -725,11 +906,17 @@ export default function Bank() {
                                 สถานะการทำรายการ : {item.order_exchange}
                               </Typography>
                               <Typography variant="subtitle1" color="text.secondary" component="div">
+                                สถานะการรีวิวของผู้ใช้ : {item.order_exchange_pickup}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                สถานะการรีวิวของธนาคารคุณ : {item.customer_status_exchange}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
                                 เวลาที่ทำรายการ : {dayjs(item.exchange_date).format("DD-MM-YYYY HH:mm:ss")}
                               </Typography>
                             </CardContent>
                             <CardActions>
-                              <Button onClick={handleClickOpen1(item)} size="medium">เปิดอ่าน</Button>
+                              <Button onClick={handleClickOpenApproved1(item)} size="medium">เปิดอ่าน</Button>
                             </CardActions>
                           </Box>
                         </Card>
@@ -761,11 +948,17 @@ export default function Bank() {
                                 สถานะการทำรายการ : {item.order_sale}
                               </Typography>
                               <Typography variant="subtitle1" color="text.secondary" component="div">
+                                สถานะการรีวิวของผู้ใช้ : {item.order_sale_pickup}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                สถานะการรีวิวของธนาคารคุณ : {item.customer_status_sale}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
                                 เวลาที่ทำรายการ : {dayjs(item.order_product_datetime).format("DD-MM-YYYY HH:mm:ss")}
                               </Typography>
                             </CardContent>
                             <CardActions>
-                              <Button onClick={handleClickOpen2(item)} size="medium">เปิดอ่าน</Button>
+                              <Button onClick={handleClickOpenApproved2(item)} size="medium">เปิดอ่าน</Button>
                             </CardActions>
                           </Box>
                         </Card>
@@ -1322,6 +1515,347 @@ export default function Bank() {
               ปิด
             </Button>
           </DialogActions>
+        </Dialog>
+
+        {/* approved */}
+        <Dialog
+          open={openOrderApproved}
+          onClose={handleCloseApproved}
+          scroll={scroll}
+          aria-labelledby="scroll-dialog-title"
+          aria-describedby="scroll-dialog-description"
+        >
+          <DialogTitle id="scroll-dialog-title" sx={{ textAlign: "center" }}>คุณได้ทำรายการของธนาคาร {selectedProductApproved ? selectedProductApproved.bank_name : 'N/A'} </DialogTitle>
+          <DialogContent dividers={scroll === 'paper'}>
+            <DialogContentText
+              id="scroll-dialog-description"
+              ref={descriptionElementRefApproved}
+              tabIndex={-1}
+            >
+              {selectedProductApproved ? (
+                <>
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <Card sx={{ maxWidth: 345, m: 1 }} >
+                      <CardMedia
+                        component="img"
+                        height="300"
+                        image={`http://localhost:5000/image/${selectedProductApproved.product_image}`}
+                        title="รูปภาพทรัพยากร"
+                      />
+                    </Card>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+
+                    <div style={{ marginTop: 50 }}>
+                      <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
+                      <TextField disabled id="outlined-disabled" label={selectedProductApproved.product_name} variant="outlined" sx={{ width: '50ch' }} />
+                    </div>
+
+                    <div style={{ marginTop: 20 }}>
+                      <Box
+                        component="form"
+                        sx={{
+                          '& .MuiTextField-root': { m: 1, width: '25ch' },
+                        }}
+                        noValidate
+                        autoComplete="off"
+                      ></Box>
+                      <FormLabel component="legend" style={{ color: 'black' }}>ประเภททรัพยากรทางการเกษตร:</FormLabel>
+                      <TextField disabled id="outlined-disabled" label={selectedProductApproved.product_type4} variant="outlined" sx={{ width: '50ch' }} />
+
+                    </div>
+                    <div style={{ marginTop: 30 }}>
+                      <FormLabel component="legend" style={{ color: 'black' }}>สถานะการทำรายการ : </FormLabel>
+                      <TextField disabled id="outlined-disabled" label={`${selectedProductApproved.order_rental}`} variant="outlined" sx={{ width: '50ch' }} />
+                    </div>
+                    <div style={{ marginTop: 30 }}>
+                      <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการทำรายการ : </FormLabel>
+                      <TextField disabled id="outlined-disabled" label={`${selectedProductApproved.order_quantity} ${selectedProductApproved.product_unit}`} variant="outlined" sx={{ width: '50ch' }} />
+                    </div>
+                    <div >
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DemoContainer
+                          components={[
+                            'DatePicker',
+                          ]}
+                          sx={{ width: '50ch', marginTop: 3 }}
+                        >
+                          <DemoItem label={<Label componentName="วันที่จะมารับทรัพยากร" valueType="date" />} >
+                            <DatePicker
+                              disabled
+                              value={borrowDate}
+                              renderInput={(params) => <TextField {...params} variant="outlined" />}
+                            />
+                          </DemoItem>
+                        </DemoContainer>
+                      </LocalizationProvider>
+                    </div>
+                    <div >
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DemoContainer
+                          components={[
+                            'DatePicker',
+                          ]}
+                          sx={{ width: '50ch', marginTop: 3 }}
+                        >
+                          <DemoItem label={<Label componentName="วันที่จะนำทรัพยากรมาคืน" valueType="date" />} >
+                            <DatePicker
+                              disabled
+                              value={returnDate}
+                              renderInput={(params) => <TextField {...params} variant="outlined" />}
+                            />
+                          </DemoItem>
+                        </DemoContainer>
+                      </LocalizationProvider>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <p>Details not found.</p>
+              )}
+            </DialogContentText>
+          </DialogContent>
+          {(selectedProductApproved && selectedProductApproved.order_rental_pickup === 'รีวิวทรัพยากรเรียบร้อย' && selectedProductApproved.customer_status !== 'รีวิวผู้ใช้เรียบร้อย') && (
+            <DialogActions sx={{ justifyContent: 'center' }}>
+              <Button onClick={() => handleClicktoReview(selectedProductApproved.order_request_id)}>รีวิวผู้ใช้ที่ได้เช่าหรือยืมทรัพยากรในธนาคารของคุณ</Button>
+            </DialogActions>
+          )}
+        </Dialog>
+
+        <Dialog
+          open={openOrderApproved1}
+          onClose={() => setOpenNextDialogApproved(false)}
+          scroll={scroll}
+          aria-labelledby="scroll-dialog-title"
+          aria-describedby="scroll-dialog-description"
+        >
+          <DialogTitle id="scroll-dialog-title" sx={{ textAlign: "center" }}>รายการที่ {selectedProductApproved1 ? selectedProductApproved1.fullname : 'N/A'} ได้ทำรายการ</DialogTitle>
+          <DialogContent dividers={scroll === 'paper'}>
+            <DialogContentText
+              id="scroll-dialog-description"
+              ref={descriptionElementRefApproved1}
+              tabIndex={-1}
+            >
+              {selectedProductApproved1 ? (
+                <>
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <Card sx={{ maxWidth: 345, m: 1 }} >
+                      <CardMedia
+                        component="img"
+                        height="300"
+                        image={`http://localhost:5000/image/${selectedProductApproved1.product_image}`}
+                        title="รูปภาพทรัพยากร"
+                      />
+                    </Card>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+
+                    <div style={{ marginTop: 50 }}>
+                      <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
+                      <TextField disabled id="outlined-disabled" label={selectedProductApproved1.product_name} variant="outlined" sx={{ width: '50ch' }} />
+                    </div>
+                    <div style={{ marginTop: 20 }}>
+                      <Box
+                        component="form"
+                        sx={{
+                          '& .MuiTextField-root': { m: 1, width: '25ch' },
+                        }}
+                        noValidate
+                        autoComplete="off"
+                      ></Box>
+                      <FormLabel component="legend" style={{ color: 'black' }}>ประเภททรัพยากรทางการเกษตร:</FormLabel>
+                      <TextField disabled id="outlined-disabled" label={selectedProductApproved1.product_type4} variant="outlined" sx={{ width: '50ch' }} />
+
+                    </div>
+                    <div style={{ marginTop: 30 }}>
+                      <FormLabel component="legend" style={{ color: 'black' }}>สถานะการทำรายการ : </FormLabel>
+                      <TextField disabled id="outlined-disabled" label={`${selectedProductApproved1.order_exchange}`} variant="outlined" sx={{ width: '50ch' }} />
+                    </div>
+                    <div style={{ marginTop: 30 }}>
+                      <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการทำรายการ : </FormLabel>
+                      <TextField disabled id="outlined-disabled" label={`${selectedProductApproved1.orderExchange_quantity} ${selectedProductApproved1.product_unit}`} variant="outlined" sx={{ width: '50ch' }} />
+                    </div>
+
+                    <div >
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DemoContainer
+                          components={[
+                            'DatePicker',
+                          ]}
+                          sx={{ width: '50ch', marginTop: 3 }}
+                        >
+                          <DemoItem label={<Label componentName="วันที่จะมารับทรัพยากร" valueType="date" />} >
+                            <DatePicker
+                              disabled
+                              value={orderExchange_borrowDate}
+                              renderInput={(params) => <TextField {...params} variant="outlined" />}
+                            />
+                          </DemoItem>
+                        </DemoContainer>
+                      </LocalizationProvider>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <p>Details not found.</p>
+              )}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions sx={{ justifyContent: 'space-around' }}>
+            <Button onClick={() => handleCloseApproved1()} color='error'>ปิด</Button>
+            <Button onClick={() => setOpenNextDialogApproved(true)} >ถัดไป</Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          open={openNextDialogApproved}
+          onClose={handleCloseApproved1}
+          scroll={scroll}
+          aria-labelledby="scroll-dialog-title"
+          aria-describedby="scroll-dialog-description"
+        >
+          <DialogTitle id="scroll-dialog-title" sx={{ textAlign: "center" }}>รายการที่ {selectedProductApproved1 ? selectedProductApproved1.fullname : 'N/A'} จะนำมาแลกเปลี่ยน</DialogTitle>
+          <DialogContent dividers={scroll === 'paper'}>
+            <DialogContentText
+              id="scroll-dialog-description"
+              ref={descriptionElementRefApproved1}
+              tabIndex={-1}
+            >
+              {selectedProductApproved1 ? (
+                <>
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <Card sx={{ maxWidth: 345, m: 1 }} >
+                      <CardMedia
+                        component="img"
+                        height="300"
+                        image={`http://localhost:5000/image/${selectedProductApproved1.userbank_productimage}`}
+                        title="รูปภาพทรัพยากร"
+                      />
+                    </Card>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+
+                    <div style={{ marginTop: 50 }}>
+                      <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
+                      <TextField disabled id="outlined-disabled" label={selectedProductApproved1.userbank_productname} variant="outlined" sx={{ width: '50ch' }} />
+                    </div>
+                    <div style={{ marginTop: 20 }}>
+                      <Box
+                        component="form"
+                        sx={{
+                          '& .MuiTextField-root': { m: 1, width: '25ch' },
+                        }}
+                        noValidate
+                        autoComplete="off"
+                      ></Box>
+                      <FormLabel component="legend" style={{ color: 'black' }}>ประเภททรัพยากรทางการเกษตร:</FormLabel>
+                      <TextField disabled id="outlined-disabled" label={selectedProductApproved1.userbank_producttype1} variant="outlined" sx={{ width: '50ch' }} />
+
+                    </div>
+
+                    <div style={{ marginTop: 30 }}>
+                      <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการทำรายการ : </FormLabel>
+                      <TextField disabled id="outlined-disabled" label={`${selectedProductApproved1.userbank_productquantity} ${selectedProductApproved1.userbank_unit}`} variant="outlined" sx={{ width: '50ch' }} />
+                    </div>
+
+                  </div>
+                </>
+              ) : (
+                <p>Details not found.</p>
+              )}
+            </DialogContentText>
+          </DialogContent>
+          {(selectedProductApproved1 && selectedProductApproved1.order_exchange_pickup === 'รีวิวทรัพยากรเรียบร้อย' && selectedProductApproved1.customer_status_exchange !== 'รีวิวผู้ใช้เรียบร้อย') && (
+            <DialogActions sx={{ justifyContent: 'center' }}>
+              <Button onClick={() => handleClicktoReview1(selectedProductApproved1.exchange_id)}>รีวิวผู้ใช้ที่ได้นำทรัพยากรมาแลกเปลี่ยนในธนาคารของคุณ</Button>
+            </DialogActions>
+          )}
+        </Dialog>
+
+        <Dialog
+          open={openOrderApproved2}
+          onClose={handleCloseApproved2}
+          scroll={scroll}
+          aria-labelledby="scroll-dialog-title"
+          aria-describedby="scroll-dialog-description"
+        >
+          <DialogTitle id="scroll-dialog-title" sx={{ textAlign: "center" }}>คุณได้ทำรายการของธนาคาร {selectedProductApproved2 ? selectedProductApproved2.order_sale_bankname : 'N/A'} </DialogTitle>
+          <DialogContent dividers={scroll === 'paper'}>
+            <DialogContentText
+              id="scroll-dialog-description"
+              ref={descriptionElementRefApproved2}
+              tabIndex={-1}
+            >
+              {selectedProductApproved2 ? (
+                <>
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <Card sx={{ maxWidth: 345, m: 1 }} >
+                      <CardMedia
+                        component="img"
+                        height="300"
+                        image={`http://localhost:5000/image/${selectedProductApproved2.product_image}`}
+                        title="รูปภาพทรัพยากร"
+                      />
+                    </Card>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+
+                    <div style={{ marginTop: 50 }}>
+                      <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
+                      <TextField disabled id="outlined-disabled" label={selectedProductApproved2.product_name} variant="outlined" sx={{ width: '50ch' }} />
+                    </div>
+
+                    <div style={{ marginTop: 20 }}>
+                      <Box
+                        component="form"
+                        sx={{
+                          '& .MuiTextField-root': { m: 1, width: '25ch' },
+                        }}
+                        noValidate
+                        autoComplete="off"
+                      ></Box>
+                      <FormLabel component="legend" style={{ color: 'black' }}>ประเภททรัพยากรทางการเกษตร:</FormLabel>
+                      <TextField disabled id="outlined-disabled" label={selectedProductApproved2.product_type4} variant="outlined" sx={{ width: '50ch' }} />
+
+                    </div>
+                    <div style={{ marginTop: 30 }}>
+                      <FormLabel component="legend" style={{ color: 'black' }}>สถานะการทำรายการ : </FormLabel>
+                      <TextField disabled id="outlined-disabled" label={`${selectedProductApproved2.order_sale}`} variant="outlined" sx={{ width: '50ch' }} />
+                    </div>
+                    <div style={{ marginTop: 30 }}>
+                      <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากรที่ต้องการทำรายการ : </FormLabel>
+                      <TextField disabled id="outlined-disabled" label={`${selectedProductApproved2.order_product_quantity} ${selectedProductApproved2.order_product_unit}`} variant="outlined" sx={{ width: '50ch' }} />
+                    </div>
+                    <div >
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DemoContainer
+                          components={[
+                            'DatePicker',
+                          ]}
+                          sx={{ width: '50ch', marginTop: 3 }}
+                        >
+                          <DemoItem label={<Label componentName="วันที่จะมารับทรัพยากร" valueType="date" />} >
+                            <DatePicker
+                              disabled
+                              value={orderSale_borrowDate}
+                              renderInput={(params) => <TextField {...params} variant="outlined" />}
+                            />
+                          </DemoItem>
+                        </DemoContainer>
+                      </LocalizationProvider>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <p>Details not found.</p>
+              )}
+            </DialogContentText>
+          </DialogContent>
+          {(selectedProductApproved2 && selectedProductApproved2.order_sale_pickup === 'รีวิวทรัพยากรเรียบร้อย' && selectedProductApproved2.customer_status_sale !== 'รีวิวผู้ใช้เรียบร้อย') && (
+            <DialogActions sx={{ justifyContent: 'center' }}>
+              <Button onClick={() => handleClicktoReview2(selectedProductApproved2.order_sale_id)}>รีวิวผู้ใช้ที่ซื้อทรัพยากรในธนาคารของคุณ</Button>
+            </DialogActions>
+          )}
         </Dialog>
 
 

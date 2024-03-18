@@ -45,6 +45,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Typography from '@mui/material/Typography';
 import Drawer from '@mui/material/Drawer';
+import Swal from 'sweetalert2';
 
 const ProSpan = styled('span')({
     display: 'inline-block',
@@ -147,31 +148,55 @@ function Changepage() {
     }
 
     const handleNextbankuser = () => {
-        Axios.post('http://localhost:5000/order_exchangeRequest', {
-            orderExchange_id: id,
-            bank_name: bank_name,
-            userbank_email: username,
-            orderExchange_quantity: inputQuantity,
-            orderExchange_borrowDate: borrowDate,
-        })
-            .then((response) => {
-                console.log(response.data);
-                ReactSession.set('bank_name', bank_name);
-                ReactSession.set('id', id);
-                ReactSession.set('bank_codename', filteredProducts.bank_codename);
-                ReactSession.set('username', username);
-                navigate("/borroww");
-            })
-            .catch((error) => {
-                if (error.response) {
-                    console.error("Server Error:", error.response.data);
-                } else if (error.request) {
-                    console.error("No Response from Server");
-                } else {
-                    console.error("Error:", error.message);
-                }
+        if (!inputQuantity || !borrowDate) {
+            Swal.fire({
+                icon: 'error',
+                title: 'ข้อมูลไม่ครบถ้วน',
+                text: 'กรุณากรอกข้อมูลให้ครบทุกช่อง',
             });
-       
+            return;
+        }
+        Swal.fire({
+            icon: 'warning',
+            title: 'คุณแน่ใจหรือไม่?',
+            text: 'คุณต้องการส่งข้อมูลไปให้ทางธนาคารหรือไม่?',
+            showCancelButton: true,
+            confirmButtonText: 'ใช่, ฉันต้องการส่งข้อมูล',
+            cancelButtonText: 'ยกเลิก',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // ถ้ายืนยัน
+                Axios.post('http://localhost:5000/order_exchangeRequest', {
+                    orderExchange_id: id,
+                    bank_name: bank_name,
+                    userbank_email: username,
+                    orderExchange_quantity: inputQuantity,
+                    orderExchange_borrowDate: borrowDate,
+                })
+                    .then((response) => {
+                        console.log(response.data);
+                        ReactSession.set('bank_name', bank_name);
+                        ReactSession.set('id', id);
+                        ReactSession.set('bank_codename', filteredProducts.bank_codename);
+                        ReactSession.set('username', username);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'ส่งข้อมูลสำเร็จ',
+                            text: 'รอทางธนาคารตรวจสอบข้อมูล',
+                        }).then(() => {
+                            navigate("/borroww");
+                        });
+                    })
+                    .catch((error) => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'เกิดข้อผิดพลาด',
+                            text: 'ไม่สามารถส่งข้อมูลไปยังธนาคารได้ โปรดลองอีกครั้งในภายหลัง',
+                        });
+                        console.error("Error:", error.message);
+                    });
+            }
+        });
     }
 
     return (
@@ -309,7 +334,7 @@ function Changepage() {
                             <TextField disabled id="outlined-disabled" label={filteredProducts.product_name} variant="outlined" sx={{ width: '50ch' }} />
                         </div>
 
-                        <FormControl sx={{ marginTop: 5 ,width: '50ch' }} component="fieldset" variant="standard">
+                        <FormControl sx={{ marginTop: 5, width: '50ch' }} component="fieldset" variant="standard">
                             <FormLabel component="legend" style={{ color: "black" }}>
                                 ประเภทบริการ :
                             </FormLabel>
@@ -359,20 +384,20 @@ function Changepage() {
 
                         <div style={{ marginTop: 30 }}>
                             <FormLabel component="legend" style={{ color: 'red' }}>จำนวนทรัพยากร : {filteredProducts.product_quantity} {filteredProducts.product_unit}</FormLabel>
-                            <TextField 
-                            id="outlined-disabled" 
-                            label="ใส่จำนวนที่ต้องการ" 
-                            variant="outlined" 
-                            value={inputQuantity}
-                            onChange={handleChange}
-                            sx={{ width: '50ch' }} 
-                            InputProps={{
+                            <TextField
+                                id="outlined-disabled"
+                                label="ใส่จำนวนที่ต้องการ"
+                                variant="outlined"
+                                value={inputQuantity}
+                                onChange={handleChange}
+                                sx={{ width: '50ch' }}
+                                InputProps={{
                                     endAdornment: (
                                         <InputAdornment position="end">
                                             {filteredProducts.product_unit}
                                         </InputAdornment>
                                     ),
-                                }}/>
+                                }} />
                         </div>
 
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -380,13 +405,13 @@ function Changepage() {
                                 components={[
                                     'DatePicker',
                                 ]}
-                                sx={{ width: '50ch',marginTop: 3 }} 
+                                sx={{ width: '50ch', marginTop: 3 }}
                             >
                                 <DemoItem label={<Label componentName="วันที่จะนำของมาแลกเปลี่ยน" valueType="date" />} >
-                                    <DatePicker 
-                                     value={borrowDate}
-                                     onChange={handleBorrowDateChange}
-                                     renderInput={(params) => <TextField {...params} />}
+                                    <DatePicker
+                                        value={borrowDate}
+                                        onChange={handleBorrowDateChange}
+                                        renderInput={(params) => <TextField {...params} />}
                                     />
                                 </DemoItem>
                             </DemoContainer>

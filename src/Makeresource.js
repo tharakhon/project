@@ -13,6 +13,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Axios from 'axios';
 import { ReactSession } from 'react-client-session';
 import Select from '@mui/material/Select';
+import Swal from 'sweetalert2';
 const currencies = [
   "ทรัพยากรทางการเกษตรใช้แล้วหมด เช่น ปุ๋ย ดิน",
   "อุปกรณ์หรือเครื่องมือทางการเกษตรขนาดเล็ก",
@@ -86,33 +87,66 @@ function Resource() {
   };
 
   const handleAddData = () => {
-    const formData = new FormData()
-    formData.append("bank_codename", codename);
-    formData.append("product_name", nameProduct);
-    formData.append("product_image", image);
-    formData.append('product_type', resourceForRent);
-    formData.append("product_type2", resourceForSale);
-    formData.append("product_type3", resourceForExchange);
-    formData.append("product_type4", selectedCurrency);
-    formData.append('product_quantity', amount);
-    formData.append('product_unit', selectedUnit);
-    formData.append('product_details', additionalDetails);
-    formData.append('product_price', resourcePrice)
+    if (!nameProduct || !image || (!resourceForRent && !resourceForSale && !resourceForExchange) || !selectedCurrency || !amount || !selectedUnit || !additionalDetails || (resourceForSale && !resourcePrice)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'ข้อมูลไม่ครบถ้วน',
+        text: 'กรุณากรอกข้อมูลให้ครบทุกช่อง',
+      });
+      return;
+    }
 
-    Axios.post('http://localhost:5000/bank_product', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
-      .then((response) => {
-        console.log(response.data);
-        setIsDataSaved(true);
-        if (response.data.Status === 'Success') {
-          console.log("File Successfully Uploaded");
-          alert('บันทึกข้อมูลสำเร็จ')
-        } else {
-          console.error("Error");
-        }
-      })
-      .catch(er => console.log(er))
+    // ถามให้แน่ใจก่อนจะดำเนินการต่อ
+    Swal.fire({
+      icon: 'warning',
+      title: 'คุณแน่ใจหรือไม่?',
+      text: 'คุณต้องการเพิ่มข้อมูลสินค้าใช่หรือไม่?',
+      showCancelButton: true,
+      confirmButtonText: 'ใช่, ฉันต้องการเพิ่มข้อมูล',
+      cancelButtonText: 'ยกเลิก',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // ถ้ายืนยัน
+        const formData = new FormData();
+        formData.append("bank_codename", codename);
+        formData.append("product_name", nameProduct);
+        formData.append("product_image", image);
+        formData.append('product_type', resourceForRent);
+        formData.append("product_type2", resourceForSale);
+        formData.append("product_type3", resourceForExchange);
+        formData.append("product_type4", selectedCurrency);
+        formData.append('product_quantity', amount);
+        formData.append('product_unit', selectedUnit);
+        formData.append('product_details', additionalDetails);
+        formData.append('product_price', resourcePrice);
+
+        Axios.post('http://localhost:5000/bank_product', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+          .then((response) => {
+            console.log(response.data);
+            setIsDataSaved(true);
+            if (response.data.Status === 'Success') {
+              console.log("File Successfully Uploaded");
+              Swal.fire({
+                icon: 'success',
+                title: 'บันทึกข้อมูลสำเร็จ',
+                text: 'ไฟล์ถูกอัปโหลดเรียบร้อย',
+              });
+            } else {
+              console.error("Error");
+            }
+          })
+          .catch((error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              text: 'ไม่สามารถบันทึกข้อมูลได้ โปรดลองอีกครั้งในภายหลัง',
+            });
+            console.error("Error:", error.message);
+          });
+      }
+    });
   }
 
   const handleImageChange = (event) => {
@@ -129,18 +163,34 @@ function Resource() {
     navigate(-1);
   };
   const handleReture = () => {
-    setNameProduct("");
-    setImage(null);
-    setImagePreview(null);
-    setSelectedResources([]);
-    setSelectedCurrency("");
-    setAmount("");
-    setAdditionalDetails("");
-    setResourcePrice("");
-    setResourceForRent("");
-    setResourceForSale("");
-    setResourceForExchange("");
-    setSelectedUnit("กรัม");
+    Swal.fire({
+      icon: 'warning',
+      title: 'คุณแน่ใจหรือไม่?',
+      text: 'คุณต้องการลบข้อมูลทั้งหมดหรือไม่?',
+      showCancelButton: true,
+      confirmButtonText: 'ใช่, ลบข้อมูล',
+      cancelButtonText: 'ยกเลิก',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setNameProduct("");
+        setImage(null);
+        setImagePreview(null);
+        setSelectedResources([]);
+        setSelectedCurrency("");
+        setAmount("");
+        setAdditionalDetails("");
+        setResourcePrice("");
+        setResourceForRent("");
+        setResourceForSale("");
+        setResourceForExchange("");
+        setSelectedUnit("กรัม");
+        Swal.fire({
+          icon: 'success',
+          title: 'ลบข้อมูลสำเร็จ',
+          text: 'ข้อมูลถูกลบเรียบร้อย'
+        });
+      }
+    });
   };
 
   const handleRemoveImage = () => {

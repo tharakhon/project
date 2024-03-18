@@ -47,6 +47,7 @@ import Typography from '@mui/material/Typography';
 import Drawer from '@mui/material/Drawer';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
+import Swal from 'sweetalert2';
 const drawerWidth = 240;
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -165,31 +166,54 @@ function OrderBankUsers() {
     }
 
     const handleNext = () => {
-        Axios.post('http://localhost:5000/order_request', {
-            order_id: id,
-            bank_name: bank_name,
-            userbank_email: username,
-            order_quantity: inputQuantity,
-            order_borrowDate: borrowDate,
-            order_returnDate:returnDate,
-
-            // ... other data
-        })
-            .then((response) => {
-                console.log(response.data);
-                ReactSession.set('username', username)
-                alert("ส่งข้อมูลไปให้ทางธนาคารเรียบร้อยแล้วรอทางธนาคารตรวจสอบข้อมูล")
-                navigate("/bankuser");
-            })
-            .catch((error) => {
-                if (error.response) {
-                    console.error("Server Error:", error.response.data);
-                } else if (error.request) {
-                    console.error("No Response from Server");
-                } else {
-                    console.error("Error:", error.message);
-                }
+        if (!inputQuantity || !borrowDate || !returnDate) {
+            Swal.fire({
+                icon: 'error',
+                title: 'ข้อมูลไม่ครบถ้วน',
+                text: 'กรุณากรอกข้อมูลให้ครบทุกช่อง',
             });
+            return;
+        }
+        Swal.fire({
+            icon: 'warning',
+            title: 'คุณแน่ใจหรือไม่?',
+            text: 'คุณต้องการส่งข้อมูลไปให้ทางธนาคารหรือไม่?',
+            showCancelButton: true,
+            confirmButtonText: 'ใช่, ฉันต้องการส่งข้อมูล',
+            cancelButtonText: 'ยกเลิก',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // ถ้ายืนยัน
+                Axios.post('http://localhost:5000/order_request', {
+                    order_id: id,
+                    bank_name: bank_name,
+                    userbank_email: username,
+                    order_quantity: inputQuantity,
+                    order_borrowDate: borrowDate,
+                    order_returnDate: returnDate,
+                    // ... other data
+                })
+                    .then((response) => {
+                        console.log(response.data);
+                        ReactSession.set('username', username);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'ส่งข้อมูลสำเร็จ',
+                            text: 'รอทางธนาคารตรวจสอบข้อมูล',
+                        }).then(() => {
+                            navigate("/bankuser");
+                        });
+                    })
+                    .catch((error) => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'เกิดข้อผิดพลาด',
+                            text: 'ไม่สามารถส่งข้อมูลไปยังธนาคารได้ โปรดลองอีกครั้งในภายหลัง',
+                        });
+                        console.error("Error:", error.message);
+                    });
+            }
+        });
 
     }
     useEffect(() => {

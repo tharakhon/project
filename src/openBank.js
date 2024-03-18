@@ -40,6 +40,8 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ReviewsIcon from '@mui/icons-material/Reviews';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import { Autocomplete, FormHelperText, InputAdornment, MenuItem, OutlinedInput } from "@mui/material";
+import Swal from 'sweetalert2';
+
 const drawerWidth = 240;
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -97,20 +99,41 @@ function OpenBank() {
 
     }, []);
     const handleUpdate = () => {
-        Axios.put(`http://localhost:5000/updateProduct/${id}` , {
-            ...editedData,
-            product_type: editedData.product_type ? 'ทรัพยากรเพื่อเช่าหรือยืม' : '',
-            product_type2: editedData.product_type2 ? 'ทรัพยากรเพื่อการซื้อขาย' : '',
-            product_type3: editedData.product_type3 ? 'ทรัพยากรเพื่อแลกเปลี่ยน' : '',
-        })
-            .then((response) => {
-                console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
-                setFilteredProducts(response.data);
-                navigate("/bank");
-            })
-            .catch((error) => {
-                console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
-            });
+        Swal.fire({
+            icon: 'warning',
+            title: 'คุณแน่ใจหรือไม่?',
+            text: 'คุณต้องการอัปเดตข้อมูลหรือไม่?',
+            showCancelButton: true,
+            confirmButtonText: 'ใช่, อัปเดตข้อมูล',
+            cancelButtonText: 'ยกเลิก',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Axios.put(`http://localhost:5000/updateProduct/${id}`, {
+                    ...editedData,
+                    product_type: editedData.product_type ? 'ทรัพยากรเพื่อเช่าหรือยืม' : '',
+                    product_type2: editedData.product_type2 ? 'ทรัพยากรเพื่อการซื้อขาย' : '',
+                    product_type3: editedData.product_type3 ? 'ทรัพยากรเพื่อแลกเปลี่ยน' : '',
+                })
+                    .then((response) => {
+                        console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
+                        setFilteredProducts(response.data);
+                        navigate("/bank");
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'อัปเดตข้อมูลสำเร็จ',
+                            text: 'ข้อมูลถูกอัปเดตเรียบร้อย'
+                        });
+                    })
+                    .catch((error) => {
+                        console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'เกิดข้อผิดพลาด',
+                            text: 'ไม่สามารถอัปเดตข้อมูลได้ โปรดลองอีกครั้งในภายหลัง'
+                        });
+                    });
+            }
+        });
     };
 
     const handleBackbank = () => {
@@ -312,7 +335,7 @@ function OpenBank() {
                                 sx={{ width: '48ch' }}
                                 onChange={(e) => setEditedData({ ...editedData, product_quantity: e.target.value })}
                             />
-                           
+
                         </div>
 
                         <div style={{ marginTop: 30 }}>

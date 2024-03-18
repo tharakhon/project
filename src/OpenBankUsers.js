@@ -39,6 +39,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ReviewsIcon from '@mui/icons-material/Reviews';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import Swal from 'sweetalert2';
 const drawerWidth = 240;
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -109,16 +110,26 @@ function OpenBankUsers() {
             // ... other data
         })
             .then((response) => {
-                console.log(response.data);
-                alert("สมัครเป็นสมาชิกเสร็จสิ้น")
-                // Redirect to the bank page on successful registration
-
+                Swal.fire({
+                    icon: 'success',
+                    title: 'สมัครสมาชิกเสร็จสิ้น',
+                    text: 'คุณได้เป็นสมาชิกของธนาคารเรียบร้อยแล้ว',
+                    confirmButtonText: 'OK',
+                })
             })
             .catch((error) => {
                 if (error.response) {
                     // The request was made and the server responded with a status code
                     // that falls out of the range of 2xx
                     console.error("Server Error:", error.response.data);
+                    if (error.response.data === "User is not a member of the bank") {
+                        // Show SweetAlert when the user is not a member of the bank
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'ยังไม่ได้เป็นสมาชิก',
+                            text: 'กรุณาสมัครสมาชิกก่อนทำรายการ',
+                        });
+                    }
                 } else if (error.request) {
                     // The request was made but no response was received
                     console.error("No Response from Server");
@@ -158,7 +169,11 @@ function OpenBankUsers() {
 
             // If no match is found after the loop, show an alert
             if (!isBankMember) {
-                alert("คุณไม่ได้เป็นสมาชิกของธนาคาร");
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'ยังไม่ได้เป็นสมาชิก',
+                    text: 'กรุณาสมัครสมาชิกก่อนทำรายการ',
+                });
 
             }
         } catch (error) {
@@ -195,7 +210,11 @@ function OpenBankUsers() {
 
             // If no match is found after the loop, show an alert
             if (!isBankMember) {
-                alert("คุณไม่ได้เป็นสมาชิกของธนาคาร");
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'ยังไม่ได้เป็นสมาชิก',
+                    text: 'กรุณาสมัครสมาชิกก่อนทำรายการ',
+                });
             }
         } catch (error) {
             console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
@@ -232,7 +251,11 @@ function OpenBankUsers() {
 
             // If no match is found after the loop, show an alert
             if (!isBankMember) {
-                alert("คุณไม่ได้เป็นสมาชิกของธนาคาร");
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'ยังไม่ได้เป็นสมาชิก',
+                    text: 'กรุณาสมัครสมาชิกก่อนทำรายการ',
+                });
 
             }
         } catch (error) {
@@ -384,7 +407,7 @@ function OpenBankUsers() {
                             <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
                             <TextField disabled id="outlined-disabled" label={filteredProducts.product_name} variant="outlined" sx={{ width: '50ch' }} />
                         </div>
-                        <FormControl sx={{ marginTop: 5,width: '50ch'  }} component="fieldset" variant="standard">
+                        <FormControl sx={{ marginTop: 5, width: '50ch' }} component="fieldset" variant="standard">
                             <FormLabel component="legend" style={{ color: "black" }}>
                                 ประเภทบริการ :
                             </FormLabel>

@@ -43,6 +43,7 @@ import Drawer from '@mui/material/Drawer';
 import { ReactSession } from 'react-client-session';
 import Axios from 'axios';
 import Select from '@mui/material/Select';
+import Swal from 'sweetalert2';
 const drawerWidth = 240;
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -191,29 +192,63 @@ function Borroww() {
   };
 
   const handleAddData = () => {
-    const formData = new FormData()
-    formData.append("orderExchange_id", id);
-    formData.append("bank_codename", bank_codename);
-    formData.append("bank_name", bank_name);
-    formData.append("userbank_email", username);
-    formData.append('userbank_productname', profile);
-    formData.append("userbank_productimage", image);
-    formData.append("userbank_producttype1", selectedCurrency.label);
-    formData.append("userbank_productquantity", quantity);
-    formData.append('userbank_unit', selectedUnit);
-    formData.append('userbank_productdetails', additionalDetails);
-    Axios.post('http://localhost:5000/userbank_exchange', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
-      .then((response) => {
-        console.log(response.data);
-        setIsDataSaved(true);
-        if (response.data.Status === 'Success') {
-          console.log("File Successfully Uploaded");
-        } else {
-          console.error("Error");
-        }
-      })
+    
+    if (!profile || !image || !selectedCurrency || !quantity || !selectedUnit || !additionalDetails) {
+      Swal.fire({
+          icon: 'error',
+          title: 'ข้อมูลไม่ครบถ้วน',
+          text: 'กรุณากรอกข้อมูลให้ครบทุกช่อง',
+      });
+      return;
+  }
+  Swal.fire({
+      icon: 'warning',
+      title: 'คุณแน่ใจหรือไม่?',
+      text: 'คุณต้องการเพิ่มข้อมูลใช่หรือไม่?',
+      showCancelButton: true,
+      confirmButtonText: 'ใช่, ฉันต้องการเพิ่มข้อมูล',
+      cancelButtonText: 'ยกเลิก',
+  }).then((result) => {
+      if (result.isConfirmed) {
+          // ถ้ายืนยัน
+          const formData = new FormData();
+          formData.append("orderExchange_id", id);
+          formData.append("bank_codename", bank_codename);
+          formData.append("bank_name", bank_name);
+          formData.append("userbank_email", username);
+          formData.append('userbank_productname', profile);
+          formData.append("userbank_productimage", image);
+          formData.append("userbank_producttype1", selectedCurrency.label);
+          formData.append("userbank_productquantity", quantity);
+          formData.append('userbank_unit', selectedUnit);
+          formData.append('userbank_productdetails', additionalDetails);
+          
+          Axios.post('http://localhost:5000/userbank_exchange', formData, {
+              headers: { 'Content-Type': 'multipart/form-data' },
+          })
+          .then((response) => {
+              console.log(response.data);
+              setIsDataSaved(true);
+              if (response.data.Status === 'Success') {
+                  Swal.fire({
+                      icon: 'success',
+                      title: 'เพิ่มข้อมูลสำเร็จ',
+                      text: 'ไฟล์ถูกอัปโหลดเรียบร้อย',
+                  });
+              } else {
+                  console.error("Error");
+              }
+          })
+          .catch((error) => {
+              Swal.fire({
+                  icon: 'error',
+                  title: 'เกิดข้อผิดพลาด',
+                  text: 'ไม่สามารถเพิ่มข้อมูลได้ โปรดลองอีกครั้งในภายหลัง',
+              });
+              console.error("Error:", error.message);
+          });
+      }
+  });
   }
   return (
     <div>

@@ -13,6 +13,7 @@ import Ribbon2 from "../src/image/ribbon2.png";
 import Ribbon3 from "../src/image/ribbon3.png";
 import Ribbon4 from "../src/image/ribbon4.png";
 import { ReactSession } from 'react-client-session';
+import Swal from 'sweetalert2';
 
 function RegisterBank() {
   const username = ReactSession.get("username");
@@ -88,32 +89,67 @@ function RegisterBank() {
       });
   }, []);
   const handleSubmit = () => {
-    const formData = new FormData()
-    formData.append("bank_codename", codename);
-    formData.append("bank_email", username);
-    formData.append("bank_telephone", tel);
-    formData.append('bank_address', address);
-    formData.append("bank_name", profile);
-    formData.append("bank_latitude", currentPosition.lat);
-    formData.append("bank_longitude", currentPosition.lon);
-    formData.append('bank_image', image);
-    formData.append('bank_bronze', medals.bronze);
-    formData.append('bank_silver', medals.silver);
-    formData.append('bank_gold', medals.gold);
-    formData.append('bank_platinum', medals.phat)
-    Axios.post('http://localhost:5000/bank_create', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
-      .then((response) => {
-        console.log(response.data);
-        setIsDataSaved(true);
-        if (response.data.Status === 'Success') {
-          console.log("File Successfully Uploaded");
-        } else {
-          console.error("Error");
-        }
-      })
-      .catch(er => console.log(er))
+    // เช็คว่าข้อมูลครบถ้วนหรือไม่
+    if (!codename || !username || !tel || !address || !profile || !currentPosition || !image || !medals) {
+      Swal.fire({
+        icon: 'error',
+        title: 'ข้อมูลไม่ครบถ้วน',
+        text: 'กรุณากรอกข้อมูลให้ครบทุกช่อง',
+      });
+      return;
+    }
+
+    // ถามให้แน่ใจก่อนจะดำเนินการต่อ
+    Swal.fire({
+      icon: 'warning',
+      title: 'คุณแน่ใจหรือไม่?',
+      text: 'คุณต้องการสร้างบัญชีธนาคารหรือไม่?',
+      showCancelButton: true,
+      confirmButtonText: 'ใช่, ฉันต้องการสร้างบัญชีธนาคาร',
+      cancelButtonText: 'ยกเลิก',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // ถ้ายืนยัน
+        const formData = new FormData();
+        formData.append("bank_codename", codename);
+        formData.append("bank_email", username);
+        formData.append("bank_telephone", tel);
+        formData.append('bank_address', address);
+        formData.append("bank_name", profile);
+        formData.append("bank_latitude", currentPosition.lat);
+        formData.append("bank_longitude", currentPosition.lon);
+        formData.append('bank_image', image);
+        formData.append('bank_bronze', medals.bronze);
+        formData.append('bank_silver', medals.silver);
+        formData.append('bank_gold', medals.gold);
+        formData.append('bank_platinum', medals.phat);
+
+        Axios.post('http://localhost:5000/bank_create', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+          .then((response) => {
+            console.log(response.data);
+            setIsDataSaved(true);
+            if (response.data.Status === 'Success') {
+              Swal.fire({
+                icon: 'success',
+                title: 'สร้างบัญชีธนาคารสำเร็จ',
+                text: 'ไฟล์ถูกอัปโหลดเรียบร้อย',
+              });
+            } else {
+              console.error("Error");
+            }
+          })
+          .catch((error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              text: 'ไม่สามารถสร้างบัญชีธนาคารได้ โปรดลองอีกครั้งในภายหลัง',
+            });
+            console.error("Error:", error.message);
+          });
+      }
+    });
   }
   const handleBack = () => {
     navigate('/main');
