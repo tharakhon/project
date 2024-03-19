@@ -71,6 +71,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import Stack from '@mui/material/Stack';
 import Swal from 'sweetalert2';
+import swal from 'sweetalert'; 
 
 const setting2 = ['Profile', 'Logout'];
 const settings = ['เรียงด้วยแรงค์', 'เรียงด้วยระยะทาง', 'เรียงด้วยเรตติ้ง'];
@@ -225,6 +226,7 @@ function Main12() {
   const [selectedProductReview, setSelectedProductReview] = useState(null);
   const [openOrderReview, setOpenOrderReview] = React.useState(false);
   const [bankExists, setBankExists] = useState(false);
+  const [updated, setUpdated] = useState(false);
   console.log("selectedProductApproved", selectedProductApproved)
 
   const descriptionElementRefReview = React.useRef(null);
@@ -661,7 +663,7 @@ function Main12() {
     Axios.get(`http://localhost:5000/showcodename/${username}`)
       .then((response) => {
         console.log("ข้อมูลที่ได้รับ:showcodename", response.data[0]);
-       
+
         if (response.data[0]) {
           setCodeName(response.data[0]);
           setBankExists(true); // ถ้ามีธนาคารอยู่แล้วให้เซ็ตค่าเป็น true
@@ -700,6 +702,7 @@ function Main12() {
           order_date: dayjs(item.order_date),
           order_rental_pickup: item.order_rental_pickup ?? "",
           customer_status: item.customer_status,
+          order_status_getproduct: item.order_status_getproduct
 
         }));
 
@@ -740,7 +743,7 @@ function Main12() {
           exchange_date: dayjs(item.exchange_date),
           order_exchange_pickup: item.order_exchange_pickup ?? "",
           customer_status_exchange: item.customer_status_exchange,
-
+          userbank_status_getproduct: item.userbank_status_getproduct
         }));
         const sortedProduct = fetchedProduct.sort((a, b) => b.exchange_date - a.exchange_date);
         setFilteredProductInbox(sortedProduct);
@@ -776,6 +779,7 @@ function Main12() {
           order_product_datetime: dayjs(item.order_product_datetime),
           order_sale_pickup: item.order_sale_pickup ?? "",
           customer_status_sale: item.customer_status_sale,
+          order_product_getproduct: item.order_product_getproduct
 
         }));
         const sortedProductInbox1 = fetchedProduct.sort((a, b) => b.order_product_datetime - a.order_product_datetime);
@@ -819,6 +823,22 @@ function Main12() {
         console.error("เกิดข้อผิดพลาดในการดึงข้อมูล Bookmark:", error);
       });
   }, [username]);
+
+  useEffect(() => {
+    Axios.get(`http://localhost:5000/checkAndUpdateRank/${username}`)
+      .then((response) => {
+        console.log('checkAndUpdateRank', response.data);
+        if (response.data && response.data.newRankId && response.data.newRankId !== 1) {
+          const rankText = response.data.newRankId === 2 ? "Silver" : response.data.newRankId === 3 ? "Gold" : "Platinum";
+          const bankName = response.data.bankName;
+          Swal.fire("Rank Updated!", `Your new rank is ${rankText} at ${bankName}!`, "success");
+        }
+        
+      })
+      .catch((error) => {
+        console.error('Error occurred while checking and updating rank:', error);
+      });
+  }, []);
 
   const handleClicktoReview = (product_id) => {
     ReactSession.set("product_id", product_id);
@@ -870,11 +890,11 @@ function Main12() {
         if (Array.isArray(response.data)) {
           setReviews(response.data); // เซ็ตข้อมูลรีวิวที่ได้รับเข้าสู่ state reviews
         } else {
-         
+
         }
       })
       .catch((error) => {
-       
+
       });
   }, []);
 
@@ -2273,7 +2293,7 @@ function Main12() {
             )}
           </DialogContentText>
         </DialogContent>
-        {(selectedProductApproved && selectedProductApproved.order_rental_pickup === 'รอการรีวิวทรัพยากร') && (
+        {(selectedProductApproved && selectedProductApproved.order_status_getproduct === 'รับทรัพยากรเรียบร้อยแล้ว' && selectedProductApproved.order_rental_pickup !== 'รีวิวทรัพยากรเรียบร้อย') && (
           <DialogActions sx={{ justifyContent: 'flex-end' }}>
             <Button onClick={() => handleClicktoReview(selectedProductApproved.order_request_id)}>แจ้งคืนทรัพยากร</Button>
           </DialogActions>
@@ -2423,7 +2443,7 @@ function Main12() {
             )}
           </DialogContentText>
         </DialogContent>
-        {(selectedProductApproved1 && selectedProductApproved1.order_exchange_pickup === 'รอการรีวิวทรัพยากร') && (
+        {(selectedProductApproved1 && selectedProductApproved1.userbank_status_getproduct === 'รับทรัพยากรเรียบร้อยแล้ว' && selectedProductApproved1.order_exchange_pickup !== 'รีวิวทรัพยากรเรียบร้อย') && (
           <DialogActions sx={{ justifyContent: 'flex-end' }}>
             <Button onClick={() => handleClicktoReview1(selectedProductApproved1.exchange_id)}>รีวิวทรัพยากรที่แลกเปลี่ยนในธนาคาร</Button>
           </DialogActions>
@@ -2509,7 +2529,7 @@ function Main12() {
             )}
           </DialogContentText>
         </DialogContent>
-        {(selectedProductApproved2 && selectedProductApproved2.order_sale_pickup === 'รอการรีวิวทรัพยากร') && (
+        {(selectedProductApproved2 && selectedProductApproved2.order_product_getproduct === 'รับทรัพยากรเรียบร้อยแล้ว' && selectedProductApproved2.order_sale_pickup !== 'รีวิวทรัพยากรเรียบร้อย') && (
           <DialogActions sx={{ justifyContent: 'flex-end' }}>
             <Button onClick={() => handleClicktoReview2(selectedProductApproved2.order_sale_id)}>รีวิวทรัพยากรที่ซื้อในธนาคาร</Button>
           </DialogActions>

@@ -499,7 +499,7 @@ export default function Bank() {
         })
           .then((response) => {
             console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
-            setFilteredProducts((prevProducts) => {
+            setFilteredProductInbox((prevProducts) => {
               return prevProducts.map((item) =>
                 item.exchange_id === selectedProducts.exchange_id ? response.data : item
               );
@@ -543,9 +543,144 @@ export default function Bank() {
         })
           .then((response) => {
             console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
-            setFilteredProducts((prevProducts) => {
+            setFilteredProductInbox1((prevProducts) => {
               return prevProducts.map((item) =>
                 item.order_sale_id === selectedProductss.order_sale_id ? response.data : item
+              );
+            });
+            Swal.fire({
+              icon: 'success',
+              title: 'อัปเดตสถานะสำเร็จ',
+              text: `สถานะได้ถูกอัปเดตเป็น "${status}" เรียบร้อยแล้ว`
+            });
+          })
+          .catch((error) => {
+            console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
+            Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              text: 'ไม่สามารถอัปเดตสถานะได้ โปรดลองอีกครั้งในภายหลัง'
+            });
+          });
+      }
+    });
+
+  };
+
+  const handleClicktoUpdateGetProduct = (status) => {
+    if (!selectedProductApproved) {
+      console.error("Selected product not found");
+      return;
+    }
+
+    handleCloseApproved();
+
+    Swal.fire({
+      icon: 'warning',
+      title: 'คุณแน่ใจหรือไม่?',
+      text: `คุณต้องการอัปเดตสถานะเป็น "${status}" หรือไม่?`,
+      showCancelButton: true,
+      confirmButtonText: 'ใช่, อัปเดตสถานะ',
+      cancelButtonText: 'ยกเลิก',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Axios.put(`http://localhost:5000/updateStatusGetproduct/${selectedProductApproved.order_request_id}`, {
+          order_status_getproduct: status,
+        })
+          .then((response) => {
+            console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
+            setFilteredProducts((prevProducts) => {
+              return prevProducts.map((item) =>
+                item.order_request_id === selectedProductApproved.order_request_id ? response.data : item
+              );
+            });
+            Swal.fire({
+              icon: 'success',
+              title: 'อัปเดตสถานะสำเร็จ',
+              text: `สถานะได้ถูกอัปเดตเป็น "${status}" เรียบร้อยแล้ว`
+            });
+          })
+          .catch((error) => {
+            console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
+            Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              text: 'ไม่สามารถอัปเดตสถานะได้ โปรดลองอีกครั้งในภายหลัง'
+            });
+          });
+      }
+    });
+
+  };
+
+  const handleClicktoUpdateGetProduct1 = (status) => {
+    if (!selectedProductApproved1) {
+      console.error("Selected product not found");
+      return;
+    }
+    handleCloseApproved1();
+
+    Swal.fire({
+      icon: 'warning',
+      title: 'คุณแน่ใจหรือไม่?',
+      text: `คุณต้องการอัปเดตสถานะเป็น "${status}" หรือไม่?`,
+      showCancelButton: true,
+      confirmButtonText: 'ใช่, อัปเดตสถานะ',
+      cancelButtonText: 'ยกเลิก',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Axios.put(`http://localhost:5000/updateStatusGetproduct1/${selectedProductApproved1.exchange_id}`, {
+          userbank_status_getproduct: status,
+        })
+          .then((response) => {
+            console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
+            setFilteredProductInbox((prevProducts) => {
+              return prevProducts.map((item) =>
+                item.exchange_id === selectedProductApproved1.exchange_id ? response.data : item
+              );
+            });
+            Swal.fire({
+              icon: 'success',
+              title: 'อัปเดตสถานะสำเร็จ',
+              text: `สถานะได้ถูกอัปเดตเป็น "${status}" เรียบร้อยแล้ว`
+            });
+          })
+          .catch((error) => {
+            console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
+            Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              text: 'ไม่สามารถอัปเดตสถานะได้ โปรดลองอีกครั้งในภายหลัง'
+            });
+          });
+      }
+    });
+  };
+
+  const handleClicktoUpdateGetProduct2 = (status) => {
+    if (!selectedProductApproved2) {
+      console.error("Selected product not found");
+      return;
+    }
+    handleCloseApproved2();
+
+    Swal.fire({
+      icon: 'warning',
+      title: 'คุณแน่ใจหรือไม่?',
+      text: `คุณต้องการอัปเดตสถานะเป็น "${status}" หรือไม่?`,
+      showCancelButton: true,
+      confirmButtonText: 'ใช่, อัปเดตสถานะ',
+      cancelButtonText: 'ยกเลิก',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Axios.put(`http://localhost:5000/updateStatusGetproduct2/${selectedProductApproved2.order_sale_id}`, {
+          order_product_getproduct : status,
+        })
+          .then((response) => {
+            console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
+            setFilteredProductInbox1((prevProducts) => {
+              return prevProducts.map((item) =>
+                item.order_sale_id === selectedProductApproved2.order_sale_id ? response.data : item
               );
             });
             Swal.fire({
@@ -594,7 +729,8 @@ export default function Bank() {
           order_rental: item.order_rental,
           order_date: dayjs(item.order_date),
           order_rental_pickup: item.order_rental_pickup,
-          customer_status: item.customer_status
+          customer_status: item.customer_status,
+          order_status_getproduct : item.order_status_getproduct
         }));
         const sortedProducts = fetchedProducts.sort((a, b) => b.order_date - a.order_date);
         setFilteredProducts(sortedProducts);
@@ -638,7 +774,8 @@ export default function Bank() {
           order_exchange: item.order_exchange,
           exchange_date: dayjs(item.exchange_date),
           order_exchange_pickup: item.order_exchange_pickup,
-          customer_status_exchange: item.customer_status_exchange
+          customer_status_exchange: item.customer_status_exchange,
+          userbank_status_getproduct : item.userbank_status_getproduct
         }));
         const sortedProduct = fetchedProduct.sort((a, b) => b.exchange_date - a.exchange_date);
         setFilteredProductInbox(sortedProduct);
@@ -672,7 +809,8 @@ export default function Bank() {
           order_sale: item.order_sale,
           order_product_datetime: dayjs(item.order_product_datetime),
           order_sale_pickup: item.order_sale_pickup,
-          customer_status_sale: item.customer_status_sale
+          customer_status_sale: item.customer_status_sale,
+          order_product_getproduct	: item.order_product_getproduct	
         }));
 
         const sortedProductInbox1 = fetchedProducts.sort((a, b) => b.order_product_datetime - a.order_product_datetime);
@@ -1615,6 +1753,12 @@ export default function Bank() {
               )}
             </DialogContentText>
           </DialogContent>
+          {(selectedProductApproved && selectedProductApproved.order_status_getproduct === 'ยังไม่ได้มารับทรัพยากร'
+          ) && (
+            <DialogActions sx={{ justifyContent: 'center' }}>
+            <Button onClick={() => handleClicktoUpdateGetProduct("รับทรัพยากรเรียบร้อยแล้ว")}>รับทรัพยากรเรียบร้อยแล้ว</Button>
+          </DialogActions>
+          )}
           {(selectedProductApproved && selectedProductApproved.order_rental_pickup === 'รีวิวทรัพยากรเรียบร้อย' && selectedProductApproved.customer_status !== 'รีวิวผู้ใช้เรียบร้อย') && (
             <DialogActions sx={{ justifyContent: 'center' }}>
               <Button onClick={() => handleClicktoReview(selectedProductApproved.order_request_id)}>รีวิวผู้ใช้ที่ได้เช่าหรือยืมทรัพยากรในธนาคารของคุณ</Button>
@@ -1765,6 +1909,12 @@ export default function Bank() {
               )}
             </DialogContentText>
           </DialogContent>
+          {(selectedProductApproved1 && selectedProductApproved1.userbank_status_getproduct === 'ยังไม่ได้มารับทรัพยากร'
+          ) && (
+            <DialogActions sx={{ justifyContent: 'center' }}>
+            <Button onClick={() => handleClicktoUpdateGetProduct1("รับทรัพยากรเรียบร้อยแล้ว")}>รับทรัพยากรเรียบร้อยแล้ว</Button>
+          </DialogActions>
+          )}
           {(selectedProductApproved1 && selectedProductApproved1.order_exchange_pickup === 'รีวิวทรัพยากรเรียบร้อย' && selectedProductApproved1.customer_status_exchange !== 'รีวิวผู้ใช้เรียบร้อย') && (
             <DialogActions sx={{ justifyContent: 'center' }}>
               <Button onClick={() => handleClicktoReview1(selectedProductApproved1.exchange_id)}>รีวิวผู้ใช้ที่ได้นำทรัพยากรมาแลกเปลี่ยนในธนาคารของคุณ</Button>
@@ -1851,6 +2001,12 @@ export default function Bank() {
               )}
             </DialogContentText>
           </DialogContent>
+          {(selectedProductApproved2 && selectedProductApproved2.order_product_getproduct === 'ยังไม่ได้มารับทรัพยากร'
+          ) && (
+            <DialogActions sx={{ justifyContent: 'center' }}>
+            <Button onClick={() => handleClicktoUpdateGetProduct2("รับทรัพยากรเรียบร้อยแล้ว")}>รับทรัพยากรเรียบร้อยแล้ว</Button>
+          </DialogActions>
+          )}
           {(selectedProductApproved2 && selectedProductApproved2.order_sale_pickup === 'รีวิวทรัพยากรเรียบร้อย' && selectedProductApproved2.customer_status_sale !== 'รีวิวผู้ใช้เรียบร้อย') && (
             <DialogActions sx={{ justifyContent: 'center' }}>
               <Button onClick={() => handleClicktoReview2(selectedProductApproved2.order_sale_id)}>รีวิวผู้ใช้ที่ซื้อทรัพยากรในธนาคารของคุณ</Button>
