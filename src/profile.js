@@ -6,27 +6,23 @@ import Button from '@mui/material/Button';
 import Axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { ReactSession } from 'react-client-session';
+import Swal from 'sweetalert2';
 
 function Profile() {
-  const username = ReactSession.get("username");
+  const username = localStorage.getItem('username');
   const [profile, setProfile] = useState();
   const [useremail, setEmail] = useState();
-  const [flag, setFlag] = useState(false);
   const [tel, setTel] = useState("");
   const navigate = useNavigate();
   const [userImage, setUserImage] = useState(null);
-  
+  const [isEdited, setIsEdited] = useState(false);
+
   useEffect(() => {
-    // แทน email ด้วยค่า email ของผู้ใช้ที่คุณต้องการดึง
-    // const userEmail = "tharakhon.r@ku.th";
-    // const userEmail = "earth0981234@gmail.com";
-    console.log(username);
     Axios.get(`http://localhost:5000/user/${username}`)
       .then((response) => {
         console.log("ข้อมูลที่ได้รับ:", response.data[0].email);
         const userData = response.data;
 
-        // กำหนดค่าให้กับ profile state
         setUserImage(response.data[0].image);
         setProfile(response.data[0].fullname);
         setEmail(response.data[0].email);
@@ -36,12 +32,51 @@ function Profile() {
         console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
       });
   }, [username]);
-  
-  console.log(profile)
-  console.log(username)
+
   const handleBack = () => {
-    ReactSession.set("username",username)
-    navigate(`/main`);
+    if (isEdited) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'ยังไม่ได้บันทึกการเปลี่ยนแปลง',
+        text: 'คุณต้องการที่จะออกโดยที่ยังไม่ได้บันทึกการเปลี่ยนแปลงหรือไม่?',
+        showCancelButton: true,
+        confirmButtonText: 'ออกโดยที่ยังไม่บันทึก',
+        cancelButtonText: 'ยกเลิก',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          localStorage.setItem('username', username)
+          navigate(`/main`);
+        }
+      });
+    } else {
+      localStorage.setItem('username', username)
+      navigate(`/main`);
+    }
+  }
+
+  const handleSubmit = () => {
+    Axios.put(`http://localhost:5000/updateProfile/${useremail}`, {
+      fullname: profile,
+      tel: tel
+    })
+      .then((response) => {
+        console.log("ข้อมูลถูกอัปเดต:", response.data);
+        setIsEdited(false);
+        Swal.fire({
+          icon: 'success',
+          title: 'อัปเดตข้อมูลสำเร็จ',
+          showConfirmButton: false,
+          timer: 1500
+        });
+      })
+      .catch((error) => {
+        console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
+        Swal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด',
+          text: 'ไม่สามารถอัปเดตข้อมูลได้ กรุณาลองอีกครั้ง',
+        });
+      });
   }
 
   return (
@@ -67,8 +102,13 @@ function Profile() {
             label="ชื่อ-นามสกุลจริง"
             variant="outlined"
             sx={{ margin: 1 }}
-            value={profile} // ใช้ value แทน defaultValue
-            onChange={(event) => setProfile(event.target.value)}
+            value={profile}
+            onChange={(event) => {
+              if (event.target.value.length <= 30) {
+                setProfile(event.target.value);
+                setIsEdited(true);
+              }
+            }}
             InputLabelProps={{
               shrink: true,
             }}
@@ -80,27 +120,32 @@ function Profile() {
             label="Email"
             variant="outlined"
             sx={{ margin: 1 }}
-            value={useremail} // ใช้ value แทน defaultValue
+            value={useremail}
             InputLabelProps={{
               shrink: true,
             }}
           />
-
           <TextField
             id="outlined-basic"
             label="Tel"
             variant="outlined"
             sx={{ margin: 1 }}
-            value={tel} // ใช้ค่าของ state tel
-            onChange={(event) => setTel(event.target.value)} // อัปเดต state เมื่อมีการเปลี่ยนแปลง
+            value={tel}
+            onChange={(event) => {
+              if (!isNaN(event.target.value)) {
+                if (event.target.value.length <= 10) {
+                  setTel(event.target.value);
+                  setIsEdited(true);
+                }
+              }
+            }}
+            inputProps={{ pattern: "[0-9]*" }}
           />
-
-          {/* ในส่วนของเบอร์โทร คุณอาจต้องสร้าง state และใช้ value ใน TextField เช่นเดียวกัน */}
         </div>
       </Box>
-      <div style={{ display: 'flex', justifyContent: 'space-around'}}>
+      <div style={{ display: 'flex', justifyContent: 'space-around' }}>
         <Button variant="contained" color='error' sx={{}} onClick={handleBack}>ย้อนกลับ</Button>
-        <Button variant="contained" color='success' sx={{ backgroundColor: '#07C27F'}} onClick={handleBack}>เสร็จสิ้น</Button>
+        <Button variant="contained" color='success' sx={{ backgroundColor: '#07C27F' }} onClick={handleSubmit}>บันทึกข้อมูล</Button>
       </div>
     </div>
   );

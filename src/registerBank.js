@@ -40,10 +40,12 @@ function RegisterBank() {
   console.log(tel)
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setMedals((prevMedals) => ({
-      ...prevMedals,
-      [name]: value,
-    }));
+    if (!isNaN(value)) {
+      setMedals((prevMedals) => ({
+        ...prevMedals,
+        [name]: value,
+      }));
+    }
 
   };
   // const handleLocationChange = ({ lat, lng }) => {
@@ -236,25 +238,37 @@ function RegisterBank() {
             )}
           </div>
           <TextField
+            required
             id="outlined-required"
-            label="ใส่รหัสที่ของธนาคารของคุณ"
+            label="ใส่รหัสของธนาคารของคุณ(ซ้ำกับธนาคารอื่นไม่ได้)"
             variant="outlined"
             sx={{ margin: 1 }}
-            value={codename} // ใช้ value แทน defaultValue
-            onChange={(event) => setCodeName(event.target.value)}
+            value={codename}
+            onChange={(event) => {
+              if (event.target.value.length <= 10) {
+                setCodeName(event.target.value);
+              }
+            }}
             InputLabelProps={{
               shrink: true,
+              color: 'error'
             }}
           />
           <TextField
+            required
             id="outlined-required"
-            label="ชื่อธนาคาร"
+            label="ชื่อธนาคาร(ซ้ำกับธนาคารอื่นไม่ได้)"
             variant="outlined"
             sx={{ margin: 1 }}
-            value={profile} // ใช้ value แทน defaultValue
-            onChange={(event) => setProfile(event.target.value)}
+            value={profile}
+            onChange={(event) => {
+              if (event.target.value.length <= 20) {
+                setProfile(event.target.value);
+              }
+            }}
             InputLabelProps={{
               shrink: true,
+              color: 'error'
             }}
           />
 
@@ -271,15 +285,23 @@ function RegisterBank() {
           />
 
           <TextField
+            required
             id="outlined-basic"
             label="Tel"
             variant="outlined"
             sx={{ margin: 1 }}
-            value={tel} // ใช้ค่าของ state tel
-            onChange={(event) => setTel(event.target.value)} // อัปเดต state เมื่อมีการเปลี่ยนแปลง
+            value={tel}
+            onChange={(event) => {
+              if (!isNaN(event.target.value)) {
+                if (event.target.value.length <= 10) {
+                  setTel(event.target.value);
+                }
+              }
+            }}
+            inputProps={{
+              pattern: "[0-9]*"
+            }}
           />
-
-          {/* ในส่วนของเบอร์โทร คุณอาจต้องสร้าง state และใช้ value ใน TextField เช่นเดียวกัน */}
         </div>
       </Box>
       <h1 style={{ textAlign: 'center' }}>ปักหมุดที่อยู่ของคุณโดยกดที่รูปคนใน Map </h1>
@@ -294,13 +316,17 @@ function RegisterBank() {
           autoComplete="off"
         >
           <TextField
-            id="filled-multiline-static"
+            required
+            id="outlined-multiline-static"
             label="ใส่ที่อยู่ของคุณ"
             multiline
             rows={6}
-            variant="filled"
             value={address}
-            onChange={(e) => setAddress(e.target.value)}
+            onChange={(e) => {
+              if (e.target.value.length <= 250) {
+                setAddress(e.target.value);
+              }
+            }}
           />
         </Box>
         <h2>จัดการแรงค์ของผู้ใช้ว่าสามารถทำอะไรได้บ้าง</h2>

@@ -180,7 +180,7 @@ const ProSpan = styled('span')({
 });
 
 function Main12() {
-  const username = ReactSession.get("username");
+  const username = localStorage.getItem('username');
   const [profile, setProfile] = useState([]);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [anchorElUser2, setAnchorElUser2] = React.useState(null);
@@ -384,7 +384,7 @@ function Main12() {
   };
 
   const handleOpenPopover = () => {
-    ReactSession.set('username', username)
+    ReactSession.set('username', username);
     ReactSession.set('bank_name', codename.bank_name)
     navigate("/notifications");
   };
@@ -505,12 +505,11 @@ function Main12() {
     // Handle different menu options here
     switch (option) {
       case 'Profile':
-        // Navigate to the profile page
-        ReactSession.set('username', username)
+        localStorage.setItem('username', username)
         navigate(`/profile`);
         break;
       case 'Logout':
-        // Handle 'Logout' option
+        localStorage.removeItem('username');
         navigate(`/`)
         break;
       default:
@@ -595,6 +594,7 @@ function Main12() {
   }
   const handleOpenbankuser = (title) => {
     setDisplayBookmarks(false);
+    ReactSession.set('username', username);
     ReactSession.set("bank_name", title);
     navigate('/bankuser')
   }
@@ -793,7 +793,7 @@ function Main12() {
   }, [username]);
 
   const handleToBank = () => {
-    ReactSession.set("username", username)
+    ReactSession.set('username', username);
     ReactSession.set("codename", codename.bank_codename);
     ReactSession.set("bank_name", codename.bank_name);
     console.log(filteredProducts.title)
@@ -823,16 +823,11 @@ function Main12() {
         console.error("เกิดข้อผิดพลาดในการดึงข้อมูล Bookmark:", error);
       });
   }, [username]);
-
+ 
   useEffect(() => {
     Axios.get(`http://localhost:5000/checkAndUpdateRank/${username}`)
       .then((response) => {
         console.log('checkAndUpdateRank', response.data);
-        if (response.data && response.data.newRankId && response.data.newRankId !== 1) {
-          const rankText = response.data.newRankId === 2 ? "Silver" : response.data.newRankId === 3 ? "Gold" : "Platinum";
-          const bankName = response.data.bankName;
-          Swal.fire("Rank Updated!", `Your new rank is ${rankText} at ${bankName}!`, "success");
-        }
         
       })
       .catch((error) => {
@@ -842,19 +837,19 @@ function Main12() {
 
   const handleClicktoReview = (product_id) => {
     ReactSession.set("product_id", product_id);
-    ReactSession.set("username", username);
+    ReactSession.set('username', username);
     navigate("/reviewbank")
   }
 
   const handleClicktoReview1 = (product_id) => {
     ReactSession.set("product_id", product_id);
-    ReactSession.set("username", username);
+    ReactSession.set('username', username);
     navigate("/reviewbankchage")
   }
 
   const handleClicktoReview2 = (product_id) => {
     ReactSession.set("product_id", product_id);
-    ReactSession.set("username", username);
+    ReactSession.set('username', username);
     navigate("/reviewbanksale")
   }
 

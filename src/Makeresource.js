@@ -128,6 +128,18 @@ function Resource() {
             setIsDataSaved(true);
             if (response.data.Status === 'Success') {
               console.log("File Successfully Uploaded");
+              setNameProduct("");
+              setImage(null);
+              setImagePreview(null);
+              setSelectedResources([]);
+              setSelectedCurrency("");
+              setAmount("");
+              setAdditionalDetails("");
+              setResourcePrice("");
+              setResourceForRent("");
+              setResourceForSale("");
+              setResourceForExchange("");
+              setSelectedUnit("กรัม");
               Swal.fire({
                 icon: 'success',
                 title: 'บันทึกข้อมูลสำเร็จ',
@@ -160,7 +172,29 @@ function Resource() {
   };
 
   const handleSubmit = () => {
-    navigate(-1);
+    const isDataModified = nameProduct !== "" || image !== null || resourceForRent !== "" || resourceForSale !== "" || resourceForExchange !== "" || selectedCurrency !== "" || amount !== "" || additionalDetails !== "" || resourcePrice !== "";
+
+    if (isDataModified) {
+      Swal.fire({
+        icon: 'question',
+        title: 'คุณต้องการบันทึกข้อมูลที่แก้ไขหรือไม่?',
+        text: 'ข้อมูลที่แก้ไขจะไม่ถูกบันทึกหากคุณเลือกย้อนกลับโดยไม่บันทึก',
+        showCancelButton: true,
+        confirmButtonText: 'บันทึก',
+        cancelButtonText: 'ไม่บันทึก',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // บันทึกข้อมูล
+          handleAddData();
+        } else {
+          // ย้อนกลับโดยไม่บันทึกข้อมูล
+          navigate(-1);
+        }
+      });
+    } else {
+      // ถ้าไม่มีข้อมูลถูกแก้ไข
+      navigate(-1);
+    }
   };
   const handleReture = () => {
     Swal.fire({
@@ -197,6 +231,8 @@ function Resource() {
     setImage(null);
     setImagePreview(null);
   };
+
+  
   return (
     <div>
       <NavBarBank />
@@ -255,6 +291,7 @@ function Resource() {
             sx={{ width: 400 }}
             value={nameProduct}
             onChange={(e) => setNameProduct(e.target.value)}
+            inputProps={{ maxLength: 20 }}
           />
         </div>
         <FormControl sx={{ marginTop: 5, width: '46ch' }} component="fieldset" variant="standard">
@@ -305,7 +342,12 @@ function Resource() {
           </FormLabel>
           <TextField sx={{ width: 400 }}
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              if (!isNaN(Number(inputValue)) && inputValue >= 0) {
+                setAmount(inputValue);
+              }
+            }}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -315,13 +357,15 @@ function Resource() {
                   />
                 </InputAdornment>
               ),
-            }} />
+            }}
+            type="number"
+          />
         </div>
         <div style={{ marginTop: 30 }}>
           <FormLabel component="legend" style={{ color: "black" }}>
             รายละเอียดเพิ่มเติม:
           </FormLabel>
-          <TextField id="outlined-multiline-static" sx={{ width: 400 }} value={additionalDetails} onChange={(e) => setAdditionalDetails(e.target.value)} />
+          <TextField id="outlined-multiline-static" sx={{ width: 400 }} value={additionalDetails}onChange={(e) => setAdditionalDetails(e.target.value)}  inputProps={{ maxLength: 100 }}/>
         </div>
         <div style={{ marginTop: 30 }}>
 
@@ -335,7 +379,18 @@ function Resource() {
                 endAdornment={<InputAdornment position="end">บาท</InputAdornment>}
                 value={resourcePrice}
                 sx={{ width: 400 }}
-                onChange={(e) => setResourcePrice(e.target.value)}
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  // ตรวจสอบว่าเป็นตัวเลขและมากกว่าหรือเท่ากับ 0 หรือไม่
+                  if (!isNaN(Number(inputValue)) && inputValue >= 0) {
+                    // เซ็ตค่าเมื่อเป็นตัวเลขที่มากกว่าหรือเท่ากับ 0 เท่านั้น
+                    setResourcePrice(inputValue);
+                  } else {
+                    // ถ้าค่าไม่ถูกต้อง ให้เซ็ตค่าเป็น 0
+                    setResourcePrice(0);
+                  }
+                }}
+                inputProps={{ type: 'number' }}
               />
             </>
           )}

@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import Register from './register';
 import logo from '../src/image/Logo.png';
 import { ReactSession } from 'react-client-session';
+import Swal from 'sweetalert2';
 function Login() {
 
   const clientId = "80445697984-hft4hh6kkictok8q22lm89nunm1l8vt7.apps.googleusercontent.com"
@@ -30,16 +31,31 @@ function Login() {
   }, [])
   
 
-  const onSuccess = (res) => {
-    setProfile(res.profileObj)
+  const onSuccess = async (res) => {
     const { name, email } = res.profileObj;
-    ReactSession.set("username", res.profileObj.email);
-    console.log('name:',name);
-    console.log('email:',email);
-    console.log('success', res.profileObj)
-    setflag(true);
-    navigate(`/main`)
+  
+    try {
+      // ทำการเรียก API เช็คข้อมูลในฐานข้อมูลว่ามีอีเมล์ที่เข้าสู่ระบบอยู่แล้วหรือไม่
+      const response = await Axios.get(`http://localhost:5000/user/${email}`);
+      console.log("ข้อมูลที่ได้รับ:", response.data);
+  
+      if (response.data.length > 0 && response.data[0].email === email) {
+        // มีข้อมูลในฐานข้อมูลแล้ว จะทำการเซ็ตค่าและเปลี่ยนหน้าไปยังหน้าหลัก
+        setProfile(res.profileObj);
+        localStorage.setItem('username', email);
+        console.log('name:', name);
+        console.log('email:', email);
+        console.log('success', res.profileObj);
+        setflag(true);
+        navigate(`/main`);
+      } else {
+        navigate("/register");
+      }
+    } catch (error) {
+      console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+    }
   }
+  
 
   const onFailure = (res) => {
     console.log('failed', res)

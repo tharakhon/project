@@ -175,7 +175,7 @@ function getLabelText(value) {
   return `${value}`;
 }
 export default function Bank() {
-  const username = ReactSession.get("username");
+  const username = ReactSession.get('username');
   const codename = ReactSession.get("codename");
   const bank_name = ReactSession.get("bank_name");
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -1753,7 +1753,7 @@ export default function Bank() {
               )}
             </DialogContentText>
           </DialogContent>
-          {(selectedProductApproved && selectedProductApproved.order_status_getproduct === 'ยังไม่ได้มารับทรัพยากร'
+          {(selectedProductApproved && selectedProductApproved.order_status_getproduct === 'ยังไม่ได้มารับทรัพยากร' &&  selectedProductApproved.order_status === 'อนุมัติให้ทำรายการ'
           ) && (
             <DialogActions sx={{ justifyContent: 'center' }}>
             <Button onClick={() => handleClicktoUpdateGetProduct("รับทรัพยากรเรียบร้อยแล้ว")}>รับทรัพยากรเรียบร้อยแล้ว</Button>
@@ -1909,7 +1909,7 @@ export default function Bank() {
               )}
             </DialogContentText>
           </DialogContent>
-          {(selectedProductApproved1 && selectedProductApproved1.userbank_status_getproduct === 'ยังไม่ได้มารับทรัพยากร'
+          {(selectedProductApproved1 && selectedProductApproved1.userbank_status_getproduct === 'ยังไม่ได้มารับทรัพยากร' && selectedProductApproved1.userbank_status === 'อนุมัติให้ทำรายการ'
           ) && (
             <DialogActions sx={{ justifyContent: 'center' }}>
             <Button onClick={() => handleClicktoUpdateGetProduct1("รับทรัพยากรเรียบร้อยแล้ว")}>รับทรัพยากรเรียบร้อยแล้ว</Button>
@@ -2001,7 +2001,7 @@ export default function Bank() {
               )}
             </DialogContentText>
           </DialogContent>
-          {(selectedProductApproved2 && selectedProductApproved2.order_product_getproduct === 'ยังไม่ได้มารับทรัพยากร'
+          {(selectedProductApproved2 && selectedProductApproved2.order_product_getproduct === 'ยังไม่ได้มารับทรัพยากร' && selectedProductApproved2.order_product_status === 'อนุมัติให้ทำรายการ'
           ) && (
             <DialogActions sx={{ justifyContent: 'center' }}>
             <Button onClick={() => handleClicktoUpdateGetProduct2("รับทรัพยากรเรียบร้อยแล้ว")}>รับทรัพยากรเรียบร้อยแล้ว</Button>

@@ -11,7 +11,7 @@
 }
 
 .App {
-  background-image: url('C:\Users\EartH098123\Project End\project\Project-End\src\image\background.jpg');
+  background-image: url('http://localhost:5000/image/background.jpg');
   background-attachment: fixed; /* รูปภาพจะเป็นพื้นหลังที่ติดตามหน้าเว็บเมื่อเลื่อน */
   background-repeat: no-repeat; /* ไม่ให้รูปภาพทำซ้ำ */
   background-size: cover; /* ปรับขนาดรูปภาพให้ครอบคลุมพื้นที่ทั้งหน้าเว็บ */

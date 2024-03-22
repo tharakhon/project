@@ -166,56 +166,74 @@ function OrderBankSale() {
     }
 
     const handleNext = () => {
-        if (!inputQuantity || !borrowDate) {
-            Swal.fire({
-                icon: 'error',
-                title: 'ข้อมูลไม่ครบถ้วน',
-                text: 'กรุณากรอกข้อมูลให้ครบทุกช่อง',
-            });
-            return;
-        }
-        Swal.fire({
-            icon: 'warning',
-            title: 'คุณแน่ใจหรือไม่?',
-            text: 'คุณต้องการส่งข้อมูลไปให้ทางธนาคารหรือไม่?',
-            showCancelButton: true,
-            confirmButtonText: 'ใช่, ฉันต้องการส่งข้อมูล',
-            cancelButtonText: 'ยกเลิก',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // ถ้ายืนยัน
-                Axios.post('http://localhost:5000/order_sale', {
-                    order_product_id: id,
-                    order_sale_bankname: bank_name,
-                    userbank_order_sale: username,
-                    order_product_quantity: inputQuantity,
-                    order_product_date: borrowDate,
-                    order_product_price: filteredProduct.product_price,
-                    order_product_unit: filteredProduct.product_unit,
-
-                    // ... other data
-                })
-                    .then((response) => {
-                        console.log(response.data);
-                        ReactSession.set('username', username);
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'ส่งข้อมูลสำเร็จ',
-                            text: 'รอทางธนาคารตรวจสอบข้อมูล',
-                        }).then(() => {
-                            navigate("/bankuser");
-                        });
-                    })
-                    .catch((error) => {
+        // Axios.get(`http://localhost:5000/checkPreviousTransactions/${username}`)
+        //     .then((response) => {
+        //         const previousTransactions = response.data;
+        //         if (previousTransactions.length > 0) {
+                    if (!inputQuantity || !borrowDate) {
                         Swal.fire({
                             icon: 'error',
-                            title: 'เกิดข้อผิดพลาด',
-                            text: 'ไม่สามารถส่งข้อมูลไปยังธนาคารได้ โปรดลองอีกครั้งในภายหลัง',
+                            title: 'ข้อมูลไม่ครบถ้วน',
+                            text: 'กรุณากรอกข้อมูลให้ครบทุกช่อง',
                         });
-                        console.error("Error:", error.message);
+                        return;
+                    }
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'คุณแน่ใจหรือไม่?',
+                        text: 'คุณต้องการส่งข้อมูลไปให้ทางธนาคารหรือไม่?',
+                        showCancelButton: true,
+                        confirmButtonText: 'ใช่, ฉันต้องการส่งข้อมูล',
+                        cancelButtonText: 'ยกเลิก',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // ถ้ายืนยัน
+                            Axios.post('http://localhost:5000/order_sale', {
+                                order_product_id: id,
+                                order_sale_bankname: bank_name,
+                                userbank_order_sale: username,
+                                order_product_quantity: inputQuantity,
+                                order_product_date: borrowDate,
+                                order_product_price: filteredProduct.product_price,
+                                order_product_unit: filteredProduct.product_unit,
+
+                                // ... other data
+                            })
+                                .then((response) => {
+                                    console.log(response.data);
+                                    ReactSession.set('username', username);
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'ส่งข้อมูลสำเร็จ',
+                                        text: 'รอทางธนาคารตรวจสอบข้อมูล',
+                                    }).then(() => {
+                                        navigate("/bankuser");
+                                    });
+                                })
+                                .catch((error) => {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'เกิดข้อผิดพลาด',
+                                        text: 'ไม่สามารถส่งข้อมูลไปยังธนาคารได้ โปรดลองอีกครั้งในภายหลัง',
+                                    });
+                                    console.error("Error:", error.message);
+                                });
+                        }
                     });
-            }
-        });
+            //     } else {
+            //         Swal.fire({
+            //             icon: 'info',
+            //             title: 'ไม่สามารถดำเนินการได้',
+            //             text: 'คุณต้องไปรีวิวรายการเก่าก่อนที่จะทำรายการใหม่',
+            //             confirmButtonText: 'ตกลง',
+            //         });
+            //     }
+            // })
+            // .catch((error) => {
+            //     console.error("Error:", error.message);
+            // });
+
+
 
     }
     useEffect(() => {

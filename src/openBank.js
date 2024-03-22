@@ -73,6 +73,7 @@ function OpenBank() {
         product_unit: "",
         product_price: 0
     });
+    const [dataEdited, setDataEdited] = useState(false);
 
     useEffect(() => {
         Axios.get(`http://localhost:5000/showProductUser1/${id}`)
@@ -137,8 +138,24 @@ function OpenBank() {
     };
 
     const handleBackbank = () => {
-        ReactSession.set("username", username);
-        navigate("/bank");
+        if (dataEdited) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'คุณแน่ใจหรือไม่?',
+                text: 'คุณยังไม่ได้บันทึกการเปลี่ยนแปลง คุณต้องการย้อนกลับโดยไม่บันทึกการเปลี่ยนแปลงหรือไม่?',
+                showCancelButton: true,
+                confirmButtonText: 'ใช่, ย้อนกลับ',
+                cancelButtonText: 'ยกเลิก',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    ReactSession.set("username", username);
+                    navigate("/bank");
+                }
+            });
+        } else {
+            ReactSession.set("username", username);
+            navigate("/bank");
+        }
     }
 
     const handleDrawerOpen = () => {
@@ -150,6 +167,10 @@ function OpenBank() {
     }
     const handleDrawerClose = () => {
         setOpen(false);
+    };
+    const handleDataEdited = (field, value) => {
+        setDataEdited(true); // เมื่อมีการแก้ไขข้อมูลให้เซ็ตสถานะเป็น true
+        setEditedData({ ...editedData, [field]: value });
     };
     return (
         <div>
@@ -283,7 +304,14 @@ function OpenBank() {
 
                         <div style={{ marginTop: 50 }}>
                             <FormLabel component="legend" style={{ color: 'black' }}>ชื่อทรัพยากร :</FormLabel>
-                            <TextField id="outlined-disabled" label={filteredProducts.product_name} variant="outlined" sx={{ width: '50ch' }} onChange={(e) => setEditedData({ ...editedData, product_name: e.target.value })} />
+                            <TextField id="outlined-disabled" 
+                            label={filteredProducts.product_name} 
+                            variant="outlined" 
+                            sx={{ width: '50ch' }} 
+                            onChange={(e) => handleDataEdited('product_name', e.target.value)} 
+                            inputProps={{ maxLength: 20 }}
+                            />
+                            
                         </div>
                         <FormControl sx={{ marginTop: 5, width: '50ch' }} component="fieldset" variant="standard">
                             <FormLabel component="legend" style={{ color: "black" }}>
@@ -292,19 +320,19 @@ function OpenBank() {
                             <FormGroup sx={{ display: 'flex', flexDirection: 'column' }}>
                                 <div style={{ marginTop: 20 }}>
                                     <FormControlLabel
-                                        control={<Checkbox checked={editedData.product_type} onChange={(e) => setEditedData({ ...editedData, product_type: e.target.checked ? 'ทรัพยากรเพื่อเช่าหรือยืม' : '' })} />}
+                                        control={<Checkbox checked={editedData.product_type} onChange={(e) => handleDataEdited('product_type', e.target.checked)} />}
                                         label="ทรัพยากรเพื่อเช่าหรือยืม"
                                     />
                                 </div>
                                 <div style={{ marginTop: 20 }}>
                                     <FormControlLabel
-                                        control={<Checkbox checked={editedData.product_type2} onChange={(e) => setEditedData({ ...editedData, product_type2: e.target.checked ? 'ทรัพยากรเพื่อการซื้อขาย' : '' })} />}
+                                        control={<Checkbox checked={editedData.product_type2} onChange={(e) => handleDataEdited('product_type2', e.target.checked)} />}
                                         label="ทรัพยากรเพื่อการซื้อขาย"
                                     />
                                 </div>
                                 <div style={{ marginTop: 20 }}>
                                     <FormControlLabel
-                                        control={<Checkbox checked={editedData.product_type3} onChange={(e) => setEditedData({ ...editedData, product_type3: e.target.checked ? 'ทรัพยากรเพื่อแลกเปลี่ยน' : '' })} />}
+                                        control={<Checkbox checked={editedData.product_type3} onChange={(e) => handleDataEdited('product_type3', e.target.checked)} />}
                                         label="ทรัพยากรเพื่อแลกเปลี่ยน"
                                     />
                                 </div>
@@ -325,7 +353,7 @@ function OpenBank() {
                         </div>
 
                         <div style={{ marginTop: 30 }}>
-                            <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากร : </FormLabel>
+                            <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากร (ถ้าใส่จำนวนต่ำกว่า 0 จะให้เป็นอัตโนมัติ): </FormLabel>
                             <OutlinedInput
                                 id="outlined-adornment-weight"
                                 startAdornment={<InputAdornment position="start">{`${filteredProducts.product_quantity} `}</InputAdornment>}
@@ -333,7 +361,15 @@ function OpenBank() {
                                 label="จำนวนทรัพยากร"
                                 variant="outlined"
                                 sx={{ width: '48ch' }}
-                                onChange={(e) => setEditedData({ ...editedData, product_quantity: e.target.value })}
+                                onChange={(e) => {
+                                    const inputValue = e.target.value;
+                                    if (!isNaN(Number(inputValue)) && inputValue >= 0) {
+                                        handleDataEdited('product_quantity', inputValue);
+                                    } else {
+                                        handleDataEdited('product_quantity', 0);
+                                    }
+                                }}
+                                inputProps={{ type: 'number' }} 
                             />
 
                         </div>
@@ -341,7 +377,7 @@ function OpenBank() {
                         <div style={{ marginTop: 30 }}>
                             <FormControl sx={{ display: editedData.product_type2 ? 'block' : 'none' }}>
                                 <FormLabel component="legend" style={{ color: "black" }}>
-                                    ราคาของทรัพยากร:
+                                    ราคาของทรัพยากร (ถ้าใส่จำนวนต่ำกว่า 0 จะให้เป็นอัตโนมัติ) :
                                 </FormLabel>
                                 <OutlinedInput
                                     id="outlined-adornment-weight"
@@ -349,7 +385,15 @@ function OpenBank() {
                                     endAdornment={<InputAdornment position="end">บาท</InputAdornment>}
                                     label={filteredProducts.product_price}
                                     sx={{ width: '48ch' }}
-                                    onChange={(e) => setEditedData({ ...editedData, product_price: e.target.value })}
+                                    onChange={(e) => {
+                                        const inputValue = e.target.value;
+                                        if (!isNaN(Number(inputValue)) && inputValue >= 0) {
+                                            handleDataEdited('product_price', inputValue)
+                                        } else {
+                                            handleDataEdited('product_price', 0 )
+                                        }
+                                    }}
+                                    inputProps={{ type: 'number' }}
                                 />
                             </FormControl>
                         </div>

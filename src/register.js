@@ -64,7 +64,7 @@ function Register() {
       .catch((error) => {
         console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
       })
-      
+
   }, [email]);
   const addUser = () => {
 
@@ -106,10 +106,10 @@ function Register() {
           >
             <div style={{ display: 'flex', flexDirection: 'column', width: '50ch' }}>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <img src={profile.imageUrl} style={{width:'30ch',height:'25ch',marginBottom:10}}/>
+                <img src={profile.imageUrl} style={{ width: '30ch', height: '25ch', marginBottom: 10 }} />
               </div>
               <TextField
-
+                required
                 id="outlined-required"
                 label="Name"
                 defaultValue=''
@@ -126,6 +126,7 @@ function Register() {
               />
               <br />
               <TextField
+                required
                 id="outlined-required"
                 label="Tel"
                 type='number'
@@ -136,7 +137,7 @@ function Register() {
               />
             </div>
           </Box>
-          <div style={{ display: 'flex', justifyContent:'space-around'}}>
+          <div style={{ display: 'flex', justifyContent: 'space-around' }}>
             <GoogleLogout clientId={clientId} buttonText='LOG OUT' onLogoutSuccess={logOut} />
             <Button variant="contained" sx={{ backgroundColor: '#07C27F' }} onClick={addUser} >บันทึกข้อมูล</Button>
           </div>
@@ -165,7 +166,7 @@ function Register() {
                   cursor: 'pointer', /* ทำให้เมาส์เป็นรูปแบบของมือ*/
                 }}
               >
-                LOG IN WITH GOOGLE
+                สมัครเข้าสู่ระบบด้วยบัญชี google
               </button>
             )}
           />
