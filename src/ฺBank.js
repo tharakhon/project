@@ -51,6 +51,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Stack from '@mui/material/Stack';
 import Rating from '@mui/material/Rating'
 import Swal from 'sweetalert2';
+import {  InputLabel,MenuItem, Select } from "@mui/material";
 
 const drawerWidth = 240;
 
@@ -205,6 +206,7 @@ export default function Bank() {
   const [selectedProductApproved2, setSelectedProductApproved2] = useState(null);
   const [openNextDialogApproved, setOpenNextDialogApproved] = React.useState(false);
   const [reviews, setReviews] = useState([]);
+  const [star, setStar] = React.useState('');
   console.log(reviews)
   const productTypes = [
     'ทรัพยากรทั้งหมด',
@@ -223,7 +225,13 @@ export default function Bank() {
           console.log("ข้อมูลรีวิวที่ได้รับ:", response.data);
 
           if (Array.isArray(response.data)) {
-            setReviews(response.data); // เซ็ตข้อมูลรีวิวที่ได้รับเข้าสู่ state reviews
+            const sortedReviews = response.data.sort((a, b) => {
+              const timestampA = new Date(a.date).getTime();
+              const timestampB = new Date(b.date).getTime();
+              return timestampB - timestampA;
+            });
+  
+            setReviews(sortedReviews);
           } else {
             Swal.fire({
               icon: 'info',
@@ -1021,7 +1029,7 @@ export default function Bank() {
                   ))}
                   {filteredProductInbox.map((item) => (
                     item.userbank_status !== 'รอการตรวจสอบ' && (
-                      <Grid item key={item.orderExchange_id} xs={12}>
+                      <Grid item key={item.exchange_id} xs={12}>
                         <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
                           <CardMedia
                             component="img"
@@ -1153,7 +1161,7 @@ export default function Bank() {
                   ))}
                   {filteredProductInbox.map((item) => (
                     item.userbank_status === 'รอการตรวจสอบ' && (
-                      <Grid item key={item.orderExchange_id} xs={12}>
+                      <Grid item key={item.exchange_id} xs={12}>
                         <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
                           <CardMedia
                             component="img"

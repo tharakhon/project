@@ -162,7 +162,25 @@ function OrderBankSale() {
     };
 
     const handleBackbankuser = () => {
-        navigate(-1);
+        if (inputQuantity || borrowDate) {
+            // ถ้ามีข้อมูลที่ถูกเปลี่ยนแปลง
+            Swal.fire({
+                icon: 'question',
+                title: 'คุณต้องการบันทึกข้อมูลก่อนที่จะย้อนกลับหรือไม่?',
+                text: 'ข้อมูลที่กรอกจะไม่ถูกบันทึกหากคุณเลือกย้อนกลับโดยไม่บันทึก',
+                showCancelButton: true,
+                confirmButtonText: 'ใช่',
+                cancelButtonText: 'ไม่',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    handleNext(); 
+                } else {
+                    navigate(-1); 
+                }
+            });
+        } else {
+            navigate(-1); 
+        }
     }
 
     const handleNext = () => {
@@ -322,7 +340,7 @@ function OrderBankSale() {
                 </DrawerHeader>
                 <Divider />
                 <List>
-                    {['หน้ากลัก'].map((text, index) => (
+                    {['หน้าหลัก'].map((text, index) => (
                         <ListItem key={text} disablePadding>
                             <ListItemButton onClick={() => navigate(`/main`)}>
                                 <ListItemIcon>
@@ -339,30 +357,6 @@ function OrderBankSale() {
                             <ListItemButton onClick={() => navigate('/bank')}>
                                 <ListItemIcon>
                                     <AccountBalanceIcon />
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-                <List>
-                    {['กิจกรรมของคุณ'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton >
-                                <ListItemIcon>
-                                    <AccessTimeIcon />
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-                <List>
-                    {['รีวีว'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton>
-                                <ListItemIcon>
-                                    <ReviewsIcon />
                                 </ListItemIcon>
                                 <ListItemText primary={text} />
                             </ListItemButton>

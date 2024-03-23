@@ -184,15 +184,12 @@ function Resource() {
         cancelButtonText: 'ไม่บันทึก',
       }).then((result) => {
         if (result.isConfirmed) {
-          // บันทึกข้อมูล
           handleAddData();
         } else {
-          // ย้อนกลับโดยไม่บันทึกข้อมูล
           navigate(-1);
         }
       });
     } else {
-      // ถ้าไม่มีข้อมูลถูกแก้ไข
       navigate(-1);
     }
   };

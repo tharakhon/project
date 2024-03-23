@@ -161,7 +161,7 @@ function NavBarBank() {
                 </DrawerHeader>
                 <Divider />
                 <List>
-                    {['หน้ากลัก'].map((text, index) => (
+                    {['หน้าหลัก'].map((text, index) => (
                         <ListItem key={text} disablePadding>
                             <ListItemButton onClick={handleClickToMain}>
                                 <ListItemIcon>
@@ -178,30 +178,6 @@ function NavBarBank() {
                             <ListItemButton onClick={() => navigate('/bank')}>
                                 <ListItemIcon>
                                     <AccountBalanceIcon />
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-                <List>
-                    {['กิจกรรมของคุณ'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton >
-                                <ListItemIcon>
-                                    <AccessTimeIcon />
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-                <List>
-                    {['รีวีว'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton>
-                                <ListItemIcon>
-                                    <ReviewsIcon />
                                 </ListItemIcon>
                                 <ListItemText primary={text} />
                             </ListItemButton>

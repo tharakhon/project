@@ -1000,7 +1000,7 @@ function Main12() {
         </DrawerHeader>
         <Divider />
         <List>
-          {['หน้ากลัก'].map((text, index) => (
+          {['หน้าหลัก'].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton onClick={switchToMainView}>
                 <ListItemIcon>
@@ -1493,7 +1493,7 @@ function Main12() {
                     ))}
                     {filteredProductInbox.map((inboxItem) => (
                       inboxItem.userbank_status === 'รอการตรวจสอบ' && (
-                        <Grid item key={inboxItem.orderExchange_id} xs={12}>
+                        <Grid item key={inboxItem.exchange_id} xs={12}>
                           <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
                             <CardMedia
                               component="img"
@@ -1617,7 +1617,7 @@ function Main12() {
                     ))}
                     {filteredProductInbox.map((inboxItem) => (
                       inboxItem.userbank_status === 'อนุมัติให้ทำรายการ' && (
-                        <Grid item key={inboxItem.orderExchange_id} xs={12}>
+                        <Grid item key={inboxItem.exchange_id} xs={12}>
                           <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
                             <CardMedia
                               component="img"
@@ -1744,7 +1744,7 @@ function Main12() {
                     ))}
                     {filteredProductInbox.map((inboxItem) => (
                       inboxItem.userbank_status === 'ไม่อนุมัติให้ทำรายการ' && (
-                        <Grid item key={inboxItem.orderExchange_id} xs={12}>
+                        <Grid item key={inboxItem.exchange_id} xs={12}>
                           <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
                             <CardMedia
                               component="img"

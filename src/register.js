@@ -129,10 +129,18 @@ function Register() {
                 required
                 id="outlined-required"
                 label="Tel"
-                type='number'
-                defaultValue=" "
+                type="number"
+                inputProps={{
+                  maxLength: 10,
+                }}
+                defaultValue=""
                 onChange={(event) => {
-                  setTel(event.target.value)
+                  const value = event.target.value;
+                  if (!isNaN(value)) {
+                    if (value.length <= 10) {
+                      setTel(value);
+                    }
+                  }
                 }}
               />
             </div>

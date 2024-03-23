@@ -186,69 +186,88 @@ function Borroww() {
     navigate('/bankuser')
   };
   const handleBack = () => {
-    ReactSession.set('bank_name', bank_name);
-    ReactSession.set('username', username);
-    navigate('/changepage')
+    if (!isDataSaved && (profile || image || selectedCurrency || quantity || selectedUnit || additionalDetails)) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'ข้อมูลที่กรอกอาจไม่ได้รับการบันทึก',
+        text: 'คุณต้องการบันทึกข้อมูลก่อนออกหรือไม่?',
+        showCancelButton: true,
+        confirmButtonText: 'ใช่, ฉันต้องการบันทึกข้อมูล',
+        cancelButtonText: 'ไม่, ฉันต้องการออกโดยไม่บันทึก',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          handleAddData();
+        } else {
+          ReactSession.set('bank_name', bank_name);
+          ReactSession.set('username', username);
+          navigate('/changepage');
+        }
+      });
+    } else {
+      ReactSession.set('bank_name', bank_name);
+      ReactSession.set('username', username);
+      navigate('/changepage');
+    }
   };
 
   const handleAddData = () => {
-    
+
     if (!profile || !image || !selectedCurrency || !quantity || !selectedUnit || !additionalDetails) {
       Swal.fire({
-          icon: 'error',
-          title: 'ข้อมูลไม่ครบถ้วน',
-          text: 'กรุณากรอกข้อมูลให้ครบทุกช่อง',
+        icon: 'error',
+        title: 'ข้อมูลไม่ครบถ้วน',
+        text: 'กรุณากรอกข้อมูลให้ครบทุกช่อง',
       });
       return;
-  }
-  Swal.fire({
+    }
+    Swal.fire({
       icon: 'warning',
       title: 'คุณแน่ใจหรือไม่?',
       text: 'คุณต้องการเพิ่มข้อมูลใช่หรือไม่?',
       showCancelButton: true,
       confirmButtonText: 'ใช่, ฉันต้องการเพิ่มข้อมูล',
       cancelButtonText: 'ยกเลิก',
-  }).then((result) => {
+    }).then((result) => {
       if (result.isConfirmed) {
-          // ถ้ายืนยัน
-          const formData = new FormData();
-          formData.append("orderExchange_id", id);
-          formData.append("bank_codename", bank_codename);
-          formData.append("bank_name", bank_name);
-          formData.append("userbank_email", username);
-          formData.append('userbank_productname', profile);
-          formData.append("userbank_productimage", image);
-          formData.append("userbank_producttype1", selectedCurrency.label);
-          formData.append("userbank_productquantity", quantity);
-          formData.append('userbank_unit', selectedUnit);
-          formData.append('userbank_productdetails', additionalDetails);
-          
-          Axios.post('http://localhost:5000/userbank_exchange', formData, {
-              headers: { 'Content-Type': 'multipart/form-data' },
-          })
+        // ถ้ายืนยัน
+        const formData = new FormData();
+        formData.append("orderExchange_id", id);
+        formData.append("bank_codename", bank_codename);
+        formData.append("bank_name", bank_name);
+        formData.append("userbank_email", username);
+        formData.append('userbank_productname', profile);
+        formData.append("userbank_productimage", image);
+        formData.append("userbank_producttype1", selectedCurrency.label);
+        formData.append("userbank_productquantity", quantity);
+        formData.append('userbank_unit', selectedUnit);
+        formData.append('userbank_productdetails', additionalDetails);
+
+        Axios.post('http://localhost:5000/userbank_exchange', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
           .then((response) => {
-              console.log(response.data);
-              setIsDataSaved(true);
-              if (response.data.Status === 'Success') {
-                  Swal.fire({
-                      icon: 'success',
-                      title: 'เพิ่มข้อมูลสำเร็จ',
-                      text: 'ไฟล์ถูกอัปโหลดเรียบร้อย',
-                  });
-              } else {
-                  console.error("Error");
-              }
+            console.log(response.data);
+            setIsDataSaved(true);
+            if (response.data.Status === 'Success') {
+              Swal.fire({
+                icon: 'success',
+                title: 'เพิ่มข้อมูลสำเร็จ',
+                text: 'ไฟล์ถูกอัปโหลดเรียบร้อย',
+              });
+            } else {
+              console.error("Error");
+            }
           })
           .catch((error) => {
-              Swal.fire({
-                  icon: 'error',
-                  title: 'เกิดข้อผิดพลาด',
-                  text: 'ไม่สามารถเพิ่มข้อมูลได้ โปรดลองอีกครั้งในภายหลัง',
-              });
-              console.error("Error:", error.message);
+            Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              text: 'ไม่สามารถเพิ่มข้อมูลได้ โปรดลองอีกครั้งในภายหลัง',
+            });
+            console.error("Error:", error.message);
           });
       }
-  });
+    });
   }
   return (
     <div>
@@ -318,7 +337,7 @@ function Borroww() {
         </DrawerHeader>
         <Divider />
         <List>
-          {['หน้ากลัก'].map((text, index) => (
+          {['หน้าหลัก'].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton onClick={() => navigate(`/main`)}>
                 <ListItemIcon>
@@ -335,30 +354,6 @@ function Borroww() {
               <ListItemButton onClick={() => navigate('/bank')}>
                 <ListItemIcon>
                   <AccountBalanceIcon />
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <List>
-          {['กิจกรรมของคุณ'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton >
-                <ListItemIcon>
-                  <AccessTimeIcon />
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <List>
-          {['รีวีว'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <ReviewsIcon />
                 </ListItemIcon>
                 <ListItemText primary={text} />
               </ListItemButton>
@@ -441,6 +436,7 @@ function Borroww() {
             label="ใส่จำนวนทรัพยากรที่คุณต้องการ"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
+            type="number"
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end" sx={{ display: 'flex', justifyContent: 'end' }}>

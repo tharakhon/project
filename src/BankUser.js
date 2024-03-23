@@ -319,7 +319,7 @@ export default function BankUser() {
                     </DrawerHeader>
                     <Divider />
                     <List>
-                        {['หน้ากลัก'].map((text, index) => (
+                        {['หน้าหลัก'].map((text, index) => (
                             <ListItem key={text} disablePadding>
                                 <ListItemButton onClick={() => navigate(`/main`)}>
                                     <ListItemIcon>
@@ -336,30 +336,6 @@ export default function BankUser() {
                                 <ListItemButton onClick={() => navigate('/bank')}>
                                     <ListItemIcon>
                                         <AccountBalanceIcon />
-                                    </ListItemIcon>
-                                    <ListItemText primary={text} />
-                                </ListItemButton>
-                            </ListItem>
-                        ))}
-                    </List>
-                    <List>
-                        {['กิจกรรมของคุณ'].map((text, index) => (
-                            <ListItem key={text} disablePadding>
-                                <ListItemButton onClick={() => navigate('/registerbank')}>
-                                    <ListItemIcon>
-                                        <AccessTimeIcon />
-                                    </ListItemIcon>
-                                    <ListItemText primary={text} />
-                                </ListItemButton>
-                            </ListItem>
-                        ))}
-                    </List>
-                    <List>
-                        {['รีวีว'].map((text, index) => (
-                            <ListItem key={text} disablePadding>
-                                <ListItemButton>
-                                    <ListItemIcon>
-                                        <ReviewsIcon />
                                     </ListItemIcon>
                                     <ListItemText primary={text} />
                                 </ListItemButton>
