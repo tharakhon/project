@@ -27,6 +27,7 @@ import ReviewbankChage from './writereviewChage';
 import ReviewbankSale from './writereviewSale';
 import ReviewcustomExchange from './writecommentExchange';
 import ReviewcustomSale from './writecommentSale';
+import MapShow1 from './mapShow1';
 
 function App() {
   return (
@@ -60,7 +61,7 @@ function App() {
         <Route path="reviewbanksale" element={<ReviewbankSale/>}/>
         <Route path="reviewcustomexchange" element={<ReviewcustomExchange/>}/>
         <Route path="reviewcustomsale" element={<ReviewcustomSale/>}/>
-        
+        <Route path="map1" element={<MapShow1/>}/>
         </Routes>
       </BrowserRouter>
    

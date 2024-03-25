@@ -208,7 +208,7 @@ function Notifications() {
                 console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
             })
 
-    }, [bank_name]);
+    }, [bank_name,filteredProducts]);
     useEffect(() => {
         Axios.get(`http://localhost:5000/showProductUser3/${bank_name}`)
             .then((response) => {
@@ -248,7 +248,7 @@ function Notifications() {
                 console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
             })
 
-    }, [bank_name]);
+    }, [bank_name,filteredProduct]);
 
     useEffect(() => {
         Axios.get(`http://localhost:5000/showProductUser4/${bank_name}`)
@@ -280,7 +280,7 @@ function Notifications() {
                 console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
             })
 
-    }, [bank_name]);
+    }, [bank_name,filteredProductInbox1]);
 
     const descriptionElementRef = React.useRef(null);
     React.useEffect(() => {

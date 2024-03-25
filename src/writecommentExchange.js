@@ -27,10 +27,17 @@ function getLabelText(value) {
   return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
 }
 
+function getLabelTexts(values) {
+  return `${values} Star${values !== 1 ? 's' : ''}, ${labels[values]}`;
+}
+
 export default function ReviewcustomExchange() {
   const [value, setValue] = React.useState(0);
   const [hover, setHover] = React.useState(-1);
+  const [values, setValues] = React.useState(0);
+  const [hovers, setHovers] = React.useState(-1);
   const [commentuser, setCommentuser] = useState("");
+  const [commentusers, setCommentusers] = useState("");
   const [filteredProducts, setFilteredProducts] = useState([]);
   const username = ReactSession.get("username");
   const product_id = ReactSession.get("product_id");
@@ -99,6 +106,8 @@ export default function ReviewcustomExchange() {
     formData.append("bank_codename", filteredProducts.bank_codename);
     formData.append("rating", value);
     formData.append('detail', commentuser);
+    formData.append("ratings", values);
+    formData.append('details', commentusers);
     formData.append("product_id", filteredProducts.orderExchange_id);
     formData.append("customer_review_image", image);
 
@@ -210,7 +219,7 @@ export default function ReviewcustomExchange() {
       </Grid2>
 
       <Stack direction="row" justifyContent="center" spacing={3} marginTop={5}>
-        <Typography sx={{ fontSize: "30px" }}>ให้คะแนนผู้ใช้บริการ</Typography>
+        <Typography sx={{ fontSize: "30px" }}>ให้คะแนนผู้ใช้บริการต่อความตรงต่อเวลา</Typography>
         <Rating
           name="hover-feedback"
           value={value}
@@ -230,7 +239,7 @@ export default function ReviewcustomExchange() {
         spacing={1}
         marginTop={5}
       >
-        <FormLabel component="legend" style={{ color: "black", fontSize: '20px' }}>เขียนรีวิวของคุณ</FormLabel>
+        <FormLabel component="legend" style={{ color: "black", fontSize: '20px' }}>เขียนรีวิวของคุณต่อความตรงต่อเวลา</FormLabel>
         <TextField
 
           id="outlined-multiline-static"
@@ -239,6 +248,38 @@ export default function ReviewcustomExchange() {
           sx={{ width: 600, marginTop: 3 }}
           value={commentuser}
           onChange={(e) => setCommentuser(e.target.value)}
+        />
+      </Stack>
+      <Stack direction="row" justifyContent="center" spacing={3} marginTop={5}>
+        <Typography sx={{ fontSize: "30px" }}>ให้คะแนนผู้ใช้บริการต่อทรัพยากร</Typography>
+        <Rating
+          name="hover-feedback"
+          value={values}
+          precision={0.5}
+          getLabelText={getLabelTexts}
+          onChange={(event, newValue) => { setValues(newValue); }}
+          onChangeActive={(event, newHover) => { setHovers(newHover); }}
+          size="large"
+        />
+        {values !== null && (
+          <Box sx={{ ml: 2 }}>{labels[hovers !== -1 ? hovers : values]}</Box>)}
+      </Stack>
+      <Stack
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
+        spacing={1}
+        marginTop={5}
+      >
+        <FormLabel component="legend" style={{ color: "black", fontSize: '20px' }}>เขียนรีวิวของคุณต่อทรัพยากร</FormLabel>
+        <TextField
+
+          id="outlined-multiline-static"
+          multiline
+          rows={7}
+          sx={{ width: 600, marginTop: 3 }}
+          value={commentusers}
+          onChange={(e) => setCommentusers(e.target.value)}
         />
       </Stack>
       <Stack

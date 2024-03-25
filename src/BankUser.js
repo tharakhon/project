@@ -392,7 +392,7 @@ export default function BankUser() {
                         <SearchIcon />
                     </SearchIconWrapper>
                     <StyledInputBase
-                        placeholder="Search…"
+                        placeholder="ค้นหาทรัพยากร"
                         inputProps={{ 'aria-label': 'search' }}
                         value={searchInput}
                         onChange={(e) => setSearchInput(e.target.value)}

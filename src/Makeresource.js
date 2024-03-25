@@ -26,7 +26,7 @@ const textStyle = {
   fontWeight: "normal",
 };
 const UnitDropdown = ({ selectedUnit, handleUnitChange }) => {
-  const units = ['กรัม', 'กิโลกรัม', 'ชิ้น', 'คัน', 'ถุง', 'กระสอบ', 'ลูก', 'หวี']; // เพิ่มหน่วยตามที่ต้องการ
+  const units = ['กรัม', 'กิโลกรัม', 'ชิ้น', 'คัน', 'ถุง', 'กระสอบ', 'ลูก', 'หวี','เครื่อง']; // เพิ่มหน่วยตามที่ต้องการ
 
   return (
     <FormControl fullWidth>

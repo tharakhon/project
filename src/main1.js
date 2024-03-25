@@ -71,7 +71,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import Stack from '@mui/material/Stack';
 import Swal from 'sweetalert2';
-import swal from 'sweetalert'; 
+import swal from 'sweetalert';
 
 const setting2 = ['Profile', 'Logout'];
 const settings = ['เรียงด้วยแรงค์', 'เรียงด้วยระยะทาง', 'เรียงด้วยเรตติ้ง'];
@@ -383,6 +383,141 @@ function Main12() {
     setOpenOrderApproved2(false);
   };
 
+  const handleClicktoUpdateGetProduct = (status) => {
+    if (!selectedProductApproved) {
+      console.error("Selected product not found");
+      return;
+    }
+
+    handleCloseApproved();
+
+    Swal.fire({
+      icon: 'warning',
+      title: 'คุณแน่ใจหรือไม่?',
+      text: `คุณต้องการอัปเดตสถานะเป็น "${status}" หรือไม่?`,
+      showCancelButton: true,
+      confirmButtonText: 'ใช่, อัปเดตสถานะ',
+      cancelButtonText: 'ยกเลิก',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Axios.put(`http://localhost:5000/updateStatusGetproduct/${selectedProductApproved.order_request_id}`, {
+          order_status_getproduct: status,
+        })
+          .then((response) => {
+            console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
+            setFilteredProduct((prevProducts) => {
+              return prevProducts.map((item) =>
+                item.order_request_id === selectedProductApproved.order_request_id ? response.data : item
+              );
+            });
+            Swal.fire({
+              icon: 'success',
+              title: 'อัปเดตสถานะสำเร็จ',
+              text: `สถานะได้ถูกอัปเดตเป็น "${status}" เรียบร้อยแล้ว`
+            });
+          })
+          .catch((error) => {
+            console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
+            Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              text: 'ไม่สามารถอัปเดตสถานะได้ โปรดลองอีกครั้งในภายหลัง'
+            });
+          });
+      }
+    });
+
+  };
+
+  const handleClicktoUpdateGetProduct1 = (status) => {
+    if (!selectedProductApproved1) {
+      console.error("Selected product not found");
+      return;
+    }
+    handleCloseApproved1();
+
+    Swal.fire({
+      icon: 'warning',
+      title: 'คุณแน่ใจหรือไม่?',
+      text: `คุณต้องการอัปเดตสถานะเป็น "${status}" หรือไม่?`,
+      showCancelButton: true,
+      confirmButtonText: 'ใช่, อัปเดตสถานะ',
+      cancelButtonText: 'ยกเลิก',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Axios.put(`http://localhost:5000/updateStatusGetproduct1/${selectedProductApproved1.exchange_id}`, {
+          userbank_status_getproduct: status,
+        })
+          .then((response) => {
+            console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
+            setFilteredProductInbox((prevProducts) => {
+              return prevProducts.map((item) =>
+                item.exchange_id === selectedProductApproved1.exchange_id ? response.data : item
+              );
+            });
+            Swal.fire({
+              icon: 'success',
+              title: 'อัปเดตสถานะสำเร็จ',
+              text: `สถานะได้ถูกอัปเดตเป็น "${status}" เรียบร้อยแล้ว`
+            });
+          })
+          .catch((error) => {
+            console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
+            Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              text: 'ไม่สามารถอัปเดตสถานะได้ โปรดลองอีกครั้งในภายหลัง'
+            });
+          });
+      }
+    });
+  };
+
+  const handleClicktoUpdateGetProduct2 = (status) => {
+    if (!selectedProductApproved2) {
+      console.error("Selected product not found");
+      return;
+    }
+    handleCloseApproved2();
+
+    Swal.fire({
+      icon: 'warning',
+      title: 'คุณแน่ใจหรือไม่?',
+      text: `คุณต้องการอัปเดตสถานะเป็น "${status}" หรือไม่?`,
+      showCancelButton: true,
+      confirmButtonText: 'ใช่, อัปเดตสถานะ',
+      cancelButtonText: 'ยกเลิก',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Axios.put(`http://localhost:5000/updateStatusGetproduct2/${selectedProductApproved2.order_sale_id}`, {
+          order_product_getproduct: status,
+        })
+          .then((response) => {
+            console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
+            setFilteredProductInbox1((prevProducts) => {
+              return prevProducts.map((item) =>
+                item.order_sale_id === selectedProductApproved2.order_sale_id ? response.data : item
+              );
+            });
+            Swal.fire({
+              icon: 'success',
+              title: 'อัปเดตสถานะสำเร็จ',
+              text: `สถานะได้ถูกอัปเดตเป็น "${status}" เรียบร้อยแล้ว`
+            });
+          })
+          .catch((error) => {
+            console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูล:", error);
+            Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              text: 'ไม่สามารถอัปเดตสถานะได้ โปรดลองอีกครั้งในภายหลัง'
+            });
+          });
+      }
+    });
+
+  };
+
   const handleOpenPopover = () => {
     ReactSession.set('username', username);
     ReactSession.set('bank_name', codename.bank_name)
@@ -578,7 +713,8 @@ function Main12() {
           lat: item.bank_latitude,
           lon: item.bank_longitude,
           codename: item.bank_codename,
-          bankMembers: item.member_count, // Assuming the number of members is available here
+          bankMembers: item.member_count,
+          average_rating : item.average_rating,
         }));
 
         console.log('fetchedProducts', fetchedProducts)
@@ -714,7 +850,7 @@ function Main12() {
         console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
       })
 
-  }, []);
+  }, [username,filteredProduct]);
   useEffect(() => {
     Axios.get(`http://localhost:5000/Inbox1/${username}`)
       .then((response) => {
@@ -725,6 +861,7 @@ function Main12() {
           bank_name: item.bank_name,
           fullname: item.fullname,
           image: item.image,
+          bank_image : item.bank_image,
           product_name: item.product_name,
           product_image: item.product_image,
           product_unit: item.product_unit,
@@ -754,7 +891,7 @@ function Main12() {
         console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
       })
 
-  }, [username]);
+  }, [username,filteredProductInbox]);
 
   useEffect(() => {
     Axios.get(`http://localhost:5000/Inbox2/${username}`)
@@ -767,6 +904,7 @@ function Main12() {
           order_sale_bankname: item.order_sale_bankname,
           fullname: item.fullname,
           image: item.image,
+          bank_image : item.bank_image,
           product_name: item.product_name,
           product_image: item.product_image,
           product_type4: item.product_type4,
@@ -790,7 +928,7 @@ function Main12() {
         console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
       })
 
-  }, [username]);
+  }, [username,filteredProductInbox1]);
 
   const handleToBank = () => {
     ReactSession.set('username', username);
@@ -823,12 +961,23 @@ function Main12() {
         console.error("เกิดข้อผิดพลาดในการดึงข้อมูล Bookmark:", error);
       });
   }, [username]);
- 
+
   useEffect(() => {
     Axios.get(`http://localhost:5000/checkAndUpdateRank/${username}`)
       .then((response) => {
         console.log('checkAndUpdateRank', response.data);
-        
+
+      })
+      .catch((error) => {
+        console.error('Error occurred while checking and updating rank:', error);
+      });
+  }, []);
+
+  useEffect(() => {
+    Axios.get(`http://localhost:5000/checkAndUpdateRankBank`)
+      .then((response) => {
+        console.log('checkAndUpdateRank', response.data);
+
       })
       .catch((error) => {
         console.error('Error occurred while checking and updating rank:', error);
@@ -853,37 +1002,15 @@ function Main12() {
     navigate("/reviewbanksale")
   }
 
-  const calculateAverageRating = (products) => {
-    let averageRatingsObj = {}; // เก็บผลรวมของคะแนนในแต่ละธนาคาร
-    let ratingsCount = {}; // เก็บจำนวนของรีวิวในแต่ละธนาคาร
-
-    products.forEach((product) => {
-      const title = product.title;
-      if (!averageRatingsObj[title]) {
-        averageRatingsObj[title] = 0;
-        ratingsCount[title] = 0;
-      }
-      averageRatingsObj[title] += parseFloat(product.rating); // แปลงคะแนนให้เป็นตัวเลขแบบ float ก่อนนำมารวม
-      ratingsCount[title] += 1;
-    });
-
-    let averageRatingsResult = {};
-    for (let title of Object.keys(averageRatingsObj)) {
-      averageRatingsResult[title] = (averageRatingsObj[title] / ratingsCount[title]).toFixed(1);
-    }
-    return averageRatingsResult;
-  };
-
-  const averageRatings = calculateAverageRating(filteredProducts);
-  console.log(averageRatings);
-
+ 
   useEffect(() => {
     Axios.get(`http://localhost:5000/Showreviewcustom/${username}`)
       .then((response) => {
         console.log("ข้อมูลรีวิวที่ได้รับ:", response.data);
 
         if (Array.isArray(response.data)) {
-          setReviews(response.data); // เซ็ตข้อมูลรีวิวที่ได้รับเข้าสู่ state reviews
+          const sortedReviews = response.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+          setReviews(sortedReviews); // เซ็ตข้อมูลรีวิวที่ได้รับเข้าสู่ state reviews
         } else {
 
         }
@@ -918,7 +1045,7 @@ function Main12() {
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
-              placeholder="Search…"
+              placeholder="ค้นหาธนาคาร"
               inputProps={{ 'aria-label': 'search' }}
               value={searchQuery}
               onChange={handleSearchChange}
@@ -1146,13 +1273,13 @@ function Main12() {
                   >
                     <Rating
                       name="text-feedback"
-                      value={averageRatings[bookmark.title] || null}
+                      value={parseFloat(bookmark.average_rating).toFixed(2)}
                       readOnly
                       precision={0.5}
 
                       emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
                     />
-                    <Box sx={{ ml: 2 }} >{`${averageRatings[bookmark.title] || 'N/A'}`}</Box>
+                    <Box sx={{ ml: 2 }} >{`${parseFloat(bookmark.average_rating).toFixed(2) || 'N/A'}`}</Box>
                   </Box>
                   {currentPosition && (
                     <Typography>
@@ -1248,21 +1375,18 @@ function Main12() {
           {(filteredProduct.length > 0 || filteredProductInbox.length > 0 || filteredProductInbox1.length > 0) ? (
             <>
               {filteredProduct.map((item) => (
-                <Grid item key={item.order_id} xs={12}>
+                <Grid item key={item.order_request_id} xs={12}>
                   <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
                     <CardMedia
                       component="img"
                       sx={{ width: 151 }}
-                      image={item.image}
+                      image={`http://localhost:5000/image/${item.bank_image}`}
                       alt="รูป user"
                     />
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                       <CardContent sx={{ flex: '1 0 auto' }}>
-                        <Typography component="div" variant="h5">
-                          {item.fullname}
-                        </Typography>
-                        <Typography variant="subtitle1" color="text.secondary" component="div">
-                          ได้ทำรายการของ ธนาคาร : {item.bank_name}
+                        <Typography variant="h5" component="div">
+                          ธนาคาร : {item.bank_name}
                         </Typography>
                         <Typography variant="subtitle1" color="text.secondary" component="div">
                           สถานะปัจจุบัน : {item.order_status}
@@ -1289,21 +1413,18 @@ function Main12() {
                 </Grid>
               ))}
               {filteredProductInbox.map((inboxItem) => (
-                <Grid item key={inboxItem.orderExchange_id} xs={12}>
+                <Grid item key={inboxItem.exchange_id} xs={12}>
                   <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
                     <CardMedia
                       component="img"
                       sx={{ width: 151 }}
-                      image={inboxItem.image}
+                      image={`http://localhost:5000/image/${inboxItem.bank_image}`}
                       alt="รูป user"
                     />
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                       <CardContent sx={{ flex: '1 0 auto' }}>
-                        <Typography component="div" variant="h5">
-                          {inboxItem.fullname}
-                        </Typography>
-                        <Typography variant="subtitle1" color="text.secondary" component="div">
-                          ได้ทำรายการของ ธนาคาร : {inboxItem.bank_name}
+                        <Typography variant="h5" component="div">
+                          ธนาคาร : {inboxItem.bank_name}
                         </Typography>
                         <Typography variant="subtitle1" color="text.secondary" component="div">
                           สถานะปัจจุบัน : {inboxItem.userbank_status}
@@ -1330,21 +1451,18 @@ function Main12() {
                 </Grid>
               ))}
               {filteredProductInbox1.map((item) => (
-                <Grid item key={item.order_product_id} xs={12}>
+                <Grid item key={item.order_sale_id} xs={12}>
                   <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
                     <CardMedia
                       component="img"
                       sx={{ width: 151 }}
-                      image={item.image}
+                      image={`http://localhost:5000/image/${item.bank_image}`}
                       alt="รูป user"
                     />
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                       <CardContent sx={{ flex: '1 0 auto' }}>
-                        <Typography component="div" variant="h5">
-                          {item.fullname}
-                        </Typography>
-                        <Typography variant="subtitle1" color="text.secondary" component="div">
-                          ได้ทำรายการของ ธนาคาร : {item.order_sale_bankname}
+                        <Typography variant="h5" component="div">
+                          ธนาคาร : {item.order_sale_bankname}
                         </Typography>
                         <Typography variant="subtitle1" color="text.secondary" component="div">
                           สถานะปัจจุบัน : {item.order_product_status}
@@ -1395,6 +1513,9 @@ function Main12() {
                         <Typography component="div" variant="h5">
                           {item.bank_name}
                         </Typography>
+                        <Typography variant="subtitle1" color="black" component="div">
+                          คะแนนความตรงต่อเวลา
+                        </Typography>
                         <Box
                           sx={{
                             width: 200,
@@ -1415,6 +1536,29 @@ function Main12() {
                         <Typography variant="subtitle1" color="text.secondary" component="div">
                           รายละเอียด : {item.detail}
                         </Typography>
+                        <Typography variant="subtitle1" color="black" component="div">
+                          คะแนนของทรัพยากร
+                        </Typography>
+                        <Box
+                          sx={{
+                            width: 200,
+                            display: 'flex',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <Rating
+                            name="text-feedback"
+                            value={item.ratings}
+                            readOnly
+                            precision={0.5}
+
+                            emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+                          />
+                          <Box sx={{ ml: 2 }} >{`${item.ratings || 'N/A'}`}</Box>
+                        </Box>
+                        <Typography variant="subtitle1" color="text.secondary" component="div">
+                          รายละเอียด : {item.details}
+                        </Typography>
                         <Typography variant="subtitle1" color="text.secondary" component="div">
                           เวลาที่ทำรายการ : {dayjs(item.date).format("DD-MM-YYYY HH:mm:ss")}
                         </Typography>
@@ -1425,9 +1569,6 @@ function Main12() {
                           alt="รูปธนาคาร"
                         />
                       </CardContent>
-                      <CardActions>
-                        <Button onClick={handleClickOpenReview(item)} size="medium">เปิดอ่าน</Button>
-                      </CardActions>
                     </Box>
                   </Card>
                 </Grid>
@@ -1462,16 +1603,13 @@ function Main12() {
                             <CardMedia
                               component="img"
                               sx={{ width: 151 }}
-                              image={item.image}
+                              image={`http://localhost:5000/image/${item.bank_image}`}
                               alt="รูป user"
                             />
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                               <CardContent sx={{ flex: '1 0 auto' }}>
-                                <Typography component="div" variant="h5">
-                                  {item.fullname}
-                                </Typography>
-                                <Typography variant="subtitle1" color="text.secondary" component="div">
-                                  ได้ทำรายการของ ธนาคาร : {item.bank_name}
+                                <Typography variant="h5" component="div">
+                                  ธนาคาร : {item.bank_name}
                                 </Typography>
                                 <Typography variant="subtitle1" color="text.secondary" component="div">
                                   สถานะปัจจุบัน : {item.order_status}
@@ -1498,16 +1636,13 @@ function Main12() {
                             <CardMedia
                               component="img"
                               sx={{ width: 151 }}
-                              image={inboxItem.image}
+                              image={`http://localhost:5000/image/${inboxItem.bank_image}`}
                               alt="รูป user"
                             />
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                               <CardContent sx={{ flex: '1 0 auto' }}>
-                                <Typography component="div" variant="h5">
-                                  {inboxItem.fullname}
-                                </Typography>
-                                <Typography variant="subtitle1" color="text.secondary" component="div">
-                                  ได้ทำรายการของ ธนาคาร : {inboxItem.bank_name}
+                                <Typography variant="h5" component="div">
+                                 ธนาคาร : {inboxItem.bank_name}
                                 </Typography>
                                 <Typography variant="subtitle1" color="text.secondary" component="div">
                                   สถานะปัจจุบัน : {inboxItem.userbank_status}
@@ -1534,16 +1669,13 @@ function Main12() {
                             <CardMedia
                               component="img"
                               sx={{ width: 151 }}
-                              image={item.image}
+                              image={`http://localhost:5000/image/${item.bank_image}`}
                               alt="รูป user"
                             />
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                               <CardContent sx={{ flex: '1 0 auto' }}>
-                                <Typography component="div" variant="h5">
-                                  {item.fullname}
-                                </Typography>
-                                <Typography variant="subtitle1" color="text.secondary" component="div">
-                                  ได้ทำรายการของ ธนาคาร : {item.order_sale_bankname}
+                                <Typography variant="h5" component="div">
+                                  ธนาคาร : {item.order_sale_bankname}
                                 </Typography>
                                 <Typography variant="subtitle1" color="text.secondary" component="div">
                                   สถานะปัจจุบัน : {item.order_product_status}
@@ -1583,16 +1715,13 @@ function Main12() {
                             <CardMedia
                               component="img"
                               sx={{ width: 151 }}
-                              image={item.image}
+                              image={`http://localhost:5000/image/${item.bank_image}`}
                               alt="รูป user"
                             />
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                               <CardContent sx={{ flex: '1 0 auto' }}>
-                                <Typography component="div" variant="h5">
-                                  {item.fullname}
-                                </Typography>
-                                <Typography variant="subtitle1" color="text.secondary" component="div">
-                                  ได้ทำรายการของ ธนาคาร : {item.bank_name}
+                                <Typography variant="h5" component="div">
+                                  ธนาคาร : {item.bank_name}
                                 </Typography>
                                 <Typography variant="subtitle1" color="text.secondary" component="div">
                                   สถานะปัจจุบัน : {item.order_status}
@@ -1622,16 +1751,13 @@ function Main12() {
                             <CardMedia
                               component="img"
                               sx={{ width: 151 }}
-                              image={inboxItem.image}
+                              image={`http://localhost:5000/image/${inboxItem.bank_image}`}
                               alt="รูป user"
                             />
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                               <CardContent sx={{ flex: '1 0 auto' }}>
-                                <Typography component="div" variant="h5">
-                                  {inboxItem.fullname}
-                                </Typography>
-                                <Typography variant="subtitle1" color="text.secondary" component="div">
-                                  ได้ทำรายการของ ธนาคาร : {inboxItem.bank_name}
+                                <Typography variant="h5" component="div">
+                                 ธนาคาร : {inboxItem.bank_name}
                                 </Typography>
                                 <Typography variant="subtitle1" color="text.secondary" component="div">
                                   สถานะปัจจุบัน : {inboxItem.userbank_status}
@@ -1661,16 +1787,13 @@ function Main12() {
                             <CardMedia
                               component="img"
                               sx={{ width: 151 }}
-                              image={item.image}
+                              image={`http://localhost:5000/image/${item.bank_image}`}
                               alt="รูป user"
                             />
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                               <CardContent sx={{ flex: '1 0 auto' }}>
-                                <Typography component="div" variant="h5">
-                                  {item.fullname}
-                                </Typography>
-                                <Typography variant="subtitle1" color="text.secondary" component="div">
-                                  ได้ทำรายการของ ธนาคาร : {item.order_sale_bankname}
+                                <Typography variant="h5" component="div">
+                                  ธนาคาร : {item.order_sale_bankname}
                                 </Typography>
                                 <Typography variant="subtitle1" color="text.secondary" component="div">
                                   สถานะปัจจุบัน : {item.order_product_status}
@@ -1713,16 +1836,13 @@ function Main12() {
                             <CardMedia
                               component="img"
                               sx={{ width: 151 }}
-                              image={item.image}
+                              image={`http://localhost:5000/image/${item.bank_image}`}
                               alt="รูป user"
                             />
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                               <CardContent sx={{ flex: '1 0 auto' }}>
-                                <Typography component="div" variant="h5">
-                                  {item.fullname}
-                                </Typography>
-                                <Typography variant="subtitle1" color="text.secondary" component="div">
-                                  ได้ทำรายการของ ธนาคาร : {item.bank_name}
+                                <Typography variant="h5" component="div">
+                                  ธนาคาร : {item.bank_name}
                                 </Typography>
                                 <Typography variant="subtitle1" color="text.secondary" component="div">
                                   สถานะปัจจุบัน : {item.order_status}
@@ -1749,16 +1869,13 @@ function Main12() {
                             <CardMedia
                               component="img"
                               sx={{ width: 151 }}
-                              image={inboxItem.image}
+                              image={`http://localhost:5000/image/${inboxItem.bank_image}`}
                               alt="รูป user"
                             />
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                               <CardContent sx={{ flex: '1 0 auto' }}>
-                                <Typography component="div" variant="h5">
-                                  {inboxItem.fullname}
-                                </Typography>
-                                <Typography variant="subtitle1" color="text.secondary" component="div">
-                                  ได้ทำรายการของ ธนาคาร : {inboxItem.bank_name}
+                                <Typography variant="h5" component="div">
+                                  ธนาคาร : {inboxItem.bank_name}
                                 </Typography>
                                 <Typography variant="subtitle1" color="text.secondary" component="div">
                                   สถานะปัจจุบัน : {inboxItem.userbank_status}
@@ -1785,16 +1902,13 @@ function Main12() {
                             <CardMedia
                               component="img"
                               sx={{ width: 151 }}
-                              image={item.image}
+                              image={`http://localhost:5000/image/${item.bank_image}`}
                               alt="รูป user"
                             />
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                               <CardContent sx={{ flex: '1 0 auto' }}>
-                                <Typography component="div" variant="h5">
-                                  {item.fullname}
-                                </Typography>
-                                <Typography variant="subtitle1" color="text.secondary" component="div">
-                                  ได้ทำรายการของ ธนาคาร : {item.order_sale_bankname}
+                                <Typography variant="h5" component="div">
+                                  ธนาคาร : {item.order_sale_bankname}
                                 </Typography>
                                 <Typography variant="subtitle1" color="text.secondary" component="div">
                                   สถานะปัจจุบัน : {item.order_product_status}
@@ -2288,9 +2402,14 @@ function Main12() {
             )}
           </DialogContentText>
         </DialogContent>
+        {(selectedProductApproved && selectedProductApproved.order_status_getproduct === 'ส่งทรัพยากรเรียบร้อยแล้ว') && (
+          <DialogActions sx={{ justifyContent: 'flex-end' }}>
+            <Button onClick={() => handleClicktoUpdateGetProduct("รับทรัพยากรเรียบร้อยแล้ว")}>รับทรัพยากรเรียบร้อยแล้ว</Button>
+          </DialogActions>
+        )}
         {(selectedProductApproved && selectedProductApproved.order_status_getproduct === 'รับทรัพยากรเรียบร้อยแล้ว' && selectedProductApproved.order_rental_pickup !== 'รีวิวทรัพยากรเรียบร้อย') && (
           <DialogActions sx={{ justifyContent: 'flex-end' }}>
-            <Button onClick={() => handleClicktoReview(selectedProductApproved.order_request_id)}>แจ้งคืนทรัพยากร</Button>
+            <Button onClick={() => handleClicktoReview(selectedProductApproved.order_request_id)}>รีวิวทรัพยากรที่ซื้อในธนาคาร</Button>
           </DialogActions>
         )}
       </Dialog>
@@ -2438,9 +2557,14 @@ function Main12() {
             )}
           </DialogContentText>
         </DialogContent>
+        {(selectedProductApproved1 && selectedProductApproved1.userbank_status_getproduct === 'ส่งทรัพยากรเรียบร้อยแล้ว') && (
+          <DialogActions sx={{ justifyContent: 'flex-end' }}>
+            <Button onClick={() => handleClicktoUpdateGetProduct1("รับทรัพยากรเรียบร้อยแล้ว")}>รับทรัพยากรเรียบร้อยแล้ว</Button>
+          </DialogActions>
+        )}
         {(selectedProductApproved1 && selectedProductApproved1.userbank_status_getproduct === 'รับทรัพยากรเรียบร้อยแล้ว' && selectedProductApproved1.order_exchange_pickup !== 'รีวิวทรัพยากรเรียบร้อย') && (
           <DialogActions sx={{ justifyContent: 'flex-end' }}>
-            <Button onClick={() => handleClicktoReview1(selectedProductApproved1.exchange_id)}>รีวิวทรัพยากรที่แลกเปลี่ยนในธนาคาร</Button>
+            <Button onClick={() => handleClicktoReview1(selectedProductApproved1.exchange_id)}>รีวิวทรัพยากรที่ซื้อในธนาคาร</Button>
           </DialogActions>
         )}
       </Dialog>
@@ -2524,6 +2648,11 @@ function Main12() {
             )}
           </DialogContentText>
         </DialogContent>
+        {(selectedProductApproved2 && selectedProductApproved2.order_product_getproduct === 'ส่งทรัพยากรเรียบร้อยแล้ว') && (
+          <DialogActions sx={{ justifyContent: 'flex-end' }}>
+            <Button onClick={() => handleClicktoUpdateGetProduct2("รับทรัพยากรเรียบร้อยแล้ว")}>รับทรัพยากรเรียบร้อยแล้ว</Button>
+          </DialogActions>
+        )}
         {(selectedProductApproved2 && selectedProductApproved2.order_product_getproduct === 'รับทรัพยากรเรียบร้อยแล้ว' && selectedProductApproved2.order_sale_pickup !== 'รีวิวทรัพยากรเรียบร้อย') && (
           <DialogActions sx={{ justifyContent: 'flex-end' }}>
             <Button onClick={() => handleClicktoReview2(selectedProductApproved2.order_sale_id)}>รีวิวทรัพยากรที่ซื้อในธนาคาร</Button>

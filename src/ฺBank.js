@@ -865,6 +865,7 @@ export default function Bank() {
     ReactSession.set("emailuserbank", selectedProductApproved2.email);
     navigate("/reviewcustomsale")
   }
+ 
   return (
     <Box sx={{ display: 'flex' }}>
       <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -922,7 +923,7 @@ export default function Bank() {
                 <SearchIcon />
               </SearchIconWrapper>
               <StyledInputBase
-                placeholder="Search Products"
+                placeholder="ค้นหาทรัพยากร"
                 inputProps={{ 'aria-label': 'search' }}
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
@@ -1764,10 +1765,10 @@ export default function Bank() {
           {(selectedProductApproved && selectedProductApproved.order_status_getproduct === 'ยังไม่ได้มารับทรัพยากร' &&  selectedProductApproved.order_status === 'อนุมัติให้ทำรายการ'
           ) && (
             <DialogActions sx={{ justifyContent: 'center' }}>
-            <Button onClick={() => handleClicktoUpdateGetProduct("รับทรัพยากรเรียบร้อยแล้ว")}>รับทรัพยากรเรียบร้อยแล้ว</Button>
+            <Button onClick={() => handleClicktoUpdateGetProduct("ส่งทรัพยากรเรียบร้อยแล้ว")}>ส่งทรัพยากรเรียบร้อยแล้ว</Button>
           </DialogActions>
           )}
-          {(selectedProductApproved && selectedProductApproved.order_rental_pickup === 'รีวิวทรัพยากรเรียบร้อย' && selectedProductApproved.customer_status !== 'รีวิวผู้ใช้เรียบร้อย') && (
+          {(selectedProductApproved && selectedProductApproved.order_rental_pickup === 'รีวิวทรัพยากรเรียบร้อย' && selectedProductApproved.customer_status !== 'รีวิวผู้ใช้เรียบร้อย' && selectedProductApproved.order_status_getproduct === 'รับทรัพยากรเรียบร้อยแล้ว') && (
             <DialogActions sx={{ justifyContent: 'center' }}>
               <Button onClick={() => handleClicktoReview(selectedProductApproved.order_request_id)}>รีวิวผู้ใช้ที่ได้เช่าหรือยืมทรัพยากรในธนาคารของคุณ</Button>
             </DialogActions>
@@ -1920,10 +1921,10 @@ export default function Bank() {
           {(selectedProductApproved1 && selectedProductApproved1.userbank_status_getproduct === 'ยังไม่ได้มารับทรัพยากร' && selectedProductApproved1.userbank_status === 'อนุมัติให้ทำรายการ'
           ) && (
             <DialogActions sx={{ justifyContent: 'center' }}>
-            <Button onClick={() => handleClicktoUpdateGetProduct1("รับทรัพยากรเรียบร้อยแล้ว")}>รับทรัพยากรเรียบร้อยแล้ว</Button>
+            <Button onClick={() => handleClicktoUpdateGetProduct1("ส่งทรัพยากรเรียบร้อยแล้ว")}>ส่งทรัพยากรเรียบร้อยแล้ว</Button>
           </DialogActions>
           )}
-          {(selectedProductApproved1 && selectedProductApproved1.order_exchange_pickup === 'รีวิวทรัพยากรเรียบร้อย' && selectedProductApproved1.customer_status_exchange !== 'รีวิวผู้ใช้เรียบร้อย') && (
+          {(selectedProductApproved1 && selectedProductApproved1.order_exchange_pickup === 'รีวิวทรัพยากรเรียบร้อย' && selectedProductApproved1.customer_status_exchange !== 'รีวิวผู้ใช้เรียบร้อย' && selectedProductApproved1.userbank_status_getproduct === 'รับทรัพยากรเรียบร้อยแล้ว') && (
             <DialogActions sx={{ justifyContent: 'center' }}>
               <Button onClick={() => handleClicktoReview1(selectedProductApproved1.exchange_id)}>รีวิวผู้ใช้ที่ได้นำทรัพยากรมาแลกเปลี่ยนในธนาคารของคุณ</Button>
             </DialogActions>
@@ -2012,10 +2013,10 @@ export default function Bank() {
           {(selectedProductApproved2 && selectedProductApproved2.order_product_getproduct === 'ยังไม่ได้มารับทรัพยากร' && selectedProductApproved2.order_product_status === 'อนุมัติให้ทำรายการ'
           ) && (
             <DialogActions sx={{ justifyContent: 'center' }}>
-            <Button onClick={() => handleClicktoUpdateGetProduct2("รับทรัพยากรเรียบร้อยแล้ว")}>รับทรัพยากรเรียบร้อยแล้ว</Button>
+            <Button onClick={() => handleClicktoUpdateGetProduct2("ส่งทรัพยากรเรียบร้อยแล้ว")}>ส่งทรัพยากรเรียบร้อยแล้ว</Button>
           </DialogActions>
           )}
-          {(selectedProductApproved2 && selectedProductApproved2.order_sale_pickup === 'รีวิวทรัพยากรเรียบร้อย' && selectedProductApproved2.customer_status_sale !== 'รีวิวผู้ใช้เรียบร้อย') && (
+          {(selectedProductApproved2 && selectedProductApproved2.order_sale_pickup === 'รีวิวทรัพยากรเรียบร้อย' && selectedProductApproved2.customer_status_sale !== 'รีวิวผู้ใช้เรียบร้อย' && selectedProductApproved2.order_product_getproduct === 'รับทรัพยากรเรียบร้อยแล้ว') && (
             <DialogActions sx={{ justifyContent: 'center' }}>
               <Button onClick={() => handleClicktoReview2(selectedProductApproved2.order_sale_id)}>รีวิวผู้ใช้ที่ซื้อทรัพยากรในธนาคารของคุณ</Button>
             </DialogActions>
