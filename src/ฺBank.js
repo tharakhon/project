@@ -262,7 +262,7 @@ export default function Bank() {
 
   const handleClickOpen1 = (product) => () => {
     setSelectedProducts(product);
-    setOrderExchange_borrowDate(dayjs(product.orderExchange_borrowDate));
+    setOrderExchange_borrowDate(dayjs(product.userbank_borrowdate));
     setOpenOrder1(true);
     setScroll('body');
   };
@@ -284,7 +284,7 @@ export default function Bank() {
 
   const handleClickOpenApproved1 = (product) => () => {
     setSelectedProductApproved1(product);
-    setOrderExchange_borrowDate(dayjs(product.orderExchange_borrowDate));
+    setOrderExchange_borrowDate(dayjs(product.userbank_borrowdate));
     setOpenOrderApproved1(true);
     setScroll('body');
   };
@@ -383,9 +383,15 @@ export default function Bank() {
   }, [openOrderApproved2]);
 
   const handleNext = () => {
+    ReactSession.set('username', username);
+    ReactSession.set("codename", codename);
+    ReactSession.set("bank_name", bank_name);
     navigate("/addproduct");
   }
   const handleNextListbank = () => {
+    ReactSession.set('username', username);
+    ReactSession.set("codename", codename);
+    ReactSession.set("bank_name", bank_name);
     navigate("/listbank");
   }
   const [value, setValue] = React.useState(0);
@@ -770,7 +776,7 @@ export default function Bank() {
           product_type4: item.product_type4,
           product_unit: item.product_unit,
           product_details: item.product_details,
-          orderExchange_borrowDate: dayjs(item.orderExchange_borrowDate),
+          userbank_borrowdate: dayjs(item.userbank_borrowdate),
           orderExchange_quantity: item.orderExchange_quantity,
           userbank_status: item.userbank_status,
           userbank_productname: item.userbank_productname,

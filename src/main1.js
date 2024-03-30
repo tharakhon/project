@@ -312,7 +312,7 @@ function Main12() {
 
   const handleClickOpen1 = (product) => () => {
     setSelectedProducts(product);
-    setOrderExchange_borrowDate(dayjs(product.orderExchange_borrowDate));
+    setOrderExchange_borrowDate(dayjs(product.userbank_borrowdate));
     setOpenOrder1(true);
     setScroll('body');
   };
@@ -334,7 +334,7 @@ function Main12() {
 
   const handleClickOpenApproved1 = (product) => () => {
     setSelectedProductApproved1(product);
-    setOrderExchange_borrowDate(dayjs(product.orderExchange_borrowDate));
+    setOrderExchange_borrowDate(dayjs(product.userbank_borrowdate));
     setOpenOrderApproved1(true);
     setScroll('body');
   };
@@ -634,6 +634,26 @@ function Main12() {
     setActiveTab(newValue);
   };
 
+  const handleMenuOptionClickSorted = (selectedOption) => {
+    let sortedProducts = [...originalData]; 
+
+    if (selectedOption === 'เรียงด้วยเรตติ้ง') {
+      // เรียงลำดับ sortedProducts โดยใช้ average_rating จากมากไปน้อย
+      sortedProducts.sort((a, b) => b.average_rating - a.average_rating);
+    } else if (selectedOption === 'เรียงด้วยแรงค์') {
+      // เรียงลำดับ sortedProducts โดยใช้ rank
+      sortedProducts.sort((a, b) => b.rank.localeCompare(a.rank));
+    } else if (selectedOption === 'เรียงด้วยระยะทาง') {
+      // เรียงลำดับ sortedProducts โดยใช้ระยะทาง
+      // คุณสามารถเขียนโค้ดเรียงลำดับตามระยะทางได้ตามที่คุณต้องการ
+      // เช่น sortedProducts.sort((a, b) => a.distance - b.distance);
+      // หรือใช้ข้อมูลอื่นที่เกี่ยวข้องกับระยะทางแทน
+    }
+  
+    setFilteredProducts(sortedProducts); // เซ็ตผลลัพธ์ที่กรองไว้
+    handleCloseUserMenu(); // ปิดเมนู
+  };
+
   const handleMenuOptionClick = (option) => {
     handleCloseUserMenu1();
 
@@ -714,7 +734,7 @@ function Main12() {
           lon: item.bank_longitude,
           codename: item.bank_codename,
           bankMembers: item.member_count,
-          average_rating : item.average_rating,
+          average_rating: item.average_rating,
         }));
 
         console.log('fetchedProducts', fetchedProducts)
@@ -726,6 +746,7 @@ function Main12() {
       });
   }, []);
   const handleSubmit = () => {
+    ReactSession.set('username', username);
     navigate(`/registerbank`)
   }
   const handleOpenbankuser = (title) => {
@@ -850,7 +871,7 @@ function Main12() {
         console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
       })
 
-  }, [username,filteredProduct]);
+  }, [username, filteredProduct]);
   useEffect(() => {
     Axios.get(`http://localhost:5000/Inbox1/${username}`)
       .then((response) => {
@@ -861,12 +882,12 @@ function Main12() {
           bank_name: item.bank_name,
           fullname: item.fullname,
           image: item.image,
-          bank_image : item.bank_image,
+          bank_image: item.bank_image,
           product_name: item.product_name,
           product_image: item.product_image,
           product_unit: item.product_unit,
           product_details: item.product_details,
-          orderExchange_borrowDate: dayjs(item.orderExchange_borrowDate),
+          userbank_borrowdate: dayjs(item.userbank_borrowdate),
           orderExchange_quantity: item.orderExchange_quantity,
           userbank_status: item.userbank_status,
           userbank_productname: item.userbank_productname,
@@ -891,7 +912,7 @@ function Main12() {
         console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
       })
 
-  }, [username,filteredProductInbox]);
+  }, [username, filteredProductInbox]);
 
   useEffect(() => {
     Axios.get(`http://localhost:5000/Inbox2/${username}`)
@@ -904,7 +925,7 @@ function Main12() {
           order_sale_bankname: item.order_sale_bankname,
           fullname: item.fullname,
           image: item.image,
-          bank_image : item.bank_image,
+          bank_image: item.bank_image,
           product_name: item.product_name,
           product_image: item.product_image,
           product_type4: item.product_type4,
@@ -928,7 +949,7 @@ function Main12() {
         console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
       })
 
-  }, [username,filteredProductInbox1]);
+  }, [username, filteredProductInbox1]);
 
   const handleToBank = () => {
     ReactSession.set('username', username);
@@ -1002,7 +1023,7 @@ function Main12() {
     navigate("/reviewbanksale")
   }
 
- 
+
   useEffect(() => {
     Axios.get(`http://localhost:5000/Showreviewcustom/${username}`)
       .then((response) => {
@@ -1214,7 +1235,7 @@ function Main12() {
                 onClose={handleCloseUserMenu}
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                  <MenuItem key={setting} onClick={() => handleMenuOptionClickSorted(setting)}>
                     <Typography textAlign="center">{setting}</Typography>
                   </MenuItem>
                 ))}
@@ -1642,7 +1663,7 @@ function Main12() {
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                               <CardContent sx={{ flex: '1 0 auto' }}>
                                 <Typography variant="h5" component="div">
-                                 ธนาคาร : {inboxItem.bank_name}
+                                  ธนาคาร : {inboxItem.bank_name}
                                 </Typography>
                                 <Typography variant="subtitle1" color="text.secondary" component="div">
                                   สถานะปัจจุบัน : {inboxItem.userbank_status}
@@ -1757,7 +1778,7 @@ function Main12() {
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                               <CardContent sx={{ flex: '1 0 auto' }}>
                                 <Typography variant="h5" component="div">
-                                 ธนาคาร : {inboxItem.bank_name}
+                                  ธนาคาร : {inboxItem.bank_name}
                                 </Typography>
                                 <Typography variant="subtitle1" color="text.secondary" component="div">
                                   สถานะปัจจุบัน : {inboxItem.userbank_status}

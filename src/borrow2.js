@@ -142,10 +142,15 @@ function Borroww() {
   const [isDataSaved, setIsDataSaved] = useState(false);
   const theme = useTheme();
   const [selectedUnit, setSelectedUnit] = useState('กรัม');
-  console.log(bank_codename)
+  const [borrowDate, setBorrowDate] = useState(null);
+  console.log(borrowDate)
 
   const handleUnitChange = (event) => {
     setSelectedUnit(event.target.value);
+  };
+
+  const handleBorrowDateChange = (date) => {
+    setBorrowDate(date);
   };
 
 
@@ -186,7 +191,7 @@ function Borroww() {
     navigate('/bankuser')
   };
   const handleBack = () => {
-    if (!isDataSaved && (profile || image || selectedCurrency || quantity || selectedUnit || additionalDetails)) {
+    if (!isDataSaved && (profile || image || selectedCurrency || quantity || selectedUnit || additionalDetails || borrowDate !== null)) {
       Swal.fire({
         icon: 'warning',
         title: 'ข้อมูลที่กรอกอาจไม่ได้รับการบันทึก',
@@ -210,9 +215,11 @@ function Borroww() {
     }
   };
 
+ 
+
   const handleAddData = () => {
 
-    if (!profile || !image || !selectedCurrency || !quantity || !selectedUnit || !additionalDetails) {
+    if (!profile || !image || !selectedCurrency || !quantity || !selectedUnit || !additionalDetails || !borrowDate) {
       Swal.fire({
         icon: 'error',
         title: 'ข้อมูลไม่ครบถ้วน',
@@ -241,6 +248,7 @@ function Borroww() {
         formData.append("userbank_productquantity", quantity);
         formData.append('userbank_unit', selectedUnit);
         formData.append('userbank_productdetails', additionalDetails);
+        formData.append("userbank_borrowdate", borrowDate);
 
         Axios.post('http://localhost:5000/userbank_exchange', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
@@ -269,6 +277,7 @@ function Borroww() {
       }
     });
   }
+  
   return (
     <div>
       <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
@@ -456,6 +465,22 @@ function Borroww() {
             value={additionalDetails} onChange={(e) => setAdditionalDetails(e.target.value)}
           />
         </div>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DemoContainer
+            components={[
+              'DatePicker',
+            ]}
+            sx={{ width: '50ch', marginTop: 3 }}
+          >
+            <DemoItem label={<Label componentName="วันที่จะนำของมาแลกเปลี่ยน" valueType="date" />} >
+              <DatePicker
+                value={borrowDate}
+                onChange={handleBorrowDateChange}
+                renderInput={(params) => <TextField {...params} />}
+              />
+            </DemoItem>
+          </DemoContainer>
+        </LocalizationProvider>
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-around', margin: 40 }}>
         <Button variant="contained" size="large" color="error" onClick={handleBack}> ย้อนกลับ </Button>

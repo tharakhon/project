@@ -152,7 +152,7 @@ function Notifications() {
     };
     const handleClickOpen1 = (product) => () => {
         setSelectedProducts(product);
-        setOrderExchange_borrowDate(dayjs(product.orderExchange_borrowDate));
+        setOrderExchange_borrowDate(dayjs(product.userbank_borrowdate));
         setOpenOrder1(true);
         setScroll('body');
     };
@@ -208,7 +208,7 @@ function Notifications() {
                 console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
             })
 
-    }, [bank_name,filteredProducts]);
+    }, []);
     useEffect(() => {
         Axios.get(`http://localhost:5000/showProductUser3/${bank_name}`)
             .then((response) => {
@@ -227,7 +227,7 @@ function Notifications() {
                     product_type4: item.product_type4,
                     product_unit: item.product_unit,
                     product_details: item.product_details,
-                    orderExchange_borrowDate: dayjs(item.orderExchange_borrowDate),
+                    userbank_borrowdate: dayjs(item.userbank_borrowdate),
                     orderExchange_quantity: item.orderExchange_quantity,
                     userbank_status: item.userbank_status,
                     userbank_productname: item.userbank_productname,
@@ -248,7 +248,7 @@ function Notifications() {
                 console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
             })
 
-    }, [bank_name,filteredProduct]);
+    }, []);
 
     useEffect(() => {
         Axios.get(`http://localhost:5000/showProductUser4/${bank_name}`)
@@ -280,7 +280,7 @@ function Notifications() {
                 console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
             })
 
-    }, [bank_name,filteredProductInbox1]);
+    }, []);
 
     const descriptionElementRef = React.useRef(null);
     React.useEffect(() => {
@@ -470,17 +470,13 @@ function Notifications() {
                         <IconButton size="large" color="inherit">
                             <TextsmsOutlinedIcon />
                         </IconButton>
-                        <IconButton
-                            size="large"
-                            color="inherit"
-                        >
-                            <NotificationsIcon />
-                        </IconButton>
+                       
                         <IconButton
                             size="large"
                             edge="end"
                             aria-haspopup="true"
                             color="inherit"
+                            onClick={() => navigate(`/profile`)}
                         >
                             <AccountCircle />
                         </IconButton>
@@ -581,7 +577,7 @@ function Notifications() {
                         ))}
                         {filteredProduct.map((item) => (
                             item.userbank_status === 'รอการตรวจสอบ' && (
-                                <Grid item key={item.orderExchange_id} xs={12}>
+                                <Grid item key={item.orderExchange_id } xs={12}>
                                     <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
                                         <CardMedia
                                             component="img"

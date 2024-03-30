@@ -336,7 +336,7 @@ function RegisterBank() {
         <img src={Ribbon1} alt="Bronze" style={{ marginTop: 60 }} />
         <FormLabel component="legend" style={{ color: 'black', fontSize: '22px', left: 50, top: 70 }}>Bronze</FormLabel>
         <div>
-          <FormLabel component="legend" style={{ color: 'black', right: 20, top: 100 }}>สามารถทำรายการในธนาคารทั้งหมดได้ </FormLabel>
+          <FormLabel component="legend" style={{ color: 'black', right: 20, top: 100 }}>สามารถทำรายการเช่ายืมได้ทั้งหมด </FormLabel>
           <OutlinedInput
             id="outlined-adornment-weight"
             endAdornment={<InputAdornment position="end">รายการ</InputAdornment>}
@@ -353,7 +353,7 @@ function RegisterBank() {
           style={{ marginTop: 100, marginRight: 7 }} />
         <FormLabel component="legend" style={{ color: 'black', fontSize: '22px', left: 38, top: 110 }}>Silver</FormLabel>
         <div>
-          <FormLabel component="legend" style={{ color: 'black', right: 20, top: 140 }}>สามารถทำรายการในธนาคารทั้งหมดได้ </FormLabel>
+          <FormLabel component="legend" style={{ color: 'black', right: 20, top: 140 }}>สามารถทำรายการเช่ายืมได้ทั้งหมด </FormLabel>
           <OutlinedInput
             id="outlined-adornment-weight"
             endAdornment={<InputAdornment position="end">รายการ</InputAdornment>}
@@ -369,7 +369,7 @@ function RegisterBank() {
           style={{ marginTop: 100, marginRight: 13 }} />
         <FormLabel component="legend" style={{ color: 'black', fontSize: '22px', left: 34, top: 110 }}>Gold</FormLabel>
         <div>
-          <FormLabel component="legend" style={{ color: 'black', right: 12, top: 140 }}>สามารถทำรายการในธนาคารทั้งหมดได้ </FormLabel>
+          <FormLabel component="legend" style={{ color: 'black', right: 12, top: 140 }}>สามารถทำรายการเช่ายืมได้ทั้งหมด </FormLabel>
           <OutlinedInput
             id="outlined-adornment-weight"
             endAdornment={<InputAdornment position="end" >รายการ</InputAdornment>}
@@ -385,7 +385,7 @@ function RegisterBank() {
           style={{ marginTop: 100, marginLeft: 17 }} />
         <FormLabel component="legend" style={{ color: 'black', fontSize: '22px', left: 58, top: 110 }}>Platinum</FormLabel>
         <div>
-          <FormLabel component="legend" style={{ color: 'black', right: 30, top: 140 }}>สามารถทำรายการในธนาคารทั้งหมดได้ </FormLabel>
+          <FormLabel component="legend" style={{ color: 'black', right: 30, top: 140 }}>สามารถทำรายการเช่ายืมได้ทั้งหมด </FormLabel>
           <OutlinedInput
             id="outlined-adornment-weight"
             endAdornment={<InputAdornment position="end"  >รายการ</InputAdornment>}

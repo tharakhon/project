@@ -5,38 +5,19 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
-import Ribbon1 from "../src/image/ribbon1.png";
-import Ribbon2 from "../src/image/ribbon2.png";
-import Ribbon3 from "../src/image/ribbon3.png";
-import Ribbon4 from "../src/image/ribbon4.png";
-import { Autocomplete} from "@mui/material";
-import MapShow from "./mapShow";
-const ListBronze = [
-    { label: 'สามารถทำรายการทั้งหมดได้ 1 รายการ' },
-    { label: 'สามารถทำรายการเช่าหรือยืมได้ 1 รายการ' },
-    { label: 'สามารถทำรายการแลกเปลี่ยนด้ 1 รายการ' },
-    { label: 'สามารถทำรายการซื้อขายได้ 1 รายการ' },
-]
-const ListSilver = [
-    { label: 'สามารถทำรายการทั้งหมดได้ 2 รายการ' },
-    { label: 'สามารถทำรายการเช่าหรือยืมได้ 2 รายการ' },
-    { label: 'สามารถทำรายการแลกเปลี่ยนด้ 2 รายการ' },
-    { label: 'สามารถทำรายการซื้อขายได้ 2 รายการ' },
-]
-const ListGold = [
-    { label: 'สามารถทำรายการทั้งหมดได้ 3 รายการ' },
-    { label: 'สามารถทำรายการเช่าหรือยืมได้ 3 รายการ' },
-    { label: 'สามารถทำรายการแลกเปลี่ยนด้ 3 รายการ' },
-    { label: 'สามารถทำรายการซื้อขายได้ 3 รายการ' },
-]
-const ListPlatinum = [
-    { label: 'สามารถทำรายการทั้งหมดได้ไม่จำกัด' },
-    { label: 'สามารถทำรายการเช่าหรือยืมได้ 4 รายการ' },
-    { label: 'สามารถทำรายการแลกเปลี่ยนด้ 4 รายการ' },
-    { label: 'สามารถทำรายการซื้อขายได้ 4 รายการ' },
-]
+import { Autocomplete, FormLabel, InputAdornment, OutlinedInput } from "@mui/material";
+import Mapshow from './mapShow';
+import { ReactSession } from 'react-client-session';
+import Axios from 'axios';
+import Card from '@mui/material/Card';
+import CardMedia from '@mui/material/CardMedia';
+import Swal from 'sweetalert2';
+
 function ListBankuser() {
     const [profile, setProfile] = useState();
+    const username = ReactSession.get('username');
+    const codename = ReactSession.get("codename");
+    const bank_name = ReactSession.get("bank_name");
     const [email, setEmail] = useState();
     const [tel, setTel] = useState("");
     const [flag, setflag] = useState(false);
@@ -44,21 +25,21 @@ function ListBankuser() {
     const [imagePreview, setImagePreview] = useState(null);
     const navigate = useNavigate();
     const [address, setAddress] = useState('');
-    const handleImageChange = (event) => {
-        const selectedImage = event.target.files[0];
-
-        if (selectedImage) {
-            setImage(selectedImage);
-            const imageUrl = URL.createObjectURL(selectedImage);
-            setImagePreview(imageUrl);
-        }
-    };
-    const handleSubmit = () => {
-        navigate("/bankuser");
-    }
+    const [filterProduct, setFilterProduct] = useState([])
+    const [originalData, setOriginalData] = useState({});
+   
+    useEffect(() => {
+        Axios.get(`http://localhost:5000/ShowBank/${bank_name}`)
+            .then((response) => {
+                console.log("ข้อมูลที่ได้รับ ShowBank :", response.data);
+                setFilterProduct(response.data[0]);
+                setOriginalData(response.data[0]);
+            })
+    }, [filterProduct, bank_name])
     const handleBack = () => {
-        navigate("/bankuser");
+      navigate(-1);
     }
+   
     return (
         <>
             <NavbarProfile />
@@ -73,75 +54,40 @@ function ListBankuser() {
                 noValidate
                 autoComplete="off"
             >
-                <div style={{ display: 'flex', flexDirection: 'column', width: '50ch' }}>
-                    <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
-                        {imagePreview ? (
-                            <div >
-                                <img
-                                    src={imagePreview}
-                                    alt="Selected"
-                                    style={{
-                                        width: '100%',
-                                        height: '100%',
-                                        objectFit: 'cover',
-                                    }}
-                                />
-                            </div>
-                        ) : (
-                            <div>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleImageChange}
-                                    style={{ display: 'none' }}
-                                    id="image-upload"
-                                />
-                                <label htmlFor="image-upload">
-                                    <Button
-                                        variant="outlined"
-                                        component="span"
-                                        sx={{ margin: 1 }}
-                                    >
-                                        Upload Image
-                                    </Button>
-                                </label>
-                            </div>
-                        )}
-                    </div>
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                    <Card sx={{ maxWidth: 345, m: 1 }}>
+                        <CardMedia
+                            component="img"
+                            sx={{ height: 300 }}
+                            image={`http://localhost:5000/image/${filterProduct.bank_image}`}
+                            alt="รูป user"
+                        />
+                    </Card>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '50ch' }}>
                     <TextField
+                    disabled
                         id="outlined-required"
-                        label="ชื่อธนาคาร"
+                        label={filterProduct.bank_name}
                         variant="outlined"
                         sx={{ margin: 1 }}
-                        value={profile} // ใช้ value แทน defaultValue
-                        onChange={(event) => setProfile(event.target.value)}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
                     />
 
                     <TextField
                         disabled
                         id="outlined-disabled"
-                        label="Email"
                         variant="outlined"
                         sx={{ margin: 1 }}
-                        value={email} // ใช้ value แทน defaultValue
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
+                        value={filterProduct.bank_email} // ใช้ value แทน defaultValue
                     />
 
                     <TextField
+                    disabled
                         id="outlined-basic"
-                        label="Tel"
+                        label={filterProduct.bank_telephone}
                         variant="outlined"
                         sx={{ margin: 1 }}
-                        value={tel} // ใช้ค่าของ state tel
-                        onChange={(event) => setTel(event.target.value)} // อัปเดต state เมื่อมีการเปลี่ยนแปลง
                     />
-
-                    {/* ในส่วนของเบอร์โทร คุณอาจต้องสร้าง state และใช้ value ใน TextField เช่นเดียวกัน */}
                 </div>
                 <Box
                     component="form"
@@ -152,56 +98,78 @@ function ListBankuser() {
                     autoComplete="off"
                 >
                     <TextField
+                    disabled
                         id="filled-multiline-static"
-                        label="ที่อยู่ของธนาคาร"
+                        label={filterProduct.bank_address}
                         multiline
                         rows={6}
-                        variant="filled"
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
+                        variant="outlined"
                     />
                 </Box>
                 <div style={{ display: "flex", alignitems: "center", justifyContent: 'center', }}>
-                    <img src={Ribbon1} alt="Bronze"
-                        style={{ marginTop: 50, width:100}} />
-                    <Autocomplete disablePortal
-                        id="combo-box-demo"
-                        options={ListBronze}
-                        sx={{ marginTop: 9, width: 350 }}
-                        renderInput={(params) => <TextField {...params} />}></Autocomplete>
+                    <img src={`http://localhost:5000/image/ribbon1.png`} alt="Bronze"
+                        style={{ marginTop: 50, width: 100 }} />
+                    <FormLabel component="legend" style={{ color: 'black', fontSize: '22px', left: 50, top: 70 }}>Bronze</FormLabel>
+                    <div>
+                        <FormLabel component="legend" style={{ color: 'black', right: 20, top: 100 }}>สามารถทำรายการเช่ายืมได้ทั้งหมด </FormLabel>
+                        <OutlinedInput
+                        disabled
+                            id="outlined-adornment-weight"
+                            value={filterProduct.bank_bronze}
+                            endAdornment={<InputAdornment position="end">รายการ</InputAdornment>}
+                            sx={{ right: 20, top: 100, }}
+                        />
+                    </div>
                 </div>
                 <div style={{ display: "flex", alignitems: "center", justifyContent: 'center', }}>
-                    <img src={Ribbon2} alt="Silver"
-                        style={{ marginTop: 75, width:100 }} />
-                    <Autocomplete disablePortal
-                        id="combo-box-demo"
-                        options={ListSilver}
-                        sx={{ marginTop: 12, width: 350 }}
-                        renderInput={(params) => <TextField {...params} />}></Autocomplete>
+                    <img src={`http://localhost:5000/image/ribbon2.png`} alt="Silver"
+                        style={{ marginTop: 75, width: 100 }} />
+                    <FormLabel component="legend" style={{ color: 'black', fontSize: '22px', left: 50, top: 70 }}>Bronze</FormLabel>
+                    <div>
+                        <FormLabel component="legend" style={{ color: 'black', right: 20, top: 100 }}>สามารถทำรายการเช่ายืมได้ทั้งหมด </FormLabel>
+                        <OutlinedInput
+                        disabled
+                            id="outlined-adornment-weight"
+                            value={filterProduct.bank_silver}
+                            endAdornment={<InputAdornment position="end">รายการ</InputAdornment>}
+                            sx={{ right: 20, top: 100, }}
+                        />
+                    </div>
                 </div>
                 <div style={{ display: "flex", alignitems: "center", justifyContent: 'center', }}>
-                    <img src={Ribbon3} alt="Gold"
-                        style={{ marginTop: 75, width:100 }} />
-                    <Autocomplete disablePortal
-                        id="combo-box-demo"
-                        options={ListGold}
-                        sx={{ marginTop: 12, width: 350 }}
-                        renderInput={(params) => <TextField {...params} />}></Autocomplete>
+                    <img src={`http://localhost:5000/image/ribbon3.png`} alt="Gold"
+                        style={{ marginTop: 75, width: 100 }} />
+                    <FormLabel component="legend" style={{ color: 'black', fontSize: '22px', left: 50, top: 70 }}>Bronze</FormLabel>
+                    <div>
+                        <FormLabel component="legend" style={{ color: 'black', right: 20, top: 100 }}>สามารถทำรายการเช่ายืมได้ทั้งหมด </FormLabel>
+                        <OutlinedInput
+                        disabled
+                            id="outlined-adornment-weight"
+                            value={filterProduct.bank_gold}
+                            endAdornment={<InputAdornment position="end">รายการ</InputAdornment>}
+                            sx={{ right: 20, top: 100, }}
+                        />
+                    </div>
                 </div>
                 <div style={{ display: "flex", alignitems: "center", justifyContent: 'center', }}>
-                    <img src={Ribbon4} alt="Platinum"
-                        style={{ marginTop: 75, width:100 }} />
-                    <Autocomplete disablePortal
-                        id="combo-box-demo"
-                        options={ListPlatinum}
-                        sx={{ marginTop: 12, width: 350 }}
-                        renderInput={(params) => <TextField {...params} />}></Autocomplete>
+                    <img src={`http://localhost:5000/image/ribbon4.png`} alt="Platinum"
+                        style={{ marginTop: 75, width: 100 }} />
+                    <FormLabel component="legend" style={{ color: 'black', fontSize: '22px', left: 50, top: 70 }}>Bronze</FormLabel>
+                    <div>
+                        <FormLabel component="legend" style={{ color: 'black', right: 20, top: 100 }}>สามารถทำรายการเช่ายืมได้ทั้งหมด </FormLabel>
+                        <OutlinedInput
+                        disabled
+                            id="outlined-adornment-weight"
+                            value={filterProduct.bank_platinum}
+                            endAdornment={<InputAdornment position="end">รายการ</InputAdornment>}
+                            sx={{ right: 20, top: 100, }}
+                        />
+                    </div>
                 </div>
             </Box>
-            <MapShow/>
+            <Mapshow/>
             <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: 50 }}>
                 <Button variant="contained" size="large" color="error" onClick={handleBack}> ย้อนกลับ </Button>
-                <Button variant="contained" size="large" color="success" onClick={handleSubmit}>ถัดไป</Button>
             </div>
         </>
     );

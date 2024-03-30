@@ -144,7 +144,7 @@ function Changepage() {
 
     }, []);
     const handleBackbankuser = () => {
-        if (inputQuantity !== '' || borrowDate !== null) {
+        if (inputQuantity !== '' ) {
             Swal.fire({
                 icon: 'question',
                 title: 'คุณต้องการบันทึกข้อมูลที่แก้ไขหรือไม่?',
@@ -165,7 +165,7 @@ function Changepage() {
     }
 
     const handleNextbankuser = () => {
-        if (!inputQuantity || !borrowDate) {
+        if (!inputQuantity ) {
             Swal.fire({
                 icon: 'error',
                 title: 'ข้อมูลไม่ครบถ้วน',
@@ -188,7 +188,6 @@ function Changepage() {
                     bank_name: bank_name,
                     userbank_email: username,
                     orderExchange_quantity: inputQuantity,
-                    orderExchange_borrowDate: borrowDate,
                 })
                     .then((response) => {
                         console.log(response.data);
@@ -393,22 +392,7 @@ function Changepage() {
                                 }} />
                         </div>
 
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DemoContainer
-                                components={[
-                                    'DatePicker',
-                                ]}
-                                sx={{ width: '50ch', marginTop: 3 }}
-                            >
-                                <DemoItem label={<Label componentName="วันที่จะนำของมาแลกเปลี่ยน" valueType="date" />} >
-                                    <DatePicker
-                                        value={borrowDate}
-                                        onChange={handleBorrowDateChange}
-                                        renderInput={(params) => <TextField {...params} />}
-                                    />
-                                </DemoItem>
-                            </DemoContainer>
-                        </LocalizationProvider>
+                      
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-around", margin: 40 }}>
                         <Button variant="contained" color="error" onClick={handleBackbankuser}>ย้อนกลับ</Button>
