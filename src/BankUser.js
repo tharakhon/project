@@ -250,6 +250,12 @@ export default function BankUser() {
     
         return averageRating;
       }
+
+      const handleOpenBankChat = () => {
+        ReactSession.set('username', username)
+        ReactSession.set('bank_name',bank_name)
+        navigate('/Bankuserchat')
+    }
     return (
         <Box sx={{ display: 'flex' }}>
             <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -269,7 +275,7 @@ export default function BankUser() {
                         <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, marginLeft: 350 }}>ธนาคาร : {bank_name}</p></Typography>
                         <Box sx={{ flexGrow: 1 }} />
                         <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                            <IconButton size="large" color="inherit">
+                            <IconButton size="large" color="inherit" onClick={handleOpenBankChat}>
                                 <TextsmsOutlinedIcon />
                             </IconButton>
                             <IconButton

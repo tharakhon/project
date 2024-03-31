@@ -1046,6 +1046,11 @@ function Main12() {
     setOpenOrderReview(true);
     setScroll('body');
   }
+
+  const handleOpenChat = () => {
+    ReactSession.set('username', username)
+    navigate('/UserChatbank')
+  }
   return (
     <div >
       <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
@@ -1074,7 +1079,7 @@ function Main12() {
           </Search>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <IconButton size="large" color="inherit">
+            <IconButton size="large" color="inherit" onClick={handleOpenChat}>
               <TextsmsOutlinedIcon />
             </IconButton>
             <IconButton

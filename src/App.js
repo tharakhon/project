@@ -28,6 +28,9 @@ import ReviewbankSale from './writereviewSale';
 import ReviewcustomExchange from './writecommentExchange';
 import ReviewcustomSale from './writecommentSale';
 import MapShow1 from './mapShow1';
+import { Bankuserchat } from './components/bankuserchat';
+import { BankChat } from './components/bankchat'; 
+import { UserChatbank } from './components/UserChatbank';
 
 function App() {
   return (
@@ -62,6 +65,9 @@ function App() {
         <Route path="reviewcustomexchange" element={<ReviewcustomExchange/>}/>
         <Route path="reviewcustomsale" element={<ReviewcustomSale/>}/>
         <Route path="map1" element={<MapShow1/>}/>
+        <Route path="Bankuserchat" element={<Bankuserchat/>}/>
+        <Route path="Bankchat" element={<BankChat/>}/>
+        <Route path="UserChatbank" element={<UserChatbank/>}/>
         </Routes>
       </BrowserRouter>
    

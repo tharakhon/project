@@ -93,6 +93,11 @@ function NavBarBank() {
           })
     
       }, [username]);
+      const handleOpenBankChat = () => {
+        ReactSession.set('username', username)
+        ReactSession.set('bank_name', bankname.bank_name)
+        navigate('/Bankchat')
+    }
     return (
         <div>
             <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
@@ -111,7 +116,7 @@ function NavBarBank() {
                     <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, marginLeft: 320 }}>ธนาคาร : {bankname.bank_name}</p></Typography>
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                        <IconButton size="large" color="inherit">
+                        <IconButton size="large" color="inherit" onClick={handleOpenBankChat}>
                             <TextsmsOutlinedIcon />
                         </IconButton>
                         <IconButton
