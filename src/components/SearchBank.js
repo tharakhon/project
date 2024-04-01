@@ -11,14 +11,14 @@ const SearchBank = ({ handleSelectBank }) => {
   const username = ReactSession.get("username");
   const bank_name = ReactSession.get("bank_name");
   const [banks, setBanks] = useState([]);
-  /*console.log(banks)*/
+  
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "messages"), (snapshot) => {
       const latestMessages = {};
       snapshot.forEach((doc) => {
         const data = doc.data();
         if (data.bank_name === bank_name && data.from !== username) {
-          latestMessages[data.name] = { ...data, id: doc.id };
+          latestMessages[data.bank_name] = { ...data, id: doc.id }; // เปลี่ยน data.name เป็น data.bank_name
         }
       });
       setBanks(Object.values(latestMessages));

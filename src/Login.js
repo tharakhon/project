@@ -39,7 +39,7 @@ function Login() {
       const response = await Axios.get(`http://localhost:5000/user/${email}`);
       console.log("ข้อมูลที่ได้รับ:", response.data);
   
-      if (response.data.length > 0 && response.data[0].email === email) {
+      if (response.data.length > 0 && response.data[0].email === email && response.data[0].statused === "Active") {
         // มีข้อมูลในฐานข้อมูลแล้ว จะทำการเซ็ตค่าและเปลี่ยนหน้าไปยังหน้าหลัก
         setProfile(res.profileObj);
         localStorage.setItem('username', email);

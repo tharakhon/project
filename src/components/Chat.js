@@ -19,7 +19,6 @@ const Chat = ({ searchedUser }) => {
     const messagesRef = collection(db, "messages");
     const [images,setImages] = useState([]);
 
-
     useEffect ( () =>{
         axios.get(`http://localhost:5000/showbank/${bank_name}`)
         .then ((response) => {

@@ -71,7 +71,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import Stack from '@mui/material/Stack';
 import Swal from 'sweetalert2';
-import swal from 'sweetalert';
+
 
 const setting2 = ['Profile', 'Logout'];
 const settings = ['เรียงด้วยแรงค์', 'เรียงด้วยระยะทาง', 'เรียงด้วยเรตติ้ง'];
@@ -952,11 +952,15 @@ function Main12() {
   }, [username, filteredProductInbox1]);
 
   const handleToBank = () => {
-    ReactSession.set('username', username);
-    ReactSession.set("codename", codename.bank_codename);
-    ReactSession.set("bank_name", codename.bank_name);
-    console.log(filteredProducts.title)
-    navigate("/bank")
+    if (codename.bank_name) {
+      ReactSession.set('username', username);
+      ReactSession.set("codename", codename.bank_codename);
+      ReactSession.set("bank_name", codename.bank_name);
+      console.log(filteredProducts.title)
+      navigate("/bank")
+  } else {
+      Swal.fire("แจ้งเตือน", "คุณยังไม่ได้สร้างธนาคาร", "warning");
+  }
   }
 
   const itemsToDisplay = displayBookmarks ? bookmarks : filteredProducts;

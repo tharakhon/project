@@ -9,15 +9,19 @@ import {
     query,
     onSnapshot,
 } from "@firebase/firestore";
+import axios from "axios";
 
 const ChatBank = ({ searchedBank }) => {
     const username = ReactSession.get("username");
     const bank_name = ReactSession.get("bank_name");
     const [messages, setMessages] = useState([]);
-    const [newMessage, setNewMessage] = useState(""); 
+    const [newMessage, setNewMessage] = useState("");
     const messagesRef = collection(db, "messages");
-
-    /*useEffect(() => {
+    const [banks, setBanks] = useState([]);
+    const [images, setImages] = useState([]);
+    const [profile, setProfile] = useState([]);
+    console.log(searchedBank)
+    useEffect(() => {
         const unsubscribe = onSnapshot(query(messagesRef, orderBy("createdAt")), (snapshot) => {
             let messages = [];
             snapshot.forEach((doc) => {
@@ -28,21 +32,42 @@ const ChatBank = ({ searchedBank }) => {
         });
 
         return () => unsubscribe();
-    }, [messagesRef]);*/
-    
+    }, [messagesRef]);
+    useEffect(() => {
+        axios.get(`http://localhost:5000/readimage/${username}`)
+            .then((response) => {
+                setImages(response.data[0])
+            })
+    }, [])
+
+    useEffect(() => {
+        axios.get(`http://localhost:5000/showbank/${bank_name}`)
+            .then((response) => {
+                setBanks(response.data[0].bank_image)
+            })
+    }, [])
+    useEffect(() => {
+        axios.get(`http://localhost:5000/user/${username}`)
+            .then((response) => {
+                setProfile(response.data[0])
+            })
+    }, [])
     const handleSend = async () => {
-        /*try {
+        try {
             await addDoc(messagesRef, {
-                replytext: newMessage,
-                from: username,
-                to: searchedUser.user,
+                text: newMessage,
                 createdAt: serverTimestamp(),
-                bank_name: bank_name, 
+                user: username,
+                bank_name: bank_name,
+                image: images.image,
+                name: profile.fullname,
+                imagesbank: banks,
             });
+
             setNewMessage("");
         } catch (error) {
             console.error("Error sending message: ", error);
-        }*/
+        }
     };
 
     return (
@@ -53,10 +78,47 @@ const ChatBank = ({ searchedBank }) => {
                     <div className="chatIcons"></div>
                 </div>
             )}
-            {searchedBank&& (
+            {searchedBank && (
                 <div className="messages">
-                    <span className="other-message">{searchedBank.from}
-                    </span>
+                    {messages.map((message) => {
+                        if (message.bank_name === bank_name) {
+                            const isOwnMessage = message.user === username;
+                            const isCurrentMessageSender = message.user === username;
+
+                            if (isOwnMessage || isCurrentMessageSender) {
+                                return (
+                                    <div
+                                        key={message.id}
+                                        className={`message ${isOwnMessage ? 'own-message' : 'other-message'}`}
+                                    >
+                                        <div className="message-content">
+                                            {!isOwnMessage && <span className="user">{message.user}</span>}
+                                            <span className="message-text">{message.text}</span>
+                                            <span className="timestamp">{message.createdAt && new Date(message.createdAt.toDate()).toLocaleTimeString()}</span>
+                                        </div>
+                                    </div>
+                                );
+                            } else if (message.to === username) { // Check if message is addressed to the user
+                                return (
+                                    <div
+                                        key={message.id}
+                                        className="message bank-message" // Adding a specific class for bank messages
+                                    >
+                                        <div className="other-message">
+                                            <span className="message-text">{message.bank_name} : {message.replytext}</span>
+                                            <span className="timestamp">{message.createdAt && new Date(message.createdAt.toDate()).toLocaleTimeString()}</span>
+                                        </div>
+                                    </div>
+                                );
+                            } else {
+                                return null;
+                            }
+                        } else {
+                            return null;
+                        }
+                    })}
+                    
+
                     <div className="input-wrapper">
                         <div className="input">
                             <input

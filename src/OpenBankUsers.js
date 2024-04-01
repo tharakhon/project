@@ -104,40 +104,45 @@ function OpenBankUsers() {
         navigate("/bankuser");
     }
     const handleMemberbankuser = () => {
-        Axios.post('http://localhost:5000/RegisterUserForBank', {
-            userBank_email: username,
-            userBank_bankName: bank_name,
-            // ... other data
-        })
-            .then((response) => {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'สมัครสมาชิกเสร็จสิ้น',
-                    text: 'คุณได้เป็นสมาชิกของธนาคารเรียบร้อยแล้ว',
-                    confirmButtonText: 'OK',
+        Swal.fire({
+            icon: 'warning',
+            title: 'ยืนยันการสมัครสมาชิก',
+            text: 'คุณต้องการสมัครสมาชิกในธนาคารหรือไม่?',
+            showCancelButton: true,
+            confirmButtonText: 'ใช่',
+            cancelButtonText: 'ไม่',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Axios.post('http://localhost:5000/RegisterUserForBank', {
+                    userBank_email: username,
+                    userBank_bankName: bank_name,
                 })
-            })
-            .catch((error) => {
-                if (error.response) {
-                    // The request was made and the server responded with a status code
-                    // that falls out of the range of 2xx
-                    console.error("Server Error:", error.response.data);
-                    if (error.response.data === "User is not a member of the bank") {
-                        // Show SweetAlert when the user is not a member of the bank
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'ยังไม่ได้เป็นสมาชิก',
-                            text: 'กรุณาสมัครสมาชิกก่อนทำรายการ',
-                        });
+                .then((response) => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'สมัครสมาชิกเสร็จสิ้น',
+                        text: 'คุณได้เป็นสมาชิกของธนาคารเรียบร้อยแล้ว',
+                        confirmButtonText: 'OK',
+                    });
+                })
+                .catch((error) => {
+                    if (error.response) {
+                        console.error("Server Error:", error.response.data);
+                        if (error.response.data === "User is not a member of the bank") {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'ยังไม่ได้เป็นสมาชิก',
+                                text: 'กรุณาสมัครสมาชิกก่อนทำรายการ',
+                            });
+                        }
+                    } else if (error.request) {
+                        console.error("No Response from Server");
+                    } else {
+                        console.error("Error:", error.message);
                     }
-                } else if (error.request) {
-                    // The request was made but no response was received
-                    console.error("No Response from Server");
-                } else {
-                    // Something happened in setting up the request that triggered an Error
-                    console.error("Error:", error.message);
-                }
-            });
+                });
+            }
+        });
     }
     const handleOrderbankuser = async (id) => {
         try {

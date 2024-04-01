@@ -9,6 +9,7 @@ import Navbar from './NavBar';
 import Axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import logo from '../src/image/Logo.png';
+import Swal from 'sweetalert2';
 
 
 
@@ -68,6 +69,24 @@ function Register() {
   }, [email]);
   const addUser = () => {
 
+    if (fullname.trim() === '' || tel.trim() === '') {
+      Swal.fire({
+        icon: 'warning',
+        title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+        text: 'โปรดกรอกข้อมูลให้ครบทุกช่อง',
+      });
+      return;
+    }
+
+    if (tel.trim().length < 9 || tel.trim().length > 10) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'ความยาวของเบอร์โทรไม่ถูกต้อง',
+        text: 'โปรดกรอกเบอร์โทรให้ถูกต้อง',
+      });
+      return;
+    }
+
     Axios.post("http://localhost:5000/create", {
       image: profile.imageUrl,
       email: profile.email,
@@ -83,7 +102,7 @@ function Register() {
           tel: tel,
         },
       ]);
-      navigate(`/`)
+      navigate(`/`);
     });
   };
 
@@ -137,7 +156,7 @@ function Register() {
                 onChange={(event) => {
                   const value = event.target.value;
                   if (!isNaN(value)) {
-                    if (value.length <= 10) {
+                    if (value.length <= 10 && value.length >= 9) {
                       setTel(value);
                     }
                   }

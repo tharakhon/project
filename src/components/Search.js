@@ -11,6 +11,7 @@ const Search = ({ handleSelectUser }) => {
   const username = ReactSession.get("username");
   const bank_name = ReactSession.get("bank_name");
   const [users, setUsers] = useState([]);
+ 
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "messages"), (snapshot) => {

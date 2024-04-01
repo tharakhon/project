@@ -167,21 +167,21 @@ export default function BankUser() {
 
                     if (Array.isArray(response.data)) {
                         setReviews(response.data); // เซ็ตข้อมูลรีวิวที่ได้รับเข้าสู่ state reviews
-                    }  else {
+                    } else {
                         Swal.fire({
                             icon: 'info',
                             title: 'ไม่พบรีวิว',
                             text: 'ยังไม่มีรีวิวสำหรับทรัพยากรนี้',
-                          });
-                      }
+                        });
+                    }
                 })
                 .catch((error) => {
                     Swal.fire({
                         icon: 'error',
                         title: 'เกิดข้อผิดพลาด',
                         text: 'ไม่สามารถดึงข้อมูลรีวิวได้ในขณะนี้',
-                      });
-                  });
+                    });
+                });
         }
     };
     const handleCloseReviewsDialog = () => {
@@ -197,11 +197,19 @@ export default function BankUser() {
     const handleDrawerClose = () => {
         setOpen(false);
     };
-    const handleNext = (id) => {
-        ReactSession.set('bank_name', bank_name);
-        ReactSession.set('username', username);
-        ReactSession.set("id", id);
-        navigate(`/openbankusers`);
+    const handleNext = (id, resourceQuantity) => {
+        if (resourceQuantity <= 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'ขออภัย',
+                text: 'ทรัพยากรหมดแล้ว'
+            });
+        } else {
+            ReactSession.set('bank_name', bank_name);
+            ReactSession.set('username', username);
+            ReactSession.set("id", id);
+            navigate(`/openbankusers`);
+        }
     };
     const handleNextListbankuser = () => {
         navigate("/listbankuser");
@@ -239,21 +247,21 @@ export default function BankUser() {
 
     function calculateAverageRating(reviews) {
         if (reviews.length === 0) {
-          return 0; // ถ้าไม่มีรีวิว ให้คะแนนเฉลี่ยเป็น 0
+            return 0; // ถ้าไม่มีรีวิว ให้คะแนนเฉลี่ยเป็น 0
         }
-    
+
         // คำนวณผลรวมของคะแนนทั้งหมด
         const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
-    
+
         // หารด้วยจำนวนรีวิวเพื่อคำนวณคะแนนเฉลี่ย
         const averageRating = totalRating / reviews.length;
-    
-        return averageRating;
-      }
 
-      const handleOpenBankChat = () => {
+        return averageRating;
+    }
+
+    const handleOpenBankChat = () => {
         ReactSession.set('username', username)
-        ReactSession.set('bank_name',bank_name)
+        ReactSession.set('bank_name', bank_name)
         navigate('/Bankuserchat')
     }
     return (
@@ -512,12 +520,18 @@ export default function BankUser() {
                                                 <Typography gutterBottom variant="h5" component="div">
                                                     {resource.title}
                                                 </Typography>
-                                                <Typography variant="body2" color="text.secondary">
-                                                    {`จำนวนทรัพยากรที่เหลืออยู่ : ${resource.quantity} ${resource.unit}`}
-                                                </Typography>
+                                                {resource.quantity <= 0 ? (
+                                                    <Typography variant="body2" color="text.secondary">
+                                                        ทรัพยากรหมดแล้ว
+                                                    </Typography>
+                                                ) : (
+                                                    <Typography variant="body2" color="text.secondary">
+                                                        {`จำนวนทรัพยากรที่เหลืออยู่ : ${resource.quantity} ${resource.unit}`}
+                                                    </Typography>
+                                                )}
                                             </CardContent>
                                             <CardActions sx={{ justifyContent: 'space-around' }}>
-                                                <Button size="small" onClick={() => handleNext(resource.id)}>
+                                                <Button size="small" onClick={() => handleNext(resource.id, resource.quantity)}>
                                                     ดูทรัพยากร
                                                 </Button>
                                                 <Button size="small" onClick={() => handleOpenReviewsDialog(resource)}>
@@ -553,12 +567,18 @@ export default function BankUser() {
                                                     <Typography gutterBottom variant="h5" component="div">
                                                         {resource.title}
                                                     </Typography>
-                                                    <Typography variant="body2" color="text.secondary">
-                                                        {`จำนวนทรัพยากรที่เหลืออยู่ : ${resource.quantity} ${resource.unit}`}
-                                                    </Typography>
+                                                    {resource.quantity <= 0 ? (
+                                                        <Typography variant="body2" color="text.secondary">
+                                                            ทรัพยากรหมดแล้ว
+                                                        </Typography>
+                                                    ) : (
+                                                        <Typography variant="body2" color="text.secondary">
+                                                            {`จำนวนทรัพยากรที่เหลืออยู่ : ${resource.quantity} ${resource.unit}`}
+                                                        </Typography>
+                                                    )}
                                                 </CardContent>
                                                 <CardActions sx={{ justifyContent: 'space-around' }}>
-                                                    <Button size="small" onClick={() => handleNext(resource.id)}>
+                                                    <Button size="small" onClick={() => handleNext(resource.id, resource.quantity)}>
                                                         ดูทรัพยากร
                                                     </Button>
                                                     <Button size="small" onClick={() => handleOpenReviewsDialog(resource)}>
