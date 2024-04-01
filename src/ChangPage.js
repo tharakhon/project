@@ -46,6 +46,8 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Typography from '@mui/material/Typography';
 import Drawer from '@mui/material/Drawer';
 import Swal from 'sweetalert2';
+import Avatar from '@mui/material/Avatar';
+import massage from './image/conversation.png';
 
 const ProSpan = styled('span')({
     display: 'inline-block',
@@ -99,6 +101,7 @@ function Changepage() {
     const [borrowDate, setBorrowDate] = useState(null);
     const navigate = useNavigate();
     const bank_name = ReactSession.get("bank_name");
+    const [userImage, setUserImage] = useState('');
     const [open, setOpen] = useState(false);
     const username = ReactSession.get("username");
     const theme = useTheme();
@@ -106,6 +109,23 @@ function Changepage() {
     const handleDrawerOpen = () => {
         setOpen(true);
     };
+    useEffect(() => {
+        Axios.get(`http://localhost:5000/readimage/${username}`)
+            .then((response) => {
+                console.log("image:", response.data[0].image);
+                // Assuming the image data is present in the response data
+                setUserImage(response.data[0].image);
+            })
+            .catch((error) => {
+                console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+            })
+
+    }, [username, userImage]);
+    const handleOpenBankChat = () => {
+        ReactSession.set('username', username)
+        ReactSession.set('bank_name', bank_name)
+        navigate('/Bankuserchat')
+    }
     const handleBorrowDateChange = (date) => {
         setBorrowDate(date);
     };
@@ -120,7 +140,7 @@ function Changepage() {
 
     const handleClick = () => {
         ReactSession.set('username', username)
-        navigate("/profile")
+        navigate("/profilebank")
     }
     const handleDrawerClose = () => {
         setOpen(false);
@@ -144,7 +164,7 @@ function Changepage() {
 
     }, []);
     const handleBackbankuser = () => {
-        if (inputQuantity !== '' ) {
+        if (inputQuantity !== '') {
             Swal.fire({
                 icon: 'question',
                 title: 'คุณต้องการบันทึกข้อมูลที่แก้ไขหรือไม่?',
@@ -156,16 +176,16 @@ function Changepage() {
                 if (result.isConfirmed) {
                     handleNextbankuser();
                 } else {
-                    navigate('/openbankusers'); 
+                    navigate('/openbankusers');
                 }
             });
         } else {
-            navigate('/openbankusers'); 
+            navigate('/openbankusers');
         }
     }
 
     const handleNextbankuser = () => {
-        if (!inputQuantity ) {
+        if (!inputQuantity) {
             Swal.fire({
                 icon: 'error',
                 title: 'ข้อมูลไม่ครบถ้วน',
@@ -219,28 +239,20 @@ function Changepage() {
         <div>
             <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
                 <Toolbar>
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={handleDrawerOpen}
-                        edge="start"
-                        sx={{ mr: 2, ...(open && { display: 'none' }) }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
                     <Typography><img src={logo} style={{ padding: 20, height: 80, width: 80, }} /></Typography>
                     <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, }}>AVB</p></Typography>
                     <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, marginLeft: 360 }}>ธนาคาร : {bank_name}</p></Typography>
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                        <IconButton size="large" color="inherit">
-                            <TextsmsOutlinedIcon />
+                        <IconButton size="large" color="inherit" onClick={() => navigate(`/main`)}>
+                            <HomeIcon />
                         </IconButton>
                         <IconButton
                             size="large"
                             color="inherit"
+                            onClick={handleOpenBankChat}
                         >
-                            <NotificationsIcon />
+                            <img src={massage} style={{ width: '24px' }} />
                         </IconButton>
                         <IconButton
                             size="large"
@@ -249,7 +261,7 @@ function Changepage() {
                             color="inherit"
                             onClick={handleClick}
                         >
-                            <AccountCircle />
+                            <Avatar alt="Remy Sharp" src={userImage} />
                         </IconButton>
                     </Box>
                     <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
@@ -263,50 +275,6 @@ function Changepage() {
                     </Box>
                 </Toolbar>
             </AppBar>
-            <Drawer
-                sx={{
-                    width: drawerWidth,
-                    flexShrink: 0,
-                    '& .MuiDrawer-paper': {
-                        width: drawerWidth,
-                        boxSizing: 'border-box',
-                    },
-                }}
-                variant="persistent"
-                anchor="left"
-                open={open}
-            >
-                <DrawerHeader>
-                    <IconButton onClick={handleDrawerClose}>
-                        {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-                    </IconButton>
-                </DrawerHeader>
-                <Divider />
-                <List>
-                    {['หน้าหลัก'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton onClick={() => navigate(`/main`)}>
-                                <ListItemIcon>
-                                    <HomeIcon />
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-                <List>
-                    {['ธนาคารของคุณ'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton onClick={() => navigate('/bank')}>
-                                <ListItemIcon>
-                                    <AccountBalanceIcon />
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-            </Drawer>
             {filteredProducts ? (
                 <div>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -392,7 +360,7 @@ function Changepage() {
                                 }} />
                         </div>
 
-                      
+
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-around", margin: 40 }}>
                         <Button variant="contained" color="error" onClick={handleBackbankuser}>ย้อนกลับ</Button>

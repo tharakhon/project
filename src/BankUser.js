@@ -53,6 +53,9 @@ import Rating from '@mui/material/Rating'
 import StarRateSharpIcon from '@mui/icons-material/StarRateSharp';
 import dayjs from 'dayjs';
 import Swal from 'sweetalert2';
+import massage from './image/conversation.png'
+import Avatar from '@mui/material/Avatar';
+import { CardActionArea } from '@mui/material';
 
 const drawerWidth = 240;
 const Search = styled('div')(({ theme }) => ({
@@ -141,6 +144,7 @@ export default function BankUser() {
     const username = ReactSession.get("username");
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [searchInput, setSearchInput] = useState('');
+    const [userImage, setUserImage] = useState('');
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
     const theme = useTheme();
@@ -192,7 +196,7 @@ export default function BankUser() {
     };
     const handleClick = () => {
         ReactSession.set('username', username)
-        navigate("/profile")
+        navigate("/profilebank")
     }
     const handleDrawerClose = () => {
         setOpen(false);
@@ -212,6 +216,7 @@ export default function BankUser() {
         }
     };
     const handleNextListbankuser = () => {
+        ReactSession.set('bank_name', bank_name);
         navigate("/listbankuser");
     }
     // const filteredProducts = products.filter((product) =>
@@ -258,7 +263,18 @@ export default function BankUser() {
 
         return averageRating;
     }
+    useEffect(() => {
+        Axios.get(`http://localhost:5000/readimage/${username}`)
+            .then((response) => {
+                console.log("image:", response.data[0].image);
+                // Assuming the image data is present in the response data
+                setUserImage(response.data[0].image);
+            })
+            .catch((error) => {
+                console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+            })
 
+    }, [username, userImage]);
     const handleOpenBankChat = () => {
         ReactSession.set('username', username)
         ReactSession.set('bank_name', bank_name)
@@ -269,28 +285,20 @@ export default function BankUser() {
             <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
                 <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
                     <Toolbar>
-                        <IconButton
-                            color="inherit"
-                            aria-label="open drawer"
-                            onClick={handleDrawerOpen}
-                            edge="start"
-                            sx={{ mr: 2, ...(open && { display: 'none' }) }}
-                        >
-                            <MenuIcon />
-                        </IconButton>
                         <Typography><img src={logo} style={{ padding: 20, height: 80, width: 80, }} /></Typography>
                         <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, }}>AVB</p></Typography>
                         <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, marginLeft: 350 }}>ธนาคาร : {bank_name}</p></Typography>
                         <Box sx={{ flexGrow: 1 }} />
                         <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                            <IconButton size="large" color="inherit" onClick={handleOpenBankChat}>
-                                <TextsmsOutlinedIcon />
+                            <IconButton size="large" color="inherit" onClick={() => navigate(`/main`)}>
+                                <HomeIcon />
                             </IconButton>
                             <IconButton
                                 size="large"
                                 color="inherit"
+                                onClick={handleOpenBankChat}
                             >
-                                <NotificationsIcon />
+                                <img src={massage} style={{ width: '24px' }} />
                             </IconButton>
                             <IconButton
                                 size="large"
@@ -299,7 +307,7 @@ export default function BankUser() {
                                 color="inherit"
                                 onClick={handleClick}
                             >
-                                <AccountCircle />
+                                <Avatar alt="Remy Sharp" src={userImage} />
                             </IconButton>
                         </Box>
                         <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
@@ -313,50 +321,6 @@ export default function BankUser() {
                         </Box>
                     </Toolbar>
                 </AppBar>
-                <Drawer
-                    sx={{
-                        width: drawerWidth,
-                        flexShrink: 0,
-                        '& .MuiDrawer-paper': {
-                            width: drawerWidth,
-                            boxSizing: 'border-box',
-                        },
-                    }}
-                    variant="persistent"
-                    anchor="left"
-                    open={open}
-                >
-                    <DrawerHeader>
-                        <IconButton onClick={handleDrawerClose}>
-                            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-                        </IconButton>
-                    </DrawerHeader>
-                    <Divider />
-                    <List>
-                        {['หน้าหลัก'].map((text, index) => (
-                            <ListItem key={text} disablePadding>
-                                <ListItemButton onClick={() => navigate(`/main`)}>
-                                    <ListItemIcon>
-                                        <HomeIcon />
-                                    </ListItemIcon>
-                                    <ListItemText primary={text} />
-                                </ListItemButton>
-                            </ListItem>
-                        ))}
-                    </List>
-                    <List>
-                        {['ธนาคารของคุณ'].map((text, index) => (
-                            <ListItem key={text} disablePadding>
-                                <ListItemButton onClick={() => navigate('/bank')}>
-                                    <ListItemIcon>
-                                        <AccountBalanceIcon />
-                                    </ListItemIcon>
-                                    <ListItemText primary={text} />
-                                </ListItemButton>
-                            </ListItem>
-                        ))}
-                    </List>
-                </Drawer>
             </AppBar>
             <Drawer
                 variant="permanent"
@@ -510,12 +474,14 @@ export default function BankUser() {
                                 filteredAndSearchedProducts.map((resource) => (
                                     <Grid item xs={3.75} key={resource.title}>
                                         <Card sx={{ maxWidth: 345, m: 1 }} >
-                                            <CardMedia
-                                                component="img"
-                                                height="300"
-                                                image={`http://localhost:5000/image/${resource.image}`}
-                                                title="รูปภาพทรัพยากร"
-                                            />
+                                            <CardActionArea onClick={() => handleNext(resource.id, resource.quantity)}>
+                                                <CardMedia
+                                                    component="img"
+                                                    height="300"
+                                                    image={`http://localhost:5000/image/${resource.image}`}
+                                                    title="รูปภาพทรัพยากร"
+                                                />
+                                            </CardActionArea>
                                             <CardContent>
                                                 <Typography gutterBottom variant="h5" component="div">
                                                     {resource.title}
@@ -557,12 +523,14 @@ export default function BankUser() {
                                     .map((resource) => (
                                         <Grid item xs={3.75} key={resource.title}>
                                             <Card sx={{ maxWidth: 345, m: 1 }} >
-                                                <CardMedia
-                                                    component="img"
-                                                    height="300"
-                                                    image={`http://localhost:5000/image/${resource.image}`}
-                                                    title="รูปภาพทรัพยากร"
-                                                />
+                                                <CardActionArea onClick={() => handleNext(resource.id, resource.quantity)}>
+                                                    <CardMedia
+                                                        component="img"
+                                                        height="300"
+                                                        image={`http://localhost:5000/image/${resource.image}`}
+                                                        title="รูปภาพทรัพยากร"
+                                                    />
+                                                </CardActionArea>
                                                 <CardContent>
                                                     <Typography gutterBottom variant="h5" component="div">
                                                         {resource.title}

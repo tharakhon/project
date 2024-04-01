@@ -54,6 +54,8 @@ import dayjs from 'dayjs';
 import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { ReactSession } from 'react-client-session';
 import Swal from 'sweetalert2';
+import massage from './image/conversation.png'
+import Avatar from '@mui/material/Avatar';
 
 const drawerWidth = 240;
 
@@ -138,11 +140,21 @@ function Notifications() {
     const [orderExchange_borrowDate, setOrderExchange_borrowDate] = useState(dayjs());
     const [orderSale_borrowDate, setOrderSale_borrowDate] = useState(dayjs());
     const [openNextDialog, setOpenNextDialog] = React.useState(false);
+    const [userImage, setUserImage] = useState('');
 
 
-    console.log(filteredProducts)
-    console.log(selectedProduct)
-    console.log(bank_name)
+    useEffect(() => {
+        Axios.get(`http://localhost:5000/readimage/${username}`)
+          .then((response) => {
+            console.log("image:", response.data[0].image);
+            // Assuming the image data is present in the response data
+            setUserImage(response.data[0].image);
+          })
+          .catch((error) => {
+            console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+          })
+    
+      }, [username, userImage]);
     const handleClickOpen = (product) => () => {
         setSelectedProduct(product);
         setBorrowDate(dayjs(product.order_borrowDate));
@@ -453,24 +465,19 @@ function Notifications() {
         <div>
             <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
                 <Toolbar>
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={handleDrawerOpen}
-                        edge="start"
-                        sx={{ mr: 2, ...(open && { display: 'none' }) }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
                     <Typography><img src={logo} style={{ padding: 20, height: 80, width: 80, }} /></Typography>
                     <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, }}>AVB</p></Typography>
                     <Typography variant="h3" component="div" sx={{ paddingLeft: 45 }}> Notifications</Typography>
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                        <IconButton size="large" color="inherit">
-                            <TextsmsOutlinedIcon />
+                        <IconButton size="large" color="inherit" onClick={() => navigate(`/main`)}>
+                            <HomeIcon />
                         </IconButton>
-                       
+
+                        <IconButton size="large" color="inherit" onClick={() => navigate(`/UserChatbank`)}>
+                            <img src={massage} style={{ width: '24px' }} />
+                        </IconButton>
+
                         <IconButton
                             size="large"
                             edge="end"
@@ -478,7 +485,7 @@ function Notifications() {
                             color="inherit"
                             onClick={() => navigate(`/profile`)}
                         >
-                            <AccountCircle />
+                            <Avatar alt="Remy Sharp" src={userImage} />
                         </IconButton>
                     </Box>
                     <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
@@ -492,50 +499,7 @@ function Notifications() {
                     </Box>
                 </Toolbar>
             </AppBar>
-            <Drawer
-                sx={{
-                    width: drawerWidth,
-                    flexShrink: 0,
-                    '& .MuiDrawer-paper': {
-                        width: drawerWidth,
-                        boxSizing: 'border-box',
-                    },
-                }}
-                variant="persistent"
-                anchor="left"
-                open={open}
-            >
-                <DrawerHeader>
-                    <IconButton onClick={handleDrawerClose}>
-                        {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-                    </IconButton>
-                </DrawerHeader>
-                <Divider />
-                <List>
-                    {['หน้าหลัก'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton onClick={() => navigate(`/main`)}>
-                                <ListItemIcon>
-                                    <HomeIcon />
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-                <List>
-                    {['ธนาคารของคุณ'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton onClick={() => navigate('/bank')}>
-                                <ListItemIcon>
-                                    <AccountBalanceIcon />
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-            </Drawer>
+
             <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
                 {(filteredProducts.length > 0 || filteredProduct.length > 0 || filteredProductInbox1.length > 0) ? (
                     <>
@@ -577,7 +541,7 @@ function Notifications() {
                         ))}
                         {filteredProduct.map((item) => (
                             item.userbank_status === 'รอการตรวจสอบ' && (
-                                <Grid item key={item.orderExchange_id } xs={12}>
+                                <Grid item key={item.orderExchange_id} xs={12}>
                                     <Card sx={{ display: 'flex', height: '100%', width: '100%' }}>
                                         <CardMedia
                                             component="img"

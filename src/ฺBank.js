@@ -51,7 +51,8 @@ import Tooltip from '@mui/material/Tooltip';
 import Stack from '@mui/material/Stack';
 import Rating from '@mui/material/Rating'
 import Swal from 'sweetalert2';
-import {  InputLabel,MenuItem, Select } from "@mui/material";
+import { InputLabel, MenuItem, Select } from "@mui/material";
+import { CardActionArea } from '@mui/material';
 
 const drawerWidth = 240;
 
@@ -230,7 +231,7 @@ export default function Bank() {
               const timestampB = new Date(b.date).getTime();
               return timestampB - timestampA;
             });
-  
+
             setReviews(sortedReviews);
           } else {
             Swal.fire({
@@ -688,7 +689,7 @@ export default function Bank() {
     }).then((result) => {
       if (result.isConfirmed) {
         Axios.put(`http://localhost:5000/updateStatusGetproduct2/${selectedProductApproved2.order_sale_id}`, {
-          order_product_getproduct : status,
+          order_product_getproduct: status,
         })
           .then((response) => {
             console.log("ข้อมูลที่ถูกอัปเดต:", response.data);
@@ -744,7 +745,7 @@ export default function Bank() {
           order_date: dayjs(item.order_date),
           order_rental_pickup: item.order_rental_pickup,
           customer_status: item.customer_status,
-          order_status_getproduct : item.order_status_getproduct
+          order_status_getproduct: item.order_status_getproduct
         }));
         const sortedProducts = fetchedProducts.sort((a, b) => b.order_date - a.order_date);
         setFilteredProducts(sortedProducts);
@@ -789,7 +790,7 @@ export default function Bank() {
           exchange_date: dayjs(item.exchange_date),
           order_exchange_pickup: item.order_exchange_pickup,
           customer_status_exchange: item.customer_status_exchange,
-          userbank_status_getproduct : item.userbank_status_getproduct
+          userbank_status_getproduct: item.userbank_status_getproduct
         }));
         const sortedProduct = fetchedProduct.sort((a, b) => b.exchange_date - a.exchange_date);
         setFilteredProductInbox(sortedProduct);
@@ -824,7 +825,7 @@ export default function Bank() {
           order_product_datetime: dayjs(item.order_product_datetime),
           order_sale_pickup: item.order_sale_pickup,
           customer_status_sale: item.customer_status_sale,
-          order_product_getproduct	: item.order_product_getproduct	
+          order_product_getproduct: item.order_product_getproduct
         }));
 
         const sortedProductInbox1 = fetchedProducts.sort((a, b) => b.order_product_datetime - a.order_product_datetime);
@@ -871,7 +872,7 @@ export default function Bank() {
     ReactSession.set("emailuserbank", selectedProductApproved2.email);
     navigate("/reviewcustomsale")
   }
- 
+
   return (
     <Box sx={{ display: 'flex' }}>
       <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -1768,12 +1769,12 @@ export default function Bank() {
               )}
             </DialogContentText>
           </DialogContent>
-          {(selectedProductApproved && selectedProductApproved.order_status_getproduct === 'ยังไม่ได้มารับทรัพยากร' &&  selectedProductApproved.order_status === 'อนุมัติให้ทำรายการ'
+          {(selectedProductApproved && selectedProductApproved.order_status_getproduct === 'ยังไม่ได้มารับทรัพยากร' && selectedProductApproved.order_status === 'อนุมัติให้ทำรายการ'
           ) && (
-            <DialogActions sx={{ justifyContent: 'center' }}>
-            <Button onClick={() => handleClicktoUpdateGetProduct("ส่งทรัพยากรเรียบร้อยแล้ว")}>ส่งทรัพยากรเรียบร้อยแล้ว</Button>
-          </DialogActions>
-          )}
+              <DialogActions sx={{ justifyContent: 'center' }}>
+                <Button onClick={() => handleClicktoUpdateGetProduct("ส่งทรัพยากรเรียบร้อยแล้ว")}>ส่งทรัพยากรเรียบร้อยแล้ว</Button>
+              </DialogActions>
+            )}
           {(selectedProductApproved && selectedProductApproved.order_rental_pickup === 'รีวิวทรัพยากรเรียบร้อย' && selectedProductApproved.customer_status !== 'รีวิวผู้ใช้เรียบร้อย' && selectedProductApproved.order_status_getproduct === 'รับทรัพยากรเรียบร้อยแล้ว') && (
             <DialogActions sx={{ justifyContent: 'center' }}>
               <Button onClick={() => handleClicktoReview(selectedProductApproved.order_request_id)}>รีวิวผู้ใช้ที่ได้เช่าหรือยืมทรัพยากรในธนาคารของคุณ</Button>
@@ -1926,10 +1927,10 @@ export default function Bank() {
           </DialogContent>
           {(selectedProductApproved1 && selectedProductApproved1.userbank_status_getproduct === 'ยังไม่ได้มารับทรัพยากร' && selectedProductApproved1.userbank_status === 'อนุมัติให้ทำรายการ'
           ) && (
-            <DialogActions sx={{ justifyContent: 'center' }}>
-            <Button onClick={() => handleClicktoUpdateGetProduct1("ส่งทรัพยากรเรียบร้อยแล้ว")}>ส่งทรัพยากรเรียบร้อยแล้ว</Button>
-          </DialogActions>
-          )}
+              <DialogActions sx={{ justifyContent: 'center' }}>
+                <Button onClick={() => handleClicktoUpdateGetProduct1("ส่งทรัพยากรเรียบร้อยแล้ว")}>ส่งทรัพยากรเรียบร้อยแล้ว</Button>
+              </DialogActions>
+            )}
           {(selectedProductApproved1 && selectedProductApproved1.order_exchange_pickup === 'รีวิวทรัพยากรเรียบร้อย' && selectedProductApproved1.customer_status_exchange !== 'รีวิวผู้ใช้เรียบร้อย' && selectedProductApproved1.userbank_status_getproduct === 'รับทรัพยากรเรียบร้อยแล้ว') && (
             <DialogActions sx={{ justifyContent: 'center' }}>
               <Button onClick={() => handleClicktoReview1(selectedProductApproved1.exchange_id)}>รีวิวผู้ใช้ที่ได้นำทรัพยากรมาแลกเปลี่ยนในธนาคารของคุณ</Button>
@@ -2018,10 +2019,10 @@ export default function Bank() {
           </DialogContent>
           {(selectedProductApproved2 && selectedProductApproved2.order_product_getproduct === 'ยังไม่ได้มารับทรัพยากร' && selectedProductApproved2.order_product_status === 'อนุมัติให้ทำรายการ'
           ) && (
-            <DialogActions sx={{ justifyContent: 'center' }}>
-            <Button onClick={() => handleClicktoUpdateGetProduct2("ส่งทรัพยากรเรียบร้อยแล้ว")}>ส่งทรัพยากรเรียบร้อยแล้ว</Button>
-          </DialogActions>
-          )}
+              <DialogActions sx={{ justifyContent: 'center' }}>
+                <Button onClick={() => handleClicktoUpdateGetProduct2("ส่งทรัพยากรเรียบร้อยแล้ว")}>ส่งทรัพยากรเรียบร้อยแล้ว</Button>
+              </DialogActions>
+            )}
           {(selectedProductApproved2 && selectedProductApproved2.order_sale_pickup === 'รีวิวทรัพยากรเรียบร้อย' && selectedProductApproved2.customer_status_sale !== 'รีวิวผู้ใช้เรียบร้อย' && selectedProductApproved2.order_product_getproduct === 'รับทรัพยากรเรียบร้อยแล้ว') && (
             <DialogActions sx={{ justifyContent: 'center' }}>
               <Button onClick={() => handleClicktoReview2(selectedProductApproved2.order_sale_id)}>รีวิวผู้ใช้ที่ซื้อทรัพยากรในธนาคารของคุณ</Button>
@@ -2039,12 +2040,14 @@ export default function Bank() {
                 filteredAndSearchedProducts.map((resource) => (
                   <Grid item xs={3.75} key={resource.product_name}>
                     <Card sx={{ maxWidth: 345, m: 1 }} >
-                      <CardMedia
-                        component="img"
-                        height="300"
-                        image={`http://localhost:5000/image/${resource.product_image}`}
-                        title="รูปภาพทรัพยากร"
-                      />
+                      <CardActionArea onClick={() => handleOpenBank(resource.product_id)}>
+                        <CardMedia
+                          component="img"
+                          height="300"
+                          image={`http://localhost:5000/image/${resource.product_image}`}
+                          title="รูปภาพทรัพยากร"
+                        />
+                      </CardActionArea>
                       <CardContent>
                         <Typography gutterBottom variant="h5" component="div">
                           {resource.product_name}
@@ -2088,12 +2091,14 @@ export default function Bank() {
                   .map((resource) => (
                     <Grid key={resource.product_id} item xs={3.75}>
                       <Card sx={{ maxWidth: 345, m: 1 }}>
-                        <CardMedia
-                          component="img"
-                          height="300"
-                          image={`http://localhost:5000/image/${resource.product_image}`}
-                          title="รูปภาพทรัพยากร"
-                        />
+                        <CardActionArea onClick={() => handleOpenBank(resource.product_id)}>
+                          <CardMedia
+                            component="img"
+                            height="300"
+                            image={`http://localhost:5000/image/${resource.product_image}`}
+                            title="รูปภาพทรัพยากร"
+                          />
+                        </CardActionArea>
                         <CardContent>
                           <Typography gutterBottom variant="h5" component="div">
                             {resource.product_name}

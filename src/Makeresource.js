@@ -26,7 +26,7 @@ const textStyle = {
   fontWeight: "normal",
 };
 const UnitDropdown = ({ selectedUnit, handleUnitChange }) => {
-  const units = ['กรัม', 'กิโลกรัม', 'ชิ้น', 'คัน', 'ถุง', 'กระสอบ', 'ลูก', 'หวี','เครื่อง']; // เพิ่มหน่วยตามที่ต้องการ
+  const units = ['กรัม', 'กิโลกรัม', 'ชิ้น', 'คัน', 'ถุง', 'กระสอบ', 'ลูก', 'หวี','เครื่อง','แกลลอน','ถัง','กระปุก','เมตร','เซนติเมตร','กิโลเมตร','มิลลิเมตร','ตารางเมตร']; // เพิ่มหน่วยตามที่ต้องการ
 
   return (
     <FormControl fullWidth>
@@ -48,7 +48,7 @@ const UnitDropdown = ({ selectedUnit, handleUnitChange }) => {
 
 function Resource() {
   const username = ReactSession.get("username");
-  const codename = ReactSession.get("codename")
+  const codename = ReactSession.get("codename");
   const navigate = useNavigate();
   const [nameProduct, setNameProduct] = useState("");
   const [image, setImage] = useState(null);
@@ -397,8 +397,8 @@ function Resource() {
       </div>
       <div style={{ display: "flex", justifyContent: 'space-around', marginTop: 30 }}>
         <Button variant="contained" size="large" color="error" onClick={handleSubmit}>ย้อนกลับ</Button>
-        <Button variant="contained" size="large" color="error" onClick={handleReture}>ลบข้อมูลที่กรอกเพื่อเพิ่มทรัพยากรใหม่</Button>
         <Button variant="contained" size="large" color="warning" onClick={handleAddData}>บันทึกข้อมูล</Button>
+        <Button variant="contained" size="large" color="error" onClick={handleReture}>ล้างข้อมูล</Button>
       </div>
     </div>
   );

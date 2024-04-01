@@ -31,6 +31,7 @@ import MapShow1 from './mapShow1';
 import { Bankuserchat } from './components/bankuserchat';
 import { BankChat } from './components/bankchat'; 
 import { UserChatbank } from './components/UserChatbank';
+import ProfileBank from './profileBank';
 
 function App() {
   return (
@@ -68,6 +69,7 @@ function App() {
         <Route path="Bankuserchat" element={<Bankuserchat/>}/>
         <Route path="Bankchat" element={<BankChat/>}/>
         <Route path="UserChatbank" element={<UserChatbank/>}/>
+        <Route path="profilebank" element={<ProfileBank/>}/>
         </Routes>
       </BrowserRouter>
    

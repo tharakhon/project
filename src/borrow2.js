@@ -44,6 +44,8 @@ import { ReactSession } from 'react-client-session';
 import Axios from 'axios';
 import Select from '@mui/material/Select';
 import Swal from 'sweetalert2';
+import Avatar from '@mui/material/Avatar';
+import massage from './image/conversation.png';
 const drawerWidth = 240;
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -105,7 +107,7 @@ const textStyle = {
   fontWeight: 'normal',
 };
 const UnitDropdown = ({ selectedUnit, handleUnitChange }) => {
-  const units = ['กรัม', 'กิโลกรัม', 'ชิ้น', 'คัน', 'ถุง', 'กระสอบ', 'ลูก', 'หวี']; // เพิ่มหน่วยตามที่ต้องการ
+  const units = ['กรัม', 'กิโลกรัม', 'ชิ้น', 'คัน', 'ถุง', 'กระสอบ', 'ลูก', 'หวี','เครื่อง','แกลลอน','ถัง','กระปุก','เมตร','เซนติเมตร','กิโลเมตร','มิลลิเมตร','ตารางเมตร']; // เพิ่มหน่วยตามที่ต้องการ
 
   return (
     <FormControl fullWidth>
@@ -143,7 +145,25 @@ function Borroww() {
   const theme = useTheme();
   const [selectedUnit, setSelectedUnit] = useState('กรัม');
   const [borrowDate, setBorrowDate] = useState(null);
-  console.log(borrowDate)
+  const [userImage, setUserImage] = useState('');
+  useEffect(() => {
+    Axios.get(`http://localhost:5000/readimage/${username}`)
+      .then((response) => {
+        console.log("image:", response.data[0].image);
+        // Assuming the image data is present in the response data
+        setUserImage(response.data[0].image);
+      })
+      .catch((error) => {
+        console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+      })
+
+  }, [username, userImage]);
+
+  const handleOpenBankChat = () => {
+    ReactSession.set('username', username)
+    ReactSession.set('bank_name', bank_name)
+    navigate('/Bankuserchat')
+  }
 
   const handleUnitChange = (event) => {
     setSelectedUnit(event.target.value);
@@ -159,7 +179,7 @@ function Borroww() {
   };
   const handleClick = () => {
     ReactSession.set('username', username)
-    navigate("/profile")
+    navigate("/profilebank")
   }
   const handleDrawerClose = () => {
     setOpen(false);
@@ -215,7 +235,7 @@ function Borroww() {
     }
   };
 
- 
+
 
   const handleAddData = () => {
 
@@ -262,6 +282,9 @@ function Borroww() {
                 title: 'เพิ่มข้อมูลสำเร็จ',
                 text: 'ไฟล์ถูกอัปโหลดเรียบร้อย',
               });
+              ReactSession.set('username', username)
+              ReactSession.set('bank_name', bank_name);
+              navigate('/bankuser')
             } else {
               console.error("Error");
             }
@@ -277,33 +300,25 @@ function Borroww() {
       }
     });
   }
-  
+
   return (
     <div>
       <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
         <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{ mr: 2, ...(open && { display: 'none' }) }}
-          >
-            <MenuIcon />
-          </IconButton>
           <Typography><img src={logo} style={{ padding: 20, height: 80, width: 80, }} /></Typography>
           <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, }}>AVB</p></Typography>
           <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, marginLeft: 360 }}>ธนาคาร : {bank_name}</p></Typography>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <IconButton size="large" color="inherit">
-              <TextsmsOutlinedIcon />
+            <IconButton size="large" color="inherit" onClick={() => navigate(`/main`)}>
+              <HomeIcon />
             </IconButton>
             <IconButton
               size="large"
               color="inherit"
+              onClick={handleOpenBankChat}
             >
-              <NotificationsIcon />
+              <img src={massage} style={{ width: '24px' }} />
             </IconButton>
             <IconButton
               size="large"
@@ -312,7 +327,7 @@ function Borroww() {
               color="inherit"
               onClick={handleClick}
             >
-              <AccountCircle />
+              <Avatar alt="Remy Sharp" src={userImage} />
             </IconButton>
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
@@ -326,51 +341,6 @@ function Borroww() {
           </Box>
         </Toolbar>
       </AppBar>
-      <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: drawerWidth,
-            boxSizing: 'border-box',
-          },
-        }}
-        variant="persistent"
-        anchor="left"
-        open={open}
-      >
-        <DrawerHeader>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-          </IconButton>
-        </DrawerHeader>
-        <Divider />
-        <List>
-          {['หน้าหลัก'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton onClick={() => navigate(`/main`)}>
-                <ListItemIcon>
-                  <HomeIcon />
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <List>
-          {['ธนาคารของคุณ'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton onClick={() => navigate('/bank')}>
-                <ListItemIcon>
-                  <AccountBalanceIcon />
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
-
       <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
         <h1 style={textStyle}> ทรัพยากรที่คุณนำไปแลกเปลี่ยน</h1>
         {imagePreview ? (
@@ -485,7 +455,6 @@ function Borroww() {
       <div style={{ display: 'flex', justifyContent: 'space-around', margin: 40 }}>
         <Button variant="contained" size="large" color="error" onClick={handleBack}> ย้อนกลับ </Button>
         <Button variant="contained" color='warning' onClick={handleAddData}>บันทึกข้อมูล</Button>
-        <Button variant="contained" size="large" color="success" onClick={handleSubmit} disabled={!isDataSaved}>เสร็จสิ้น</Button>
       </div>
 
     </div>

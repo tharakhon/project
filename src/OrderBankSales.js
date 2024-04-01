@@ -48,6 +48,8 @@ import Drawer from '@mui/material/Drawer';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import Swal from 'sweetalert2';
+import massage from './image/conversation.png'
+import Avatar from '@mui/material/Avatar';
 const drawerWidth = 240;
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -120,6 +122,7 @@ function OrderBankSale() {
     const bank_name = ReactSession.get("bank_name");
     const [open, setOpen] = useState(false);
     const username = ReactSession.get("username");
+    const [userImage, setUserImage] = useState('');
     const [borrowDate, setBorrowDate] = useState(null);
     const [returnDate, setReturnDate] = useState(null);
     const [filteredProduct, setFilteredProduct] = useState(null);
@@ -127,10 +130,18 @@ function OrderBankSale() {
     const theme = useTheme();
     const [selectedUnit, setSelectedUnit] = useState('กรัม');
     const [inputQuantity, setInputQuantity] = useState('');
-    console.log(selectedUnit)
-    console.log(inputQuantity)
-    console.log(borrowDate)
-    console.log(returnDate)
+    useEffect(() => {
+        Axios.get(`http://localhost:5000/readimage/${username}`)
+            .then((response) => {
+                console.log("image:", response.data[0].image);
+                // Assuming the image data is present in the response data
+                setUserImage(response.data[0].image);
+            })
+            .catch((error) => {
+                console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+            })
+
+    }, [username, userImage]);
     const handleBorrowDateChange = (date) => {
         setBorrowDate(date);
     };
@@ -155,7 +166,7 @@ function OrderBankSale() {
     };
     const handleClick = () => {
         ReactSession.set('username', username)
-        navigate("/profile")
+        navigate("/profilebank")
     }
     const handleDrawerClose = () => {
         setOpen(false);
@@ -173,13 +184,13 @@ function OrderBankSale() {
                 cancelButtonText: 'ไม่',
             }).then((result) => {
                 if (result.isConfirmed) {
-                    handleNext(); 
+                    handleNext();
                 } else {
-                    navigate(-1); 
+                    navigate(-1);
                 }
             });
         } else {
-            navigate(-1); 
+            navigate(-1);
         }
     }
 
@@ -188,68 +199,68 @@ function OrderBankSale() {
         //     .then((response) => {
         //         const previousTransactions = response.data;
         //         if (previousTransactions.length > 0) {
-                    if (!inputQuantity || !borrowDate) {
+        if (!inputQuantity || !borrowDate) {
+            Swal.fire({
+                icon: 'error',
+                title: 'ข้อมูลไม่ครบถ้วน',
+                text: 'กรุณากรอกข้อมูลให้ครบทุกช่อง',
+            });
+            return;
+        }
+        Swal.fire({
+            icon: 'warning',
+            title: 'คุณแน่ใจหรือไม่?',
+            text: 'คุณต้องการส่งข้อมูลไปให้ทางธนาคารหรือไม่?',
+            showCancelButton: true,
+            confirmButtonText: 'ใช่, ฉันต้องการส่งข้อมูล',
+            cancelButtonText: 'ยกเลิก',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // ถ้ายืนยัน
+                Axios.post('http://localhost:5000/order_sale', {
+                    order_product_id: id,
+                    order_sale_bankname: bank_name,
+                    userbank_order_sale: username,
+                    order_product_quantity: inputQuantity,
+                    order_product_date: borrowDate,
+                    order_product_price: filteredProduct.product_price,
+                    order_product_unit: filteredProduct.product_unit,
+
+                    // ... other data
+                })
+                    .then((response) => {
+                        console.log(response.data);
+                        ReactSession.set('username', username);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'ส่งข้อมูลสำเร็จ',
+                            text: 'รอทางธนาคารตรวจสอบข้อมูล',
+                        }).then(() => {
+                            navigate("/bankuser");
+                        });
+                    })
+                    .catch((error) => {
                         Swal.fire({
                             icon: 'error',
-                            title: 'ข้อมูลไม่ครบถ้วน',
-                            text: 'กรุณากรอกข้อมูลให้ครบทุกช่อง',
+                            title: 'เกิดข้อผิดพลาด',
+                            text: 'ไม่สามารถส่งข้อมูลไปยังธนาคารได้ โปรดลองอีกครั้งในภายหลัง',
                         });
-                        return;
-                    }
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'คุณแน่ใจหรือไม่?',
-                        text: 'คุณต้องการส่งข้อมูลไปให้ทางธนาคารหรือไม่?',
-                        showCancelButton: true,
-                        confirmButtonText: 'ใช่, ฉันต้องการส่งข้อมูล',
-                        cancelButtonText: 'ยกเลิก',
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // ถ้ายืนยัน
-                            Axios.post('http://localhost:5000/order_sale', {
-                                order_product_id: id,
-                                order_sale_bankname: bank_name,
-                                userbank_order_sale: username,
-                                order_product_quantity: inputQuantity,
-                                order_product_date: borrowDate,
-                                order_product_price: filteredProduct.product_price,
-                                order_product_unit: filteredProduct.product_unit,
-
-                                // ... other data
-                            })
-                                .then((response) => {
-                                    console.log(response.data);
-                                    ReactSession.set('username', username);
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'ส่งข้อมูลสำเร็จ',
-                                        text: 'รอทางธนาคารตรวจสอบข้อมูล',
-                                    }).then(() => {
-                                        navigate("/bankuser");
-                                    });
-                                })
-                                .catch((error) => {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'เกิดข้อผิดพลาด',
-                                        text: 'ไม่สามารถส่งข้อมูลไปยังธนาคารได้ โปรดลองอีกครั้งในภายหลัง',
-                                    });
-                                    console.error("Error:", error.message);
-                                });
-                        }
+                        console.error("Error:", error.message);
                     });
-            //     } else {
-            //         Swal.fire({
-            //             icon: 'info',
-            //             title: 'ไม่สามารถดำเนินการได้',
-            //             text: 'คุณต้องไปรีวิวรายการเก่าก่อนที่จะทำรายการใหม่',
-            //             confirmButtonText: 'ตกลง',
-            //         });
-            //     }
-            // })
-            // .catch((error) => {
-            //     console.error("Error:", error.message);
-            // });
+            }
+        });
+        //     } else {
+        //         Swal.fire({
+        //             icon: 'info',
+        //             title: 'ไม่สามารถดำเนินการได้',
+        //             text: 'คุณต้องไปรีวิวรายการเก่าก่อนที่จะทำรายการใหม่',
+        //             confirmButtonText: 'ตกลง',
+        //         });
+        //     }
+        // })
+        // .catch((error) => {
+        //     console.error("Error:", error.message);
+        // });
 
 
 
@@ -269,35 +280,29 @@ function OrderBankSale() {
                 console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
             })
     }, []);
-    const handleAddData = () => {
-
+    const handleOpenBankChat = () => {
+        ReactSession.set('username', username)
+        ReactSession.set('bank_name', bank_name)
+        navigate('/Bankuserchat')
     }
     return (
         <div>
             <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
                 <Toolbar>
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={handleDrawerOpen}
-                        edge="start"
-                        sx={{ mr: 2, ...(open && { display: 'none' }) }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
                     <Typography><img src={logo} style={{ padding: 20, height: 80, width: 80, }} /></Typography>
                     <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, }}>AVB</p></Typography>
                     <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, marginLeft: 360 }}>ธนาคาร : {bank_name}</p></Typography>
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                        <IconButton size="large" color="inherit">
-                            <TextsmsOutlinedIcon />
+                        <IconButton size="large" color="inherit" onClick={() => navigate(`/main`)}>
+                            <HomeIcon />
                         </IconButton>
                         <IconButton
                             size="large"
                             color="inherit"
+                            onClick={handleOpenBankChat}
                         >
-                            <NotificationsIcon />
+                            <img src={massage} style={{ width: '24px' }} />
                         </IconButton>
                         <IconButton
                             size="large"
@@ -306,7 +311,7 @@ function OrderBankSale() {
                             color="inherit"
                             onClick={handleClick}
                         >
-                            <AccountCircle />
+                            <Avatar alt="Remy Sharp" src={userImage} />
                         </IconButton>
                     </Box>
                     <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
@@ -320,50 +325,6 @@ function OrderBankSale() {
                     </Box>
                 </Toolbar>
             </AppBar>
-            <Drawer
-                sx={{
-                    width: drawerWidth,
-                    flexShrink: 0,
-                    '& .MuiDrawer-paper': {
-                        width: drawerWidth,
-                        boxSizing: 'border-box',
-                    },
-                }}
-                variant="persistent"
-                anchor="left"
-                open={open}
-            >
-                <DrawerHeader>
-                    <IconButton onClick={handleDrawerClose}>
-                        {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-                    </IconButton>
-                </DrawerHeader>
-                <Divider />
-                <List>
-                    {['หน้าหลัก'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton onClick={() => navigate(`/main`)}>
-                                <ListItemIcon>
-                                    <HomeIcon />
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-                <List>
-                    {['ธนาคารของคุณ'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton onClick={() => navigate('/bank')}>
-                                <ListItemIcon>
-                                    <AccountBalanceIcon />
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-            </Drawer>
             {filteredProduct ? (
                 <>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>

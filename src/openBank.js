@@ -41,6 +41,8 @@ import ReviewsIcon from '@mui/icons-material/Reviews';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import { Autocomplete, FormHelperText, InputAdornment, MenuItem, OutlinedInput } from "@mui/material";
 import Swal from 'sweetalert2';
+import massage from './image/conversation.png'
+import Avatar from '@mui/material/Avatar';
 
 const drawerWidth = 240;
 
@@ -62,6 +64,7 @@ function OpenBank() {
     const [productDetails, setProductDetails] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isBankMember, setIsBankMember] = useState(false);
+    const [userImage, setUserImage] = useState('');
     const navigate = useNavigate();
     const theme = useTheme();
     const [editedData, setEditedData] = useState({
@@ -172,32 +175,42 @@ function OpenBank() {
         setDataEdited(true); // เมื่อมีการแก้ไขข้อมูลให้เซ็ตสถานะเป็น true
         setEditedData({ ...editedData, [field]: value });
     };
+
+    useEffect(() => {
+        Axios.get(`http://localhost:5000/readimage/${username}`)
+          .then((response) => {
+            console.log("image:", response.data[0].image);
+            // Assuming the image data is present in the response data
+            setUserImage(response.data[0].image);
+          })
+          .catch((error) => {
+            console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+          })
+    
+      }, [username, userImage]);
+      const handleOpenBankChat = () => {
+        ReactSession.set('username', username)
+        ReactSession.set('bank_name',bank_name)
+        navigate('/Bankchat')
+    }
     return (
         <div>
             <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
                 <Toolbar>
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={handleDrawerOpen}
-                        edge="start"
-                        sx={{ mr: 2, ...(open && { display: 'none' }) }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
                     <Typography><img src={logo} style={{ padding: 20, height: 80, width: 80, }} /></Typography>
                     <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, }}>AVB</p></Typography>
                     <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, marginLeft: 360 }}>ธนาคาร : {bank_name}</p></Typography>
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                        <IconButton size="large" color="inherit">
-                            <TextsmsOutlinedIcon />
+                        <IconButton size="large" color="inherit" onClick={() => navigate(`/main`)}>
+                        <HomeIcon />
                         </IconButton>
                         <IconButton
                             size="large"
                             color="inherit"
+                            onClick={handleOpenBankChat}
                         >
-                            <NotificationsIcon />
+                             <img src={massage} style={{ width: '24px' }} />
                         </IconButton>
                         <IconButton
                             size="large"
@@ -206,7 +219,7 @@ function OpenBank() {
                             color="inherit"
                             onClick={handleClick}
                         >
-                            <AccountCircle />
+                            <Avatar alt="Remy Sharp" src={userImage} />
                         </IconButton>
                     </Box>
                     <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
@@ -220,50 +233,6 @@ function OpenBank() {
                     </Box>
                 </Toolbar>
             </AppBar>
-            <Drawer
-                sx={{
-                    width: drawerWidth,
-                    flexShrink: 0,
-                    '& .MuiDrawer-paper': {
-                        width: drawerWidth,
-                        boxSizing: 'border-box',
-                    },
-                }}
-                variant="persistent"
-                anchor="left"
-                open={open}
-            >
-                <DrawerHeader>
-                    <IconButton onClick={handleDrawerClose}>
-                        {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-                    </IconButton>
-                </DrawerHeader>
-                <Divider />
-                <List>
-                    {['หน้าหลัก'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton onClick={() => navigate(`/main`)}>
-                                <ListItemIcon>
-                                    <HomeIcon />
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-                <List>
-                    {['ธนาคารของคุณ'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton onClick={() => navigate('/bank')}>
-                                <ListItemIcon>
-                                    <AccountBalanceIcon />
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-            </Drawer>
             {filteredProducts ? (
                 <>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>

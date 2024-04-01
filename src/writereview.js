@@ -32,6 +32,8 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ReviewsIcon from '@mui/icons-material/Reviews';
 import HomeIcon from '@mui/icons-material/Home';
 import Swal from 'sweetalert2';
+import Avatar from '@mui/material/Avatar';
+import massage from './image/conversation.png';
 
 const drawerWidth = 240;
 
@@ -90,7 +92,23 @@ export default function Reviewbank() {
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [isDataSaved, setIsDataSaved] = useState(false);
+  const [userImage, setUserImage] = useState('');
+  useEffect(() => {
+    Axios.get(`http://localhost:5000/readimage/${username}`)
+      .then((response) => {
+        console.log("image:", response.data[0].image);
+        // Assuming the image data is present in the response data
+        setUserImage(response.data[0].image);
+      })
+      .catch((error) => {
+        console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+      })
 
+  }, [username, userImage]);
+  const handleOpenChat = () => {
+    ReactSession.set('username', username)
+    navigate('/UserChatbank')
+  }
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -218,28 +236,20 @@ export default function Reviewbank() {
     <div>
       <AppBar position="static" open={open} sx={{ backgroundColor: '#07C27F' }}>
         <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{ mr: 2, ...(open && { display: 'none' }) }}
-          >
-            <MenuIcon />
-          </IconButton>
           <Typography><img src={logo} style={{ padding: 20, height: 80, width: 80, }} /></Typography>
           <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, }}>AVB</p></Typography>
           <Typography><p style={{ color: 'white', padding: 20, fontSize: 24, marginLeft: 250 }}>แสดงความคิดเห็นให้กับทรัพยากรของธนาคารนั้น</p></Typography>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <IconButton size="large" color="inherit">
-              <TextsmsOutlinedIcon />
+            <IconButton size="large" color="inherit" onClick={() => navigate(`/main`)}>
+              <HomeIcon />
             </IconButton>
             <IconButton
               size="large"
               color="inherit"
+              onClick={handleOpenChat}
             >
-              <NotificationsIcon />
+              <img src={massage} style={{ width: '24px' }} />
             </IconButton>
             <IconButton
               size="large"
@@ -248,7 +258,7 @@ export default function Reviewbank() {
               color="inherit"
               onClick={handleClick}
             >
-              <AccountCircle />
+              <Avatar alt="Remy Sharp" src={userImage} />
             </IconButton>
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
@@ -262,74 +272,6 @@ export default function Reviewbank() {
           </Box>
         </Toolbar>
       </AppBar>
-      <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: drawerWidth,
-            boxSizing: 'border-box',
-          },
-        }}
-        variant="persistent"
-        anchor="left"
-        open={open}
-      >
-        <DrawerHeader>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-          </IconButton>
-        </DrawerHeader>
-        <Divider />
-        <List>
-          {['หน้ากลัก'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton onClick={() => navigate(`/main`)}>
-                <ListItemIcon>
-                  <HomeIcon />
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <List>
-          {['ธนาคารของคุณ'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton onClick={() => navigate('/bank')}>
-                <ListItemIcon>
-                  <AccountBalanceIcon />
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <List>
-          {['กิจกรรมของคุณ'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton onClick={() => navigate('/registerbank')}>
-                <ListItemIcon>
-                  <AccessTimeIcon />
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <List>
-          {['รีวีว'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <ReviewsIcon />
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
       <Grid2 container spacing={0} columns={16} marginTop={8}>
         <Grid xs={6} container spacing={0}
           direction="column"

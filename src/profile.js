@@ -45,12 +45,12 @@ function Profile() {
       }).then((result) => {
         if (result.isConfirmed) {
           localStorage.setItem('username', username)
-          navigate(`/main`);
+          navigate(-1);
         }
       });
     } else {
       localStorage.setItem('username', username)
-      navigate(`/main`);
+      navigate(-1);
     }
   }
 

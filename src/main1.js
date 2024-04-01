@@ -71,7 +71,9 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import Stack from '@mui/material/Stack';
 import Swal from 'sweetalert2';
-
+import massage from './image/conversation.png';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import { CardActionArea } from '@mui/material';
 
 const setting2 = ['Profile', 'Logout'];
 const settings = ['เรียงด้วยแรงค์', 'เรียงด้วยระยะทาง', 'เรียงด้วยเรตติ้ง'];
@@ -635,7 +637,7 @@ function Main12() {
   };
 
   const handleMenuOptionClickSorted = (selectedOption) => {
-    let sortedProducts = [...originalData]; 
+    let sortedProducts = [...originalData];
 
     if (selectedOption === 'เรียงด้วยเรตติ้ง') {
       // เรียงลำดับ sortedProducts โดยใช้ average_rating จากมากไปน้อย
@@ -649,7 +651,7 @@ function Main12() {
       // เช่น sortedProducts.sort((a, b) => a.distance - b.distance);
       // หรือใช้ข้อมูลอื่นที่เกี่ยวข้องกับระยะทางแทน
     }
-  
+
     setFilteredProducts(sortedProducts); // เซ็ตผลลัพธ์ที่กรองไว้
     handleCloseUserMenu(); // ปิดเมนู
   };
@@ -958,9 +960,9 @@ function Main12() {
       ReactSession.set("bank_name", codename.bank_name);
       console.log(filteredProducts.title)
       navigate("/bank")
-  } else {
+    } else {
       Swal.fire("แจ้งเตือน", "คุณยังไม่ได้สร้างธนาคาร", "warning");
-  }
+    }
   }
 
   const itemsToDisplay = displayBookmarks ? bookmarks : filteredProducts;
@@ -1084,7 +1086,7 @@ function Main12() {
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <IconButton size="large" color="inherit" onClick={handleOpenChat}>
-              <TextsmsOutlinedIcon />
+              <img src={massage} style={{ width: '24px' }} />
             </IconButton>
             <IconButton
               size="large"
@@ -1221,40 +1223,41 @@ function Main12() {
       {currentView === 'main' && (
         <>
           <div style={{ display: 'flex', margin: 10, justifyContent: 'space-between', flexWrap: 'nowrap' }}>
-            <Box>
-              <Tooltip title="Open fillter">
-                <IconButton onClick={handleOpenUserMenu} >
-                  <FilterAltSharpIcon fontSize='large' color='info' />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: '45px' }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={() => handleMenuOptionClickSorted(setting)}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
 
+            <Button variant='contained' sx={{ borderRadius: 20, backgroundColor: '#2196F3', color: 'white' }} onClick={handleDisplayBookmarks}>
+              {displayBookmarks ? 'แสดงทั้งหมด' : 'แสดงบุ๊คมาร์ค'}
+            </Button>
             <Button variant='contained' sx={{ borderRadius: 20, backgroundColor: '#D62828', color: 'white' }} onClick={handleSubmit}>สร้างธนาคาร</Button></div>
-          <Button variant='contained' sx={{ borderRadius: 20, backgroundColor: '#2196F3', color: 'white' }} onClick={handleDisplayBookmarks}>
-            {displayBookmarks ? 'แสดงทั้งหมด' : 'แสดงบุ๊คมาร์ค'}
-          </Button>
+          <Box>
+            <Tooltip title="Open fillter">
+              <IconButton onClick={handleOpenUserMenu} >
+                <FilterListIcon fontSize='large' color='info' />
+                <Typography textAlign="center">เรียงลำดับ</Typography>
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: '45px' }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              {settings.map((setting) => (
+                <MenuItem key={setting} onClick={() => handleMenuOptionClickSorted(setting)}>
+                  <Typography textAlign="center">{setting}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
         </>
       )}
       {currentView === 'main' && (
@@ -1281,12 +1284,14 @@ function Main12() {
                     />
                   }
                 />
-                <CardMedia
-                  component="img"
-                  height="300"
-                  image={`http://localhost:5000/image/${bookmark.image}`}
-                  title="รูปภาพธนาคาร"
-                />
+                <CardActionArea onClick={() => handleOpenbankuser(bookmark.title)}>
+                  <CardMedia
+                    component="img"
+                    height="300"
+                    image={`http://localhost:5000/image/${bookmark.image}`}
+                    title="รูปภาพธนาคาร"
+                  />
+                </CardActionArea>
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="div">
                     {bookmark.title}

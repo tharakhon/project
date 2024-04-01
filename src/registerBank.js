@@ -14,6 +14,7 @@ import Ribbon3 from "../src/image/ribbon3.png";
 import Ribbon4 from "../src/image/ribbon4.png";
 import { ReactSession } from 'react-client-session';
 import Swal from 'sweetalert2';
+import man from './image/man.png';
 
 function RegisterBank() {
   const username = ReactSession.get("username");
@@ -138,6 +139,8 @@ function RegisterBank() {
                 title: 'สร้างบัญชีธนาคารสำเร็จ',
                 text: 'ไฟล์ถูกอัปโหลดเรียบร้อย',
               });
+              ReactSession.set("codename", codename);
+              navigate(`/bank`);
             } else {
               console.error("Error");
             }
@@ -155,10 +158,6 @@ function RegisterBank() {
   }
   const handleBack = () => {
     navigate('/main');
-  }
-  const handleNext = () => {
-    ReactSession.set("codename", codename);
-    navigate(`/bank`);
   }
 
   const handleImageChange = (event) => {
@@ -304,7 +303,7 @@ function RegisterBank() {
           />
         </div>
       </Box>
-      <h1 style={{ textAlign: 'center' }}>ปักหมุดที่อยู่ของคุณโดยกดที่รูปคนใน Map </h1>
+      <h1 style={{ textAlign: 'center' }}>ปักหมุดที่อยู่ของคุณโดยกดที่รูปคน <img src={man}/> ในMap </h1>
       <MapShow />
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Box
@@ -399,7 +398,7 @@ function RegisterBank() {
       <div style={{ display: 'flex', justifyContent: 'space-around', margin: 10 }}>
         <Button variant="contained" color='error' sx={{ top: 100 }} onClick={handleBack}>ย้อนกลับ</Button>
         <Button variant="contained" color='warning' sx={{ top: 100 }} onClick={handleSubmit}>บันทึกข้อมูล</Button>
-        <Button variant="contained" color='success' sx={{ backgroundColor: '#07C27F', top: 100 }} onClick={handleNext} disabled={!isDataSaved}>เสร็จสิ้น</Button>
+        
       </div>
     </div>
 

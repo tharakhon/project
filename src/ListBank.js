@@ -13,6 +13,7 @@ import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import Swal from 'sweetalert2';
 
+
 function ListBank() {
     const [profile, setProfile] = useState('');
     const username = ReactSession.get('username');
@@ -27,7 +28,10 @@ function ListBank() {
     const [platinum, setPlatinum] = useState('');
     const [address, setAddress] = useState('');
     const [originalData, setOriginalData] = useState([]); 
+    
     const navigate = useNavigate();
+    
+
     useEffect(() => {
         Axios.get(`http://localhost:5000/ShowBank/${bank_name}`)
             .then((response) => {
