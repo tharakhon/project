@@ -36,7 +36,7 @@ function Login() {
   
     try {
       // ทำการเรียก API เช็คข้อมูลในฐานข้อมูลว่ามีอีเมล์ที่เข้าสู่ระบบอยู่แล้วหรือไม่
-      const response = await Axios.get(`http://localhost:5000/user/${email}`);
+      const response = await Axios.get(`http://localhost:5000/user1/${email}`);
       console.log("ข้อมูลที่ได้รับ:", response.data);
   
       if (response.data.length > 0 && response.data[0].email === email && response.data[0].statused === "Active") {

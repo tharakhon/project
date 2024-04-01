@@ -78,31 +78,54 @@ function Register() {
       return;
     }
 
-    if (tel.trim().length < 9 || tel.trim().length > 10) {
+    if (tel.length < 9 || tel.length > 10) {
       Swal.fire({
         icon: 'warning',
-        title: 'ความยาวของเบอร์โทรไม่ถูกต้อง',
-        text: 'โปรดกรอกเบอร์โทรให้ถูกต้อง',
+        title: 'ข้อมูลไม่ถูกต้อง',
+        text: 'เบอร์โทรศัพท์ต้องมีความยาวระหว่าง 9 ถึง 10 ตัว',
       });
-      return;
+      return; 
     }
 
-    Axios.post("http://localhost:5000/create", {
-      image: profile.imageUrl,
-      email: profile.email,
-      fullname: fullname,
-      tel: tel,
-    }).then(() => {
-      setUserList([
-        ...userList,
-        {
+    Swal.fire({
+      title: 'คุณต้องการบันทึกข้อมูลหรือไม่?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'บันทึก',
+      cancelButtonText: 'ยกเลิก',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Axios.post("http://localhost:5000/create", {
           image: profile.imageUrl,
-          email: email,
+          email: profile.email,
           fullname: fullname,
           tel: tel,
-        },
-      ]);
-      navigate(`/`);
+        }).then(() => {
+          setUserList([
+            ...userList,
+            {
+              image: profile.imageUrl,
+              email: email,
+              fullname: fullname,
+              tel: tel,
+            },
+          ]);
+          navigate(`/`);
+          Swal.fire({
+            icon: 'success',
+            title: 'บันทึกเรียบร้อยแล้ว',
+            showConfirmButton: false,
+            timer: 1500
+          });
+        }).catch(error => {
+          console.error('เกิดข้อผิดพลาดในการบันทึกข้อมูล:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            text: 'ไม่สามารถบันทึกข้อมูลได้ กรุณาลองอีกครั้ง',
+          });
+        });
+      }
     });
   };
 
@@ -148,19 +171,15 @@ function Register() {
                 required
                 id="outlined-required"
                 label="Tel"
-                type="number"
-                inputProps={{
-                  maxLength: 10,
-                }}
-                defaultValue=""
+                value={tel}
                 onChange={(event) => {
-                  const value = event.target.value;
-                  if (!isNaN(value)) {
-                    if (value.length <= 10 && value.length >= 9) {
-                      setTel(value);
+                  if (!isNaN(event.target.value)) {
+                    if (event.target.value.length <= 10) {
+                      setTel(event.target.value);
                     }
                   }
                 }}
+                inputProps={{ pattern: "[0-9]*" }}
               />
             </div>
           </Box>

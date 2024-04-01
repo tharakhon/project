@@ -55,6 +55,14 @@ function Profile() {
   }
 
   const handleSubmit = () => {
+    if (tel.length < 9 || tel.length > 10) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'ข้อมูลไม่ถูกต้อง',
+        text: 'เบอร์โทรศัพท์ต้องมีความยาวระหว่าง 9 ถึง 10 ตัว',
+      });
+      return; 
+    }
     Axios.put(`http://localhost:5000/updateProfile/${useremail}`, {
       fullname: profile,
       tel: tel

@@ -101,6 +101,14 @@ function RegisterBank() {
       });
       return;
     }
+    if (tel.length < 9 || tel.length > 10) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'ข้อมูลไม่ถูกต้อง',
+        text: 'เบอร์โทรศัพท์ต้องมีความยาวระหว่าง 9 ถึง 10 ตัว',
+      });
+      return; 
+    }
 
     // ถามให้แน่ใจก่อนจะดำเนินการต่อ
     Swal.fire({
