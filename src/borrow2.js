@@ -107,7 +107,7 @@ const textStyle = {
   fontWeight: 'normal',
 };
 const UnitDropdown = ({ selectedUnit, handleUnitChange }) => {
-  const units = ['กรัม', 'กิโลกรัม', 'ชิ้น', 'คัน', 'ถุง', 'กระสอบ', 'ลูก', 'หวี','เครื่อง','แกลลอน','ถัง','กระปุก','เมตร','เซนติเมตร','กิโลเมตร','มิลลิเมตร','ตารางเมตร']; // เพิ่มหน่วยตามที่ต้องการ
+  const units = ['กรัม', 'กิโลกรัม', 'ชิ้น', 'คัน', 'ถุง', 'กระสอบ', 'ลูก', 'หวี', 'เครื่อง', 'แกลลอน', 'ถัง', 'กระปุก', 'เมตร', 'เซนติเมตร', 'กิโลเมตร', 'มิลลิเมตร', 'ตารางเมตร']; // เพิ่มหน่วยตามที่ต้องการ
 
   return (
     <FormControl fullWidth>
@@ -170,6 +170,15 @@ function Borroww() {
   };
 
   const handleBorrowDateChange = (date) => {
+    const currentDate = new Date();
+    if (date <= currentDate) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'วันที่มารับทรัพยากรต้องมากกว่าวันที่ปัจจุบัน',
+      });
+      return;
+    }
     setBorrowDate(date);
   };
 

@@ -203,6 +203,9 @@ function Main12() {
   const [anchorElPopover, setAnchorElPopover] = useState(null);
   const [bankMembers, setBankMembers] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const [notifications_Status, setnotifications_Status] = useState([]);
+  const [notifications_Status2, setnotifications_Status2] = useState([]);
+  const [notifications_Status3, setnotifications_Status3] = useState([]);
   const [originalData, setOriginalData] = useState([]);
   const [currentView, setCurrentView] = useState('main');
   const [borrowDate, setBorrowDate] = useState(dayjs());
@@ -525,11 +528,46 @@ function Main12() {
     ReactSession.set('bank_name', codename.bank_name)
     navigate("/notifications");
   };
+
+  useEffect(() => {
+    Axios.get(`http://localhost:5000/notifications_Status/${username}`)
+    .then((response) => {
+      console.log(response.data);
+      // Assuming the image data is present in the response data
+      setnotifications_Status(response.data);
+    })
+    .catch((error) => {
+      console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+    })
+
+  }, []);
+  useEffect(() => {
+    Axios.get(`http://localhost:5000/notifications_Status2/${username}`)
+    .then((response) => {
+      console.log(response.data);
+      // Assuming the image data is present in the response data
+      setnotifications_Status2(Object.values(response.data));
+    })
+    .catch((error) => {
+      console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+    })
+
+  }, []);
+   useEffect(() => {
+     Axios.get(`http://localhost:5000/notifications_Status3/${username}`)
+     .then((response) => {
+       console.log(response.data);
+       // Assuming the image data is present in the response data
+       setnotifications_Status3(response.data);
+     })
+     .catch((error) => {
+       console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
+     })
+
+   }, []);
+
   const calculateTotalPendingNotifications = () => {
-    if (!notifications || !Array.isArray(notifications)) {
-      console.error('Invalid notifications data:', notifications);
-      return 0;
-    }
+    
     const pendingNotifications = notifications.filter(notification => {
       return (
         notification.order_status === 'รอการตรวจสอบ' ||
@@ -541,9 +579,22 @@ function Main12() {
       return sum + notification.combined_count;
     }, 0);
 
+    const totalPendingNotification_Stautus = notifications_Status.reduce((sum, notification) => {
+      return sum + notification.count_order_status + notification.count_getproduct;
+    }, 0);
+   
+    const totalPendingNotification_Stautus2 = notifications_Status2.reduce((sum, notification) => {
+      return sum + notification.count_order_status + notification.count_getproduct;
+    }, 0);
+
+    const totalPendingNotification_Stautus3 = notifications_Status3.reduce((sum, notification) => {
+      return sum + notification.count_order_status + notification.count_getproduct;
+    }, 0);
+
+    const total = totalPendingNotification_Stautus + totalPendingNotifications + totalPendingNotification_Stautus2 + totalPendingNotification_Stautus3;
     console.log('Total Pending Notifications:', totalPendingNotifications);
 
-    return totalPendingNotifications;
+    return total;
   };
 
   const handleClosePopover = () => {
@@ -716,7 +767,7 @@ function Main12() {
     Axios.get(`http://localhost:5000/notifications/${codename.bank_name}`)
       .then((response) => {
         console.log("จำนวน notifications:", response.data);
-        setNotifications(response.data);
+        setNotifications(Object.values(response.data));
       })
       .catch((error) => {
         console.error("เกิดข้อผิดพลาดในการดึงข้อมูลจำนวนสมาชิก:", error);
@@ -2193,8 +2244,8 @@ function Main12() {
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{ justifyContent: 'space-around' }}>
-          <Button onClick={() => handleClose1()} color='error'>ปิด</Button>
-          <Button onClick={() => setOpenNextDialog(true)} >ถัดไป</Button>
+          <Button variant="contained" onClick={() => handleClose1()} color='error'>ปิด</Button>
+          <Button variant="contained" onClick={() => setOpenNextDialog(true)} >ถัดไป</Button>
         </DialogActions>
       </Dialog>
 
@@ -2439,12 +2490,12 @@ function Main12() {
         </DialogContent>
         {(selectedProductApproved && selectedProductApproved.order_status_getproduct === 'ส่งทรัพยากรเรียบร้อยแล้ว') && (
           <DialogActions sx={{ justifyContent: 'flex-end' }}>
-            <Button onClick={() => handleClicktoUpdateGetProduct("รับทรัพยากรเรียบร้อยแล้ว")}>รับทรัพยากรเรียบร้อยแล้ว</Button>
+            <Button variant="contained" onClick={() => handleClicktoUpdateGetProduct("รับทรัพยากรเรียบร้อยแล้ว")}>รับทรัพยากรเรียบร้อยแล้ว</Button>
           </DialogActions>
         )}
         {(selectedProductApproved && selectedProductApproved.order_status_getproduct === 'รับทรัพยากรเรียบร้อยแล้ว' && selectedProductApproved.order_rental_pickup !== 'รีวิวทรัพยากรเรียบร้อย') && (
           <DialogActions sx={{ justifyContent: 'flex-end' }}>
-            <Button onClick={() => handleClicktoReview(selectedProductApproved.order_request_id)}>รีวิวทรัพยากรที่ซื้อในธนาคาร</Button>
+            <Button variant="contained" onClick={() => handleClicktoReview(selectedProductApproved.order_request_id)}>รีวิวทรัพยากรที่ซื้อในธนาคาร</Button>
           </DialogActions>
         )}
       </Dialog>
@@ -2529,8 +2580,8 @@ function Main12() {
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{ justifyContent: 'space-around' }}>
-          <Button onClick={() => handleCloseApproved1()} color='error'>ปิด</Button>
-          <Button onClick={() => setOpenNextDialogApproved(true)} >ถัดไป</Button>
+          <Button variant="contained" onClick={() => handleCloseApproved1()} color='error'>ปิด</Button>
+          <Button variant="contained" onClick={() => setOpenNextDialogApproved(true)} >ถัดไป</Button>
         </DialogActions>
       </Dialog>
 
@@ -2594,12 +2645,12 @@ function Main12() {
         </DialogContent>
         {(selectedProductApproved1 && selectedProductApproved1.userbank_status_getproduct === 'ส่งทรัพยากรเรียบร้อยแล้ว') && (
           <DialogActions sx={{ justifyContent: 'flex-end' }}>
-            <Button onClick={() => handleClicktoUpdateGetProduct1("รับทรัพยากรเรียบร้อยแล้ว")}>รับทรัพยากรเรียบร้อยแล้ว</Button>
+            <Button variant="contained" onClick={() => handleClicktoUpdateGetProduct1("รับทรัพยากรเรียบร้อยแล้ว")}>รับทรัพยากรเรียบร้อยแล้ว</Button>
           </DialogActions>
         )}
         {(selectedProductApproved1 && selectedProductApproved1.userbank_status_getproduct === 'รับทรัพยากรเรียบร้อยแล้ว' && selectedProductApproved1.order_exchange_pickup !== 'รีวิวทรัพยากรเรียบร้อย') && (
           <DialogActions sx={{ justifyContent: 'flex-end' }}>
-            <Button onClick={() => handleClicktoReview1(selectedProductApproved1.exchange_id)}>รีวิวทรัพยากรที่ซื้อในธนาคาร</Button>
+            <Button variant="contained" onClick={() => handleClicktoReview1(selectedProductApproved1.exchange_id)}>รีวิวทรัพยากรที่ซื้อในธนาคาร</Button>
           </DialogActions>
         )}
       </Dialog>
@@ -2685,12 +2736,12 @@ function Main12() {
         </DialogContent>
         {(selectedProductApproved2 && selectedProductApproved2.order_product_getproduct === 'ส่งทรัพยากรเรียบร้อยแล้ว') && (
           <DialogActions sx={{ justifyContent: 'flex-end' }}>
-            <Button onClick={() => handleClicktoUpdateGetProduct2("รับทรัพยากรเรียบร้อยแล้ว")}>รับทรัพยากรเรียบร้อยแล้ว</Button>
+            <Button variant="contained" onClick={() => handleClicktoUpdateGetProduct2("รับทรัพยากรเรียบร้อยแล้ว")}>รับทรัพยากรเรียบร้อยแล้ว</Button>
           </DialogActions>
         )}
         {(selectedProductApproved2 && selectedProductApproved2.order_product_getproduct === 'รับทรัพยากรเรียบร้อยแล้ว' && selectedProductApproved2.order_sale_pickup !== 'รีวิวทรัพยากรเรียบร้อย') && (
           <DialogActions sx={{ justifyContent: 'flex-end' }}>
-            <Button onClick={() => handleClicktoReview2(selectedProductApproved2.order_sale_id)}>รีวิวทรัพยากรที่ซื้อในธนาคาร</Button>
+            <Button variant="contained" onClick={() => handleClicktoReview2(selectedProductApproved2.order_sale_id)}>รีวิวทรัพยากรที่ซื้อในธนาคาร</Button>
           </DialogActions>
         )}
       </Dialog>

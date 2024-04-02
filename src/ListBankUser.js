@@ -108,61 +108,61 @@ function ListBankuser() {
                 </Box>
                 <div style={{ display: "flex", alignitems: "center", justifyContent: 'center', }}>
                     <img src={`http://localhost:5000/image/ribbon1.png`} alt="Bronze"
-                        style={{ marginTop: 50, width: 100 }} />
-                    <FormLabel component="legend" style={{ color: 'black', fontSize: '22px', left: 50, top: 70 }}>Bronze</FormLabel>
+                        style={{ marginTop:80, width: 100,marginLeft:20 }} />
+                    <FormLabel component="legend" style={{ color: 'black', fontSize: '22px', left: 40, top: 70 }}>Bronze</FormLabel>
                     <div>
-                        <FormLabel component="legend" style={{ color: 'black', right: 20, top: 100 }}>สามารถทำรายการเช่ายืมได้ทั้งหมด </FormLabel>
+                        <FormLabel component="legend" style={{ color: 'black', right: 30, top: 100 }}>สามารถทำรายการเช่ายืมได้ทั้งหมด </FormLabel>
                         <OutlinedInput
                         disabled
                             id="outlined-adornment-weight"
                             value={filterProduct.bank_bronze}
                             endAdornment={<InputAdornment position="end">รายการ</InputAdornment>}
-                            sx={{ right: 20, top: 100, }}
+                            sx={{ right: 30, top: 100, }}
                         />
                     </div>
                 </div>
                 <div style={{ display: "flex", alignitems: "center", justifyContent: 'center', }}>
                     <img src={`http://localhost:5000/image/ribbon2.png`} alt="Silver"
                         style={{ marginTop: 75, width: 100 }} />
-                    <FormLabel component="legend" style={{ color: 'black', fontSize: '22px', left: 50, top: 70 }}>Bronze</FormLabel>
+                    <FormLabel component="legend" style={{ color: 'black', fontSize: '22px', left: 45, top: 70 }}>Silver</FormLabel>
                     <div>
-                        <FormLabel component="legend" style={{ color: 'black', right: 20, top: 100 }}>สามารถทำรายการเช่ายืมได้ทั้งหมด </FormLabel>
+                        <FormLabel component="legend" style={{ color: 'black', right: 10, top: 100 }}>สามารถทำรายการเช่ายืมได้ทั้งหมด </FormLabel>
                         <OutlinedInput
                         disabled
                             id="outlined-adornment-weight"
                             value={filterProduct.bank_silver}
                             endAdornment={<InputAdornment position="end">รายการ</InputAdornment>}
-                            sx={{ right: 20, top: 100, }}
+                            sx={{ right: 12, top: 100, }}
                         />
                     </div>
                 </div>
                 <div style={{ display: "flex", alignitems: "center", justifyContent: 'center', }}>
                     <img src={`http://localhost:5000/image/ribbon3.png`} alt="Gold"
                         style={{ marginTop: 75, width: 100 }} />
-                    <FormLabel component="legend" style={{ color: 'black', fontSize: '22px', left: 50, top: 70 }}>Bronze</FormLabel>
+                    <FormLabel component="legend" style={{ color: 'black', fontSize: '22px', left: 40, top: 70 }}>Gold</FormLabel>
                     <div>
-                        <FormLabel component="legend" style={{ color: 'black', right: 20, top: 100 }}>สามารถทำรายการเช่ายืมได้ทั้งหมด </FormLabel>
+                        <FormLabel component="legend" style={{ color: 'black', right: 7, top: 100 }}>สามารถทำรายการเช่ายืมได้ทั้งหมด </FormLabel>
                         <OutlinedInput
                         disabled
                             id="outlined-adornment-weight"
                             value={filterProduct.bank_gold}
                             endAdornment={<InputAdornment position="end">รายการ</InputAdornment>}
-                            sx={{ right: 20, top: 100, }}
+                            sx={{ right: 7, top: 100, }}
                         />
                     </div>
                 </div>
                 <div style={{ display: "flex", alignitems: "center", justifyContent: 'center', }}>
                     <img src={`http://localhost:5000/image/ribbon4.png`} alt="Platinum"
-                        style={{ marginTop: 75, width: 100 }} />
-                    <FormLabel component="legend" style={{ color: 'black', fontSize: '22px', left: 50, top: 70 }}>Bronze</FormLabel>
+                        style={{ marginTop: 75, width: 100,marginLeft:50 }} />
+                    <FormLabel component="legend" style={{ color: 'black', fontSize: '22px', left: 40, top: 70 }}>Platinum</FormLabel>
                     <div>
-                        <FormLabel component="legend" style={{ color: 'black', right: 20, top: 100 }}>สามารถทำรายการเช่ายืมได้ทั้งหมด </FormLabel>
+                        <FormLabel component="legend" style={{ color: 'black', right: 50, top: 100 }}>สามารถทำรายการเช่ายืมได้ทั้งหมด </FormLabel>
                         <OutlinedInput
                         disabled
                             id="outlined-adornment-weight"
                             value={filterProduct.bank_platinum}
                             endAdornment={<InputAdornment position="end">รายการ</InputAdornment>}
-                            sx={{ right: 20, top: 100, }}
+                            sx={{ right: 50, top: 100, }}
                         />
                     </div>
                 </div>

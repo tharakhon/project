@@ -34,7 +34,7 @@
   padding: 10px;
   background-color: #f5f5f5;
   height: 50px;
-  width: 100%;
+  width: 98vw;
 }
 
 .new-message-input {
@@ -63,6 +63,13 @@
   padding: 15px;
   margin-left: auto; /* Align to the right */
   max-width: 70%;
+}
+
+.messages {
+  min-height: 95vh; /* เพิ่ม min-height แทนที่ height */
+  min-width: 95vw; /* เพิ่ม min-width แทนที่ height */
+  display: flex;
+  background-color: #A2D2FF;
 }
 
 

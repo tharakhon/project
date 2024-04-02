@@ -1344,8 +1344,8 @@ export default function Bank() {
             </DialogContentText>
           </DialogContent>
           <DialogActions sx={{ justifyContent: 'space-around' }}>
-            <Button onClick={() => handleUpdate('ไม่อนุมัติให้ทำรายการ')} color='error'>ไม่อนุมัติให้ทำรายการ</Button>
-            <Button onClick={() => handleUpdate('อนุมัติให้ทำรายการ')} >อนุมัติให้ทำรายการ</Button>
+            <Button variant="contained" onClick={() => handleUpdate('ไม่อนุมัติให้ทำรายการ')} color='error'>ไม่อนุมัติให้ทำรายการ</Button>
+            <Button variant="contained" onClick={() => handleUpdate('อนุมัติให้ทำรายการ')} >อนุมัติให้ทำรายการ</Button>
           </DialogActions>
         </Dialog>
 
@@ -1428,8 +1428,8 @@ export default function Bank() {
             </DialogContentText>
           </DialogContent>
           <DialogActions sx={{ justifyContent: 'space-around' }}>
-            <Button onClick={() => handleClose1()} color='error'>ปิด</Button>
-            <Button onClick={() => setOpenNextDialog(true)} >ถัดไป</Button>
+            <Button variant="contained" onClick={() => handleClose1()} color='error'>ปิด</Button>
+            <Button variant="contained" onClick={() => setOpenNextDialog(true)} >ถัดไป</Button>
           </DialogActions>
         </Dialog>
 
@@ -1492,8 +1492,8 @@ export default function Bank() {
             </DialogContentText>
           </DialogContent>
           <DialogActions sx={{ justifyContent: 'space-around' }}>
-            <Button onClick={() => handleUpdate1('ไม่อนุมัติให้ทำรายการ')} color='error'>ไม่อนุมัติให้ทำรายการ</Button>
-            <Button onClick={() => handleUpdate1('อนุมัติให้ทำรายการ')} >อนุมัติให้ทำรายการ</Button>
+            <Button variant="contained" onClick={() => handleUpdate1('ไม่อนุมัติให้ทำรายการ')} color='error'>ไม่อนุมัติให้ทำรายการ</Button>
+            <Button variant="contained" onClick={() => handleUpdate1('อนุมัติให้ทำรายการ')} >อนุมัติให้ทำรายการ</Button>
           </DialogActions>
         </Dialog>
 
@@ -1577,8 +1577,8 @@ export default function Bank() {
             </DialogContentText>
           </DialogContent>
           <DialogActions sx={{ justifyContent: 'space-around' }}>
-            <Button onClick={() => handleUpdate2('ไม่อนุมัติให้ทำรายการ')} color='error'>ไม่อนุมัติให้ทำรายการ</Button>
-            <Button onClick={() => handleUpdate2('อนุมัติให้ทำรายการ')} >อนุมัติให้ทำรายการ</Button>
+            <Button variant="contained" onClick={() => handleUpdate2('ไม่อนุมัติให้ทำรายการ')} color='error'>ไม่อนุมัติให้ทำรายการ</Button>
+            <Button variant="contained" onClick={() => handleUpdate2('อนุมัติให้ทำรายการ')} >อนุมัติให้ทำรายการ</Button>
           </DialogActions>
         </Dialog>
 
@@ -1665,7 +1665,7 @@ export default function Bank() {
             </DialogContent>
           )}
           <DialogActions>
-            <Button onClick={handleCloseReviewsDialog} color="primary">
+            <Button variant="contained" onClick={handleCloseReviewsDialog} color="primary">
               ปิด
             </Button>
           </DialogActions>
@@ -1771,13 +1771,13 @@ export default function Bank() {
           </DialogContent>
           {(selectedProductApproved && selectedProductApproved.order_status_getproduct === 'ยังไม่ได้มารับทรัพยากร' && selectedProductApproved.order_status === 'อนุมัติให้ทำรายการ'
           ) && (
-              <DialogActions sx={{ justifyContent: 'center' }}>
-                <Button onClick={() => handleClicktoUpdateGetProduct("ส่งทรัพยากรเรียบร้อยแล้ว")}>ส่งทรัพยากรเรียบร้อยแล้ว</Button>
+              <DialogActions sx={{ justifyContent: 'end' }}>
+                <Button variant="contained" onClick={() => handleClicktoUpdateGetProduct("ส่งทรัพยากรเรียบร้อยแล้ว")}>ส่งทรัพยากรเรียบร้อยแล้ว</Button>
               </DialogActions>
             )}
           {(selectedProductApproved && selectedProductApproved.order_rental_pickup === 'รีวิวทรัพยากรเรียบร้อย' && selectedProductApproved.customer_status !== 'รีวิวผู้ใช้เรียบร้อย' && selectedProductApproved.order_status_getproduct === 'รับทรัพยากรเรียบร้อยแล้ว') && (
-            <DialogActions sx={{ justifyContent: 'center' }}>
-              <Button onClick={() => handleClicktoReview(selectedProductApproved.order_request_id)}>รีวิวผู้ใช้ที่ได้เช่าหรือยืมทรัพยากรในธนาคารของคุณ</Button>
+            <DialogActions sx={{ justifyContent: 'end' }}>
+              <Button variant="contained" onClick={() => handleClicktoReview(selectedProductApproved.order_request_id)}>รีวิวผู้ใช้ที่ได้เช่าหรือยืมทรัพยากรในธนาคารของคุณ</Button>
             </DialogActions>
           )}
         </Dialog>
@@ -1862,8 +1862,8 @@ export default function Bank() {
             </DialogContentText>
           </DialogContent>
           <DialogActions sx={{ justifyContent: 'space-around' }}>
-            <Button onClick={() => handleCloseApproved1()} color='error'>ปิด</Button>
-            <Button onClick={() => setOpenNextDialogApproved(true)} >ถัดไป</Button>
+            <Button variant="contained" color="error" onClick={() => handleCloseApproved1()}>ปิด</Button>
+            <Button variant="contained"  onClick={() => setOpenNextDialogApproved(true)} >ถัดไป</Button>
           </DialogActions>
         </Dialog>
 
@@ -1927,13 +1927,13 @@ export default function Bank() {
           </DialogContent>
           {(selectedProductApproved1 && selectedProductApproved1.userbank_status_getproduct === 'ยังไม่ได้มารับทรัพยากร' && selectedProductApproved1.userbank_status === 'อนุมัติให้ทำรายการ'
           ) && (
-              <DialogActions sx={{ justifyContent: 'center' }}>
-                <Button onClick={() => handleClicktoUpdateGetProduct1("ส่งทรัพยากรเรียบร้อยแล้ว")}>ส่งทรัพยากรเรียบร้อยแล้ว</Button>
+              <DialogActions sx={{ justifyContent: 'end' }}>
+                <Button variant="contained" onClick={() => handleClicktoUpdateGetProduct1("ส่งทรัพยากรเรียบร้อยแล้ว")}>ส่งทรัพยากรเรียบร้อยแล้ว</Button>
               </DialogActions>
             )}
           {(selectedProductApproved1 && selectedProductApproved1.order_exchange_pickup === 'รีวิวทรัพยากรเรียบร้อย' && selectedProductApproved1.customer_status_exchange !== 'รีวิวผู้ใช้เรียบร้อย' && selectedProductApproved1.userbank_status_getproduct === 'รับทรัพยากรเรียบร้อยแล้ว') && (
-            <DialogActions sx={{ justifyContent: 'center' }}>
-              <Button onClick={() => handleClicktoReview1(selectedProductApproved1.exchange_id)}>รีวิวผู้ใช้ที่ได้นำทรัพยากรมาแลกเปลี่ยนในธนาคารของคุณ</Button>
+            <DialogActions sx={{ justifyContent: 'end' }}>
+              <Button variant="contained" onClick={() => handleClicktoReview1(selectedProductApproved1.exchange_id)}>รีวิวผู้ใช้ที่ได้นำทรัพยากรมาแลกเปลี่ยนในธนาคารของคุณ</Button>
             </DialogActions>
           )}
         </Dialog>
@@ -2019,13 +2019,13 @@ export default function Bank() {
           </DialogContent>
           {(selectedProductApproved2 && selectedProductApproved2.order_product_getproduct === 'ยังไม่ได้มารับทรัพยากร' && selectedProductApproved2.order_product_status === 'อนุมัติให้ทำรายการ'
           ) && (
-              <DialogActions sx={{ justifyContent: 'center' }}>
-                <Button onClick={() => handleClicktoUpdateGetProduct2("ส่งทรัพยากรเรียบร้อยแล้ว")}>ส่งทรัพยากรเรียบร้อยแล้ว</Button>
+              <DialogActions sx={{ justifyContent: 'end' }}>
+                <Button variant="contained" onClick={() => handleClicktoUpdateGetProduct2("ส่งทรัพยากรเรียบร้อยแล้ว")}>ส่งทรัพยากรเรียบร้อยแล้ว</Button>
               </DialogActions>
             )}
           {(selectedProductApproved2 && selectedProductApproved2.order_sale_pickup === 'รีวิวทรัพยากรเรียบร้อย' && selectedProductApproved2.customer_status_sale !== 'รีวิวผู้ใช้เรียบร้อย' && selectedProductApproved2.order_product_getproduct === 'รับทรัพยากรเรียบร้อยแล้ว') && (
-            <DialogActions sx={{ justifyContent: 'center' }}>
-              <Button onClick={() => handleClicktoReview2(selectedProductApproved2.order_sale_id)}>รีวิวผู้ใช้ที่ซื้อทรัพยากรในธนาคารของคุณ</Button>
+            <DialogActions sx={{ justifyContent: 'end' }}>
+              <Button variant="contained" onClick={() => handleClicktoReview2(selectedProductApproved2.order_sale_id)}>รีวิวผู้ใช้ที่ซื้อทรัพยากรในธนาคารของคุณ</Button>
             </DialogActions>
           )}
         </Dialog>

@@ -33,6 +33,8 @@ const ChatBank = ({ searchedBank }) => {
 
         return () => unsubscribe();
     }, [messagesRef]);
+
+    
     useEffect(() => {
         axios.get(`http://localhost:5000/readimage/${username}`)
             .then((response) => {
@@ -52,8 +54,17 @@ const ChatBank = ({ searchedBank }) => {
                 setProfile(response.data[0])
             })
     }, [])
-    const handleSend = async () => {
+
+
+      const handleSend = async () => {
+        // ตรวจสอบว่ามีข้อความถูกพิมพ์หรือไม่
+        if (newMessage.trim() === "") {
+            // ถ้าไม่มีข้อความถูกพิมพ์ ให้ย้อนกลับโดยไม่ทำอะไร
+            return;
+        }
+
         try {
+            // ส่งข้อความเมื่อมีข้อความถูกพิมพ์
             await addDoc(messagesRef, {
                 text: newMessage,
                 createdAt: serverTimestamp(),
@@ -63,8 +74,7 @@ const ChatBank = ({ searchedBank }) => {
                 name: profile.fullname,
                 imagesbank: banks,
             });
-
-            setNewMessage("");
+            setNewMessage(""); // เคลียร์ข้อความใน input
         } catch (error) {
             console.error("Error sending message: ", error);
         }
@@ -81,7 +91,7 @@ const ChatBank = ({ searchedBank }) => {
             {searchedBank && (
                 <div className="messages">
                     {messages.map((message) => {
-                        if (message.bank_name === bank_name) {
+                        if (message.bank_name === searchedBank.bank_name) {
                             const isOwnMessage = message.user === username;
                             const isCurrentMessageSender = message.user === username;
 
@@ -121,11 +131,16 @@ const ChatBank = ({ searchedBank }) => {
 
                     <div className="input-wrapper">
                         <div className="input">
-                            <input
+                        <input
                                 type="text"
                                 placeholder="พิมพ์ข้อความของคุณที่นี่..."
                                 value={newMessage}
                                 onChange={(e) => setNewMessage(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        handleSend();
+                                    }
+                                }}
                             />
                             <div className="send">
                                 <button onClick={handleSend}>ส่ง</button>

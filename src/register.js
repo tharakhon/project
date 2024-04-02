@@ -78,6 +78,15 @@ function Register() {
       return;
     }
 
+    if (fullname.length > 30) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'ข้อมูลไม่ถูกต้อง',
+        text: 'ชื่อมีความยาวไม่เกิน 20 ตัว',
+      });
+      return; 
+    }
+
     if (tel.length < 9 || tel.length > 10) {
       Swal.fire({
         icon: 'warning',
@@ -128,7 +137,22 @@ function Register() {
       }
     });
   };
-
+  const handleUsernameChange = (event) => {
+    const inputValue = event.target.value;
+    // Check if the length of the input value exceeds 20 characters
+    if (inputValue.length > 20) {
+        // Show an alert if the length exceeds the limit
+        Swal.fire({
+            icon: 'error',
+            title: 'ข้อผิดพลาด',
+            text: 'ชื่อควรมีความยาวไม่เกิน 20 ตัวอักษร',
+        });
+        // Truncate the input value to 20 characters
+        setUsername(inputValue.slice(0, 20));
+    } else {
+        setUsername(inputValue);
+    }
+};
 
   return (
     <div>
@@ -154,10 +178,8 @@ function Register() {
                 required
                 id="outlined-required"
                 label="Name"
-                defaultValue=''
-                onChange={(event) => {
-                  setUsername(event.target.value)
-                }}
+                value={fullname}
+                onChange={handleUsernameChange}
               />
               <br />
               <TextField

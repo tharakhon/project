@@ -14,9 +14,9 @@ export const BankChat = () => {
         // เช่น การดึงข้อมูลจาก API หรือฐานข้อมูล Firebase
     }, [searchedUser]);
 
-    const handleSelectUser = (item) => {
-        setSearchedUser(item); // กำหนดผู้ใช้ที่ถูกเลือกให้กับ state selectedUser
-        console.log(item);
+    const handleSelectUser = (searchedUser) => {
+        setSearchedUser(searchedUser); // กำหนดผู้ใช้ที่ถูกเลือกให้กับ state selectedUser
+        console.log("text===========",searchedUser);
       };
 
     return (

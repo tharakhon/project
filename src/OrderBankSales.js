@@ -143,6 +143,15 @@ function OrderBankSale() {
 
     }, [username, userImage]);
     const handleBorrowDateChange = (date) => {
+        const currentDate = new Date();
+        if (date <= currentDate) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'วันที่มารับทรัพยากรต้องมากกว่าวันที่ปัจจุบัน',
+            });
+            return;
+        }
         setBorrowDate(date);
     };
 
@@ -207,6 +216,16 @@ function OrderBankSale() {
             });
             return;
         }
+
+        if (inputQuantity <= 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'ข้อมูลไม่ถูกต้อง',
+                text: 'จำนวนสินค้าต้องไม่เท่ากับ 0',
+            });
+            return;
+        }
+
         Swal.fire({
             icon: 'warning',
             title: 'คุณแน่ใจหรือไม่?',

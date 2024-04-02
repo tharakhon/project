@@ -144,12 +144,41 @@ function OrderBankUsers() {
     }, [username, userImage]);
 
     const handleBorrowDateChange = (date) => {
-        setBorrowDate(date);
+        const currentDate = new Date();
+        if (date <= currentDate) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'วันที่มารับทรัพยากรต้องมากกว่าวันที่ปัจจุบัน',
+            });
+            return;
+        }
+        setBorrowDate(date instanceof Date ? date : new Date(date)); // Ensure borrowDate is a Date object
     };
 
     const handleReturnDateChange = (date) => {
-        setReturnDate(date);
+        if (!borrowDate || date <= borrowDate) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'วันที่คืนทรัพยากรต้องมากกว่าวันที่มารับทรัพยากร',
+            });
+            return;
+        }
+
+        const maxReturnDate = new Date(borrowDate.getFullYear(), borrowDate.getMonth() + 3, borrowDate.getDate());
+        if (date > maxReturnDate) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'วันที่คืนทรัพยากรต้องไม่เกิน 3 เดือนจากวันที่ยืมทรัพยากร',
+            });
+            return;
+        }
+
+        setReturnDate(date instanceof Date ? date : new Date(date)); // Ensure returnDate is a Date object
     };
+
     const handleChange = (event) => {
         const newValue = event.target.value;
 
@@ -204,6 +233,24 @@ function OrderBankUsers() {
             });
             return;
         }
+
+        if (inputQuantity <= 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'ข้อมูลไม่ถูกต้อง',
+                text: 'จำนวนสินค้าต้องไม่เท่ากับ 0',
+            });
+            return;
+        }
+
+        if (returnDate < borrowDate) {
+            Swal.fire({
+                icon: 'error',
+                title: 'ข้อมูลไม่ถูกต้อง',
+                text: 'วันที่คืนทรัพยากรต้องมากกว่าหรือเท่ากับวันที่ยืมทรัพยากร',
+            });
+            return;
+        }
         Swal.fire({
             icon: 'warning',
             title: 'คุณแน่ใจหรือไม่?',
@@ -238,7 +285,7 @@ function OrderBankUsers() {
                         Swal.fire({
                             icon: 'error',
                             title: 'เกิดข้อผิดพลาด',
-                            text: 'ไม่สามารถส่งข้อมูลไปยังธนาคารได้คุณต้องเช็คด้วยว่าได้รีวิวทรัพยากรของธนาคารนั้นไปบ้างรึยัง โปรดลองอีกครั้งในภายหลัง',
+                            text: 'ไม่สามารถส่งข้อมูลไปยังธนาคารได้ คุณต้องเช็คด้วยว่า ได้รีวิวทรัพยากรของธนาคารนั้นไปบ้างรึยัง โปรดลองอีกครั้งในภายหลัง',
                         });
                         console.error("Error:", error.message);
                     });
@@ -370,7 +417,7 @@ function OrderBankUsers() {
                                 id="outlined-multiline-static"
                                 sx={{ width: '50ch' }} />
                         </div>
-                        <div style={{ marginTop: 30 }}>
+                        <div style={{ marginTop: 32 }}>
                             {filteredProduct.product_price === '' ? null : (
                                 <>
                                     <FormLabel component="legend" style={{ color: 'black' }}>ราคาของทรัพยากร:</FormLabel>

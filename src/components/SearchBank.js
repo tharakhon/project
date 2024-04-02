@@ -17,8 +17,8 @@ const SearchBank = ({ handleSelectBank }) => {
       const latestMessages = {};
       snapshot.forEach((doc) => {
         const data = doc.data();
-        if (data.bank_name === bank_name && data.from !== username) {
-          latestMessages[data.bank_name] = { ...data, id: doc.id }; // เปลี่ยน data.name เป็น data.bank_name
+        if (data.bank_name !== bank_name && data.from !== username) {
+          latestMessages[data.bank_name] = { ...data, id: doc.id };
         }
       });
       setBanks(Object.values(latestMessages));
