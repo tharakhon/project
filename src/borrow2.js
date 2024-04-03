@@ -171,11 +171,13 @@ function Borroww() {
 
   const handleBorrowDateChange = (date) => {
     const currentDate = new Date();
-    if (date <= currentDate) {
+    const threeMonthsLater = new Date();
+    threeMonthsLater.setMonth(currentDate.getMonth() + 3);
+    if (date <= currentDate || date > threeMonthsLater ) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'วันที่มารับทรัพยากรต้องมากกว่าวันที่ปัจจุบัน',
+        text: 'วันที่มารับทรัพยากรต้องมากกว่าวันที่ปัจจุบันและต้องไม่เกิน 3 เดือน',
       });
       return;
     }
