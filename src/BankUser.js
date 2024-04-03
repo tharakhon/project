@@ -195,6 +195,7 @@ export default function BankUser() {
         setOpen(true);
     };
     const handleClick = () => {
+        ReactSession.set('bank_name',bank_name)
         ReactSession.set('username', username)
         navigate("/profilebank")
     }

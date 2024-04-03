@@ -18,7 +18,7 @@ function Profile() {
   const [isEdited, setIsEdited] = useState(false);
 
   useEffect(() => {
-    Axios.get(`http://localhost:5000/user/${username}`)
+    Axios.get(`http://localhost:5000/user1/${username}`)
       .then((response) => {
         console.log("ข้อมูลที่ได้รับ:", response.data[0].email);
         const userData = response.data;

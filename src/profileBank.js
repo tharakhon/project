@@ -12,6 +12,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 function ProfileBank() {
     const username = ReactSession.get("username");
+    const bank_name = ReactSession.get("bank_name");
     const [profile, setProfile] = useState();
     const [useremail, setEmail] = useState();
     const [tel, setTel] = useState("");
@@ -21,7 +22,7 @@ function ProfileBank() {
     const [rankImage, setRankImage] = useState();
     const [rankName, setRankName] = useState();
     useEffect(() => {
-        Axios.get(`http://localhost:5000/user/${username}`)
+        Axios.get(`http://localhost:5000/user/${username}/${bank_name}`)
             .then((response) => {
                 console.log("ข้อมูลที่ได้รับ:", response.data[0].email);
                 const userData = response.data;
