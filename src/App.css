@@ -22,7 +22,10 @@
   justify-content: center;
   text-align: center;
   padding: 80px;
+  min-height: 100vh; /* เพิ่ม min-height แทนที่ height */
+  min-width: 100vw;
 }
+
 
 .google-login-button {
   background-color: #f90101; /* เปลี่ยนสีพื้นหลังเป็นสีน้ำเงิน */

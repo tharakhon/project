@@ -83,7 +83,6 @@ const Chat = ({ searchedUser }) => {
             {searchedUser && (
                 <div className="messages">
                     {messages
-                    .filter(message => (message.bank_name === bank_name && message.user === searchedUser.user) || (message.to === username))
                         .map((message) => (
                             <div key={message.id} className="message">
                                 <span className={message.from === username ? "ownn-message" : "other-message"}>

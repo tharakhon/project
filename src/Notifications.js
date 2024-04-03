@@ -799,7 +799,7 @@ function Notifications() {
                         ))}
                     </>
                 ) : (
-                    <p>filteredProducts is not an array.</p>
+                    <p>ไม่มีข้อมูลที่รอการตรวจสอบ</p>
                 )}
             </Grid>
             <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
@@ -888,7 +888,7 @@ function Notifications() {
                         ))}
                     </>
                 ) : (
-                    <p>filteredProducts is not an array.</p>
+                    <p>ไม่มีข้อมูลที่อนุมัติและไม่อนุมัติ</p>
                 )}
             </Grid>
             <Grid container spacing={2} style={{ width: '95%', margin: 0 }}>
@@ -977,7 +977,7 @@ function Notifications() {
                         ))}
                     </>
                 ) : (
-                    <p>filteredProducts is not an array.</p>
+                    <p>ไม่มีข้อมูลที่ส่งทรัพยากร</p>
                 )}
             </Grid>
             <Dialog

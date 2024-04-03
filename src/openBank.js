@@ -74,7 +74,8 @@ function OpenBank() {
         product_type3: "",
         product_quantity: 0,
         product_unit: "",
-        product_price: 0
+        product_price: 0,
+        product_details :"",
     });
     const [dataEdited, setDataEdited] = useState(false);
 
@@ -93,7 +94,8 @@ function OpenBank() {
                         product_type3: Boolean(response.data[0].product_type3 === 'ทรัพยากรเพื่อแลกเปลี่ยน'),
                         product_quantity: response.data[0].product_quantity || 0,
                         product_unit: response.data[0].product_unit || "",
-                        product_price: response.data[0].product_price || 0
+                        product_price: response.data[0].product_price || 0,
+                        product_details: response.data[0].product_details || "",
                     });
                 }
             })
@@ -341,6 +343,17 @@ function OpenBank() {
                                     inputProps={{ type: 'number' }}
                                 />
                             </FormControl>
+                        </div>
+                        <div style={{ marginTop: 30 }}>
+                            <FormLabel component="legend" style={{ color: 'black' }}>รายละเอียดเพิ่มเติม:</FormLabel>
+                            <TextField
+                                multiline              
+                                defaultValue={filteredProducts.product_details}
+                                id="outlined-multiline-static"
+                                sx={{ width: '50ch'}}
+                                onChange={(e) => {handleDataEdited('product_details', e.target.value)}}
+                                inputProps={{ maxLength: 20 }}
+                            />
                         </div>
                     </div>
 

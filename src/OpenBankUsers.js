@@ -132,12 +132,14 @@ function OpenBankUsers() {
                     userBank_bankName: bank_name,
                 })
                     .then((response) => {
+
                         Swal.fire({
                             icon: 'success',
                             title: 'สมัครสมาชิกเสร็จสิ้น',
                             text: 'คุณได้เป็นสมาชิกของธนาคารเรียบร้อยแล้ว',
                             confirmButtonText: 'OK',
                         });
+                        setIsBankMember(true)
                     })
                     .catch((error) => {
                         if (error.response) {
@@ -399,6 +401,18 @@ function OpenBankUsers() {
                             <FormLabel component="legend" style={{ color: 'black' }}>จำนวนทรัพยากร : </FormLabel>
                             <TextField disabled id="outlined-disabled" label={`${filteredProducts.product_quantity} ${filteredProducts.product_unit}`} variant="outlined" sx={{ width: '50ch' }} />
                         </div>
+
+                        <div style={{ marginTop: 30 }}>
+                            <FormLabel component="legend" style={{ color: 'black' }}>รายละเอียดเพิ่มเติม:</FormLabel>
+                            <TextField
+                                disabled
+                                multiline              
+                                defaultValue={filteredProducts.product_details}
+                                id="outlined-multiline-static"
+                                sx={{ width: '50ch'}}
+                            />
+                        </div>
+
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-around', margin: 30 }}>
                         <Button variant="contained" color="error" onClick={handleBackbankuser}>ย้อนกลับ</Button>

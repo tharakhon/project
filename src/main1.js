@@ -534,7 +534,7 @@ function Main12() {
     .then((response) => {
       console.log(response.data);
       // Assuming the image data is present in the response data
-      setnotifications_Status(response.data);
+      setnotifications_Status(Object.values(response.data));
     })
     .catch((error) => {
       console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
@@ -558,7 +558,7 @@ function Main12() {
      .then((response) => {
        console.log(response.data);
        // Assuming the image data is present in the response data
-       setnotifications_Status3(response.data);
+       setnotifications_Status3(Object.values(response.data));
      })
      .catch((error) => {
        console.error("เกิดข้อผิดพลาดในการตรวจสอบข้อมูลผู้ใช้:", error);
@@ -567,6 +567,10 @@ function Main12() {
    }, []);
 
   const calculateTotalPendingNotifications = () => {
+  //   if (!Array.isArray(notifications)) {
+  //     console.error('Notifications is not an array');
+  //     return 0; // หรือค่าอื่นๆ ตามที่คุณต้องการ
+  // }
     
     const pendingNotifications = notifications.filter(notification => {
       return (
@@ -574,21 +578,21 @@ function Main12() {
         notification.userbank_status === 'รอการตรวจสอบ' ||
         notification.order_product_status === 'รอการตรวจสอบ'
       );
-    });
+    }, 0);
     const totalPendingNotifications = pendingNotifications.reduce((sum, notification) => {
-      return sum + notification.combined_count;
+      return sum + parseInt(notification.combined_count || 0);
     }, 0);
 
     const totalPendingNotification_Stautus = notifications_Status.reduce((sum, notification) => {
-      return sum + notification.count_order_status + notification.count_getproduct;
+      return sum + parseInt(notification.count_order_status|| 0) + parseInt(notification.count_getproduct|| 0);
     }, 0);
    
     const totalPendingNotification_Stautus2 = notifications_Status2.reduce((sum, notification) => {
-      return sum + notification.count_order_status + notification.count_getproduct;
+      return sum + parseInt(notification.count_order_status|| 0) + parseInt(notification.count_getproduct|| 0);
     }, 0);
 
     const totalPendingNotification_Stautus3 = notifications_Status3.reduce((sum, notification) => {
-      return sum + notification.count_order_status + notification.count_getproduct;
+      return sum + parseInt(notification.count_order_status|| 0) + parseInt(notification.count_getproduct|| 0);
     }, 0);
 
     const total = totalPendingNotification_Stautus + totalPendingNotifications + totalPendingNotification_Stautus2 + totalPendingNotification_Stautus3;
