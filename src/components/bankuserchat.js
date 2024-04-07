@@ -43,7 +43,7 @@ export const Bankuserchat = () => {
 
 
   useEffect ( () =>{
-    axios.get(`http://localhost:5000/user/${username}`)
+    axios.get(`http://localhost:5000/user1/${username}`)
     .then ((response) => {
       setProfile (response.data[0])
     } )

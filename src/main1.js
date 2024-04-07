@@ -863,7 +863,7 @@ function Main12() {
     console.log(updatedProducts)
     setFilteredProducts(updatedProducts);
 
-  }, []);
+  }, [filteredProducts]);
   // Effect(() => {
   //   const storedBookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
   //   setBookmarks(storedBookmarks);
